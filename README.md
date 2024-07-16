@@ -2,8 +2,8 @@
 
 ## 목차
 
-* [커밋규칙](https://github.com/LocalGovernmentx/TutorPlatform/README.md#커밋-규칙)
-* [브랜치규칙](https://github.com/LocalGovernmentx/TutorPlatform/README.md#브랜치-규칙)
+* [커밋규칙](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#커밋-규칙)
+* [브랜치규칙](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#브랜치-규칙)
 
 
 
