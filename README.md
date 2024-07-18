@@ -4,6 +4,7 @@
 
 * [커밋규칙](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#커밋-규칙)
 * [브랜치규칙](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#브랜치-규칙)
+* [버전](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#버전)
 
 
 
@@ -85,3 +86,6 @@
     - title : merge하려는 브랜치 이름
     - description : 비우기
     - 머지 후 브랜치 삭제
+
+## 버전
+java : 22
