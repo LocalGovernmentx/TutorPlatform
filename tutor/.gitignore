@@ -5,6 +5,10 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+# Ignore application.properties file
+application.properties
+
+
 ### STS ###
 .apt_generated
 .classpath
