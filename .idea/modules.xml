@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/TutorPlatform.iml" filepath="$PROJECT_DIR$/.idea/TutorPlatform.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/tutor.main.iml" filepath="$PROJECT_DIR$/.idea/modules/tutor.main.iml" />
     </modules>
   </component>
 </project>
