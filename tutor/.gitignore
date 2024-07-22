@@ -6,7 +6,7 @@ build/
 !**/src/test/**/build/
 
 # Ignore application.properties file
-**/src/main/resources/application.properties
+./src/main/resources/application.properties
 
 
 ### STS ###
