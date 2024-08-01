@@ -1,65 +1,38 @@
 package com.sm.tutor.controller;
 
-import com.sm.tutor.domain.Member;
+
 import com.sm.tutor.service.MemberService;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.ui.Model;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/oauth-login")
+@RequestMapping("/oauth")
 public class OauthLoginController {
 
   private final MemberService memberService;
 
-  @GetMapping(value = {"", "/"})
-  public String home(Model model) {
-
-    model.addAttribute("loginType", "oauth-login");
-    model.addAttribute("pageName", "oauth 로그인");
-
-    String email = SecurityContextHolder.getContext().getAuthentication().getName();
-    System.out.println("email = " + email);
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-    Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-    Iterator<? extends GrantedAuthority> iter = authorities.iterator();
-    GrantedAuthority auth = iter.next();
-    String role = auth.getAuthority();
-
-    Member loginMember = memberService.getLoginMemberByEmail(email);
-
-    if (loginMember != null) {
-      model.addAttribute("name", loginMember.getName());
-    }
-
-    return "home";
-  }
-
-  @GetMapping("/login")
-  public String loginPage(Model model) {
-
-    model.addAttribute("loginType", "oauth-login");
-    model.addAttribute("pageName", "oauth 로그인");
-    return "login";
-  }
-
   @GetMapping("/info")
-  public String memberInfo(Authentication auth, Model model) {
-    model.addAttribute("loginType", "oauth-login");
-    model.addAttribute("pageName", "oauth 로그인");
+  public String oauthInfo(Authentication authentication) {
+    OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+    Map<String, Object> attributes = oAuth2User.getAttributes();
+    return attributes.toString();
+  }
 
-    Member loginMember = memberService.getLoginMemberByEmail(auth.getName());
+  // oauth Login이 잘 돌아가는지 확인
+  @GetMapping("/loginInfo")
+  public ResponseEntity<?> oauthLoginInfo(Authentication authentication) {
+    OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+    Map<String, Object> attributes = oAuth2User.getAttributes();
 
-    model.addAttribute("member", loginMember);
-    return "info";
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(attributes);
   }
 }

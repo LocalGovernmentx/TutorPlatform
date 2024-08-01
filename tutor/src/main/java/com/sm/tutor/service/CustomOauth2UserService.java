@@ -4,10 +4,15 @@ package com.sm.tutor.service;
 import com.sm.tutor.domain.Member;
 import com.sm.tutor.domain.Oauth;
 import com.sm.tutor.domain.dto.CustomOauth2UserDetails;
+import com.sm.tutor.domain.dto.FacebookUserDetails;
 import com.sm.tutor.domain.dto.GoogleUserDetails;
+import com.sm.tutor.domain.dto.KakaoUserDetails;
+import com.sm.tutor.domain.dto.NaverUserDetails;
 import com.sm.tutor.domain.dto.OAuth2UserInfo;
 import com.sm.tutor.repository.MemberRepository;
 import com.sm.tutor.repository.OauthRepository;
+import java.time.Instant;
+import java.time.LocalDate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -43,9 +48,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     if (provider.equals("google")) {
       log.info("구글 로그인");
       oAuth2UserInfo = new GoogleUserDetails(oAuth2User.getAttributes());
-    }
-    /*
-    else if (provider.equals("kakao")) {
+    } else if (provider.equals("kakao")) {
       log.info("카카오 로그인");
       oAuth2UserInfo = new KakaoUserDetails(oAuth2User.getAttributes());
     } else if (provider.equals("naver")) {
@@ -54,7 +57,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     } else if (provider.equals("facebook")) {
       log.info("페이스북 로그인");
       oAuth2UserInfo = new FacebookUserDetails(oAuth2User.getAttributes());
-    }*/
+    }
 
     String providerId = oAuth2UserInfo.getProviderId();
     // String email = oAuth2UserInfo.getEmail();
@@ -68,7 +71,16 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     if (findMember == null) {
       member = Member.builder()
           .email(email)
+          .password("password")
+          .phoneNumber("phoneNumber")
           .name(name)
+          .nickname("nickname")
+          .gender(1)
+          .birth(LocalDate.now())
+          .verifiedOauth(false)
+          .lastlogin(Instant.now())
+          .type(1)
+          .inviteCode("inviteCode")
           .build();
       memberRepository.save(member);
       oauth = Oauth.builder()
