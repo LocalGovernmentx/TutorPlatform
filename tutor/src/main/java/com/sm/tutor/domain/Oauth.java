@@ -1,37 +1,42 @@
 package com.sm.tutor.domain;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
-@Entity
 @Builder
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Entity
+@Table(name = "oauth", schema = "modu_tutor")
 public class Oauth {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "oauth_id", nullable = false)
+    private Integer id;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "oauth_id", nullable = false)
-  private Integer id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "member_id")
+    private Member memberId;
 
-  @Column(name = "member_id")
-  private Integer memberId;
+    @Size(max = 45)
+    @Column(name = "provider", length = 45)
+    private String provider;
 
-  // provider : google
-  private String provider;
+    @Size(max = 45)
+    @Column(name = "provider_id", length = 45)
+    private String providerId;
 
-  @Column(name = "provider_id")
-  // providerId : 구굴 로그인 한 유저의 고유 ID가 들어감
-  private String providerId;
 }
