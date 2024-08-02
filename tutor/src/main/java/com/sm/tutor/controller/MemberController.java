@@ -17,7 +17,7 @@ public class MemberController {
     @Autowired
     private MemberService memberService;
 
-    @Operation(summary = "모든 멤버 조회", description = "모든 멤버 조회")
+    @Operation(summary = "모든 멤버 조회", description = "개발용")
     @GetMapping
     public ResponseEntity<List<Member>> getAllMembers() {
         List<Member> members = memberService.getAllMembers();
@@ -25,18 +25,21 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "내 정보 조회")
     public ResponseEntity<Member> getMemberById(@PathVariable Long id) {
         Member member = memberService.getMemberById(id);
         return member != null ? new ResponseEntity<>(member, HttpStatus.OK) :
                 new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @Operation(summary = "회원가입")
     @PostMapping
     public ResponseEntity<Member> createMember(@RequestBody Member member) {
         Member createdMember = memberService.saveMember(member);
         return new ResponseEntity<>(createdMember, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "회원탈퇴")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
         memberService.deleteMember(id);
