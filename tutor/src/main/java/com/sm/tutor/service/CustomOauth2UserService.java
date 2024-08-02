@@ -84,7 +84,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
           .build();
       memberRepository.save(member);
       oauth = Oauth.builder()
-          .memberId(member.getId())
+          .member(member)
           .provider(provider)
           .providerId(providerId)
           .build();

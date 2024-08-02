@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
@@ -21,22 +22,23 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(name = "oauth", schema = "modu_tutor")
 public class Oauth {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "oauth_id", nullable = false)
-    private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "member_id")
-    private Member memberId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "oauth_id", nullable = false)
+  private Integer id;
 
-    @Size(max = 45)
-    @Column(name = "provider", length = 45)
-    private String provider;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  @JoinColumn(name = "member_id")
+  private Member member;
 
-    @Size(max = 45)
-    @Column(name = "provider_id", length = 45)
-    private String providerId;
+  @Size(max = 45)
+  @Column(name = "provider", length = 45)
+  private String provider;
+
+  @Size(max = 45)
+  @Column(name = "provider_id", length = 45)
+  private String providerId;
 
 }
