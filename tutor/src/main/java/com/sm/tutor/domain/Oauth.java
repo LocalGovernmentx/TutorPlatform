@@ -15,6 +15,7 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+@Builder
 @Getter
 @Setter
 @Entity
@@ -28,7 +29,7 @@ public class Oauth {
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "member_id")
-    private Member member;
+    private Member memberId;
 
     @Size(max = 45)
     @Column(name = "provider", length = 45)

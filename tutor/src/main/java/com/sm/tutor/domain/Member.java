@@ -5,19 +5,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.time.LocalDate;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+@Entity
+@Builder
 @Getter
 @Setter
-@Entity
 @Table(name = "member", schema = "modu_tutor")
 public class Member {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id", nullable = false)
@@ -65,5 +68,4 @@ public class Member {
     @Size(max = 45)
     @Column(name = "invite_code", length = 45)
     private String inviteCode;
-
 }
