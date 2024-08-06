@@ -3,14 +3,20 @@ package com.sm.tutor.controller;
 import com.sm.tutor.domain.Member;
 import com.sm.tutor.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
@@ -19,7 +25,7 @@ public class MemberController {
 
   @Autowired
   private MemberService memberService;
-  
+
   @Autowired
   private PasswordEncoder passwordEncoder;
 
@@ -33,7 +39,7 @@ public class MemberController {
   @GetMapping("/{email}")
   @Operation(summary = "내 정보 조회")
   public ResponseEntity<Member> getMemberByEmail(@PathVariable String email) {
-    Member member = memberService.getMemberById(email);
+    Member member = memberService.getMemberByEmail(email);
     return member != null ? new ResponseEntity<>(member, HttpStatus.OK) :
         new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
@@ -63,7 +69,7 @@ public class MemberController {
       return new ResponseEntity<>("로그인 실패", HttpStatus.UNAUTHORIZED);
     }
   }
-  
+
   @Operation(summary = "이메일 인증 코드 전송 요청")
   @PostMapping("/emails/verification-requests")
   public ResponseEntity<Void> sendMessage(@RequestParam("email") String email) {

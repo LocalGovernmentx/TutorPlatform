@@ -10,7 +10,6 @@ import java.util.Optional;
 import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,9 +32,11 @@ public class MemberService {
   @Value("${spring.mail.auth-code-expiration-millis}")
   private long authCodeExpirationMillis;
 
-  public MemberService(MemberRepository memberRepository, EmailService emailService,
+  public MemberService(MemberRepository memberRepository, PasswordEncoder passwordEncoder,
+      EmailService emailService,
       RedisService redisService) {
     this.memberRepository = memberRepository;
+    this.passwordEncoder = passwordEncoder;
     this.emailService = emailService;
     this.redisService = redisService;
   }
@@ -45,7 +46,7 @@ public class MemberService {
   }
 
   public Member getMemberByEmail(String email) {
-    Member member = memberRepository.findByEmail(email);
+    Optional<Member> member = memberRepository.findByEmail(email);
     return member.orElse(null);
   }
 
@@ -56,7 +57,16 @@ public class MemberService {
   }
 
   public void deleteMember(String email) {
-    memberRepository.deleteById(Long.valueOf(getMemberById(email).getId()));
+    memberRepository.deleteById(Long.valueOf(getMemberByEmail(email).getId()));
+  }
+
+  public boolean authenticateMember(String email, String rawPassword) {
+    Member member = getMemberByEmail(email);
+    System.out.println(member.toString());
+    if (member != null) {
+      return passwordEncoder.matches(rawPassword, member.getPassword());
+    }
+    return false;
   }
 
   public void sendCodeToEmail(String toEmail) {
@@ -104,14 +114,6 @@ public class MemberService {
     } else {
       return true;
     }
-
-  public boolean authenticateMember(String email, String rawPassword) {
-    Member member = getLoginMemberByEmail(email);
-    System.out.println(member.toString());
-    if (member != null) {
-      return passwordEncoder.matches(rawPassword, member.getPassword());
-    }
-    return false;
   }
 
   public boolean modifyPassword(String email, String password) {
