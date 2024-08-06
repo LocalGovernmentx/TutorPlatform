@@ -35,7 +35,7 @@ public class OauthLoginUIController {
     GrantedAuthority auth = iter.next();
     String role = auth.getAuthority();
 
-    Member loginMember = memberService.getLoginMemberByEmail(email);
+    Member loginMember = memberService.getMemberByEmail(email);
 
     if (loginMember != null) {
       model.addAttribute("name", loginMember.getName());
@@ -57,7 +57,7 @@ public class OauthLoginUIController {
     model.addAttribute("loginType", "oauth-login");
     model.addAttribute("pageName", "oauth 로그인");
 
-    Member loginMember = memberService.getLoginMemberByEmail(auth.getName());
+    Member loginMember = memberService.getMemberByEmail(auth.getName());
 
     model.addAttribute("member", loginMember);
     return "info";
