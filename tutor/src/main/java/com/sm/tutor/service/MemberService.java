@@ -27,9 +27,9 @@ public class MemberService {
     return memberRepository.findAll();
   }
 
-  public Member getMemberById(Long id) {
-    Optional<Member> member = memberRepository.findById(id);
-    return member.orElse(null);
+  public Member getMemberById(String email) {
+    Member member = memberRepository.findByEmail(email);
+    return member;
   }
 
   public Member saveMember(Member member) {
@@ -38,8 +38,8 @@ public class MemberService {
     return memberRepository.save(member);
   }
 
-  public void deleteMember(Long id) {
-    memberRepository.deleteById(id);
+  public void deleteMember(String email) {
+    memberRepository.deleteById(Long.valueOf(getMemberById(email).getId()));
   }
 
   public Member getLoginMemberByEmail(String email) {

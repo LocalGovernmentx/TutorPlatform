@@ -27,10 +27,10 @@ public class MemberController {
     return new ResponseEntity<>(members, HttpStatus.OK);
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/{email}")
   @Operation(summary = "내 정보 조회")
-  public ResponseEntity<Member> getMemberById(@PathVariable Long id) {
-    Member member = memberService.getMemberById(id);
+  public ResponseEntity<Member> getMemberByEmail(@PathVariable String email) {
+    Member member = memberService.getMemberById(email);
     return member != null ? new ResponseEntity<>(member, HttpStatus.OK) :
         new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
@@ -43,10 +43,10 @@ public class MemberController {
   }
 
   @Operation(summary = "회원탈퇴")
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
-    memberService.deleteMember(id);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  @DeleteMapping("/{email}")
+  public ResponseEntity<String> deleteMember(@PathVariable String email) {
+    memberService.deleteMember(email);
+    return new ResponseEntity<>("탈퇴 성공", HttpStatus.OK);
   }
 
   @Operation(summary = "로그인")
