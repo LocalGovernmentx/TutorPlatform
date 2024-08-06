@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
   private final MemberRepository memberRepository;
+  private final PasswordEncoder passwordEncoder; //
 
   private static final String AUTH_CODE_PREFIX = "AuthCode ";
 
@@ -41,26 +44,19 @@ public class MemberService {
     return memberRepository.findAll();
   }
 
-  public Member getMemberById(Long id) {
-    Optional<Member> member = memberRepository.findById(id);
+  public Member getMemberByEmail(String email) {
+    Member member = memberRepository.findByEmail(email);
     return member.orElse(null);
   }
 
   public Member saveMember(Member member) {
+    String encodedPassword = passwordEncoder.encode(member.getPassword()); // 비밀번호 암호화
+    member.setPassword(encodedPassword);
     return memberRepository.save(member);
   }
 
-  public void deleteMember(Long id) {
-    memberRepository.deleteById(id);
-  }
-
-  public Member getLoginMemberByEmail(String email) {
-    if (email == null) {
-      return null;
-    }
-
-    return memberRepository.findByEmail(email).orElse(null);
-
+  public void deleteMember(String email) {
+    memberRepository.deleteById(Long.valueOf(getMemberById(email).getId()));
   }
 
   public void sendCodeToEmail(String toEmail) {
@@ -108,6 +104,14 @@ public class MemberService {
     } else {
       return true;
     }
+
+  public boolean authenticateMember(String email, String rawPassword) {
+    Member member = getLoginMemberByEmail(email);
+    System.out.println(member.toString());
+    if (member != null) {
+      return passwordEncoder.matches(rawPassword, member.getPassword());
+    }
+    return false;
   }
 
   public boolean modifyPassword(String email, String password) {

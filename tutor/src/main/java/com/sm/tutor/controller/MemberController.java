@@ -3,19 +3,14 @@ package com.sm.tutor.controller;
 import com.sm.tutor.domain.Member;
 import com.sm.tutor.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -24,6 +19,9 @@ public class MemberController {
 
   @Autowired
   private MemberService memberService;
+  
+  @Autowired
+  private PasswordEncoder passwordEncoder;
 
   @Operation(summary = "모든 멤버 조회", description = "개발용")
   @GetMapping
@@ -32,10 +30,10 @@ public class MemberController {
     return new ResponseEntity<>(members, HttpStatus.OK);
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/{email}")
   @Operation(summary = "내 정보 조회")
-  public ResponseEntity<Member> getMemberById(@PathVariable Long id) {
-    Member member = memberService.getMemberById(id);
+  public ResponseEntity<Member> getMemberByEmail(@PathVariable String email) {
+    Member member = memberService.getMemberById(email);
     return member != null ? new ResponseEntity<>(member, HttpStatus.OK) :
         new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
@@ -48,12 +46,24 @@ public class MemberController {
   }
 
   @Operation(summary = "회원탈퇴")
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteMember(@PathVariable Long id) {
-    memberService.deleteMember(id);
-    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  @DeleteMapping("/{email}")
+  public ResponseEntity<String> deleteMember(@PathVariable String email) {
+    memberService.deleteMember(email);
+    return new ResponseEntity<>("탈퇴 성공", HttpStatus.OK);
   }
 
+  @Operation(summary = "로그인")
+  @PostMapping("/login")
+  public ResponseEntity<String> login(@RequestParam String email, @RequestParam String password) {
+    boolean authenticated = memberService.authenticateMember(email, password);
+    if (authenticated) {
+      // 로그인 성공 시, 실제로는 JWT를 발급하거나 세션을 생성합니다.
+      return new ResponseEntity<>("로그인 성공", HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>("로그인 실패", HttpStatus.UNAUTHORIZED);
+    }
+  }
+  
   @Operation(summary = "이메일 인증 코드 전송 요청")
   @PostMapping("/emails/verification-requests")
   public ResponseEntity<Void> sendMessage(@RequestParam("email") String email) {

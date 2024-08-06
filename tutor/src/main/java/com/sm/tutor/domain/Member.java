@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
@@ -22,6 +23,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Table(name = "member", schema = "modu_tutor")
 public class Member {
 
@@ -34,8 +36,8 @@ public class Member {
   @Column(name = "name", length = 45)
   private String name;
 
-  @Size(max = 64)
-  @Column(name = "password", length = 64)
+  @Size(max = 512)
+  @Column(name = "password", length = 512)
   private String password;
 
   @Size(max = 45)
