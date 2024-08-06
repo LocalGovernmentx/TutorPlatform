@@ -64,7 +64,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     String email = provider + "_" + providerId;
     String name = oAuth2UserInfo.getName();
 
-    Member findMember = memberRepository.findByEmail(email);
+    Member findMember = memberRepository.findByEmail(email).orElse(null);
     Member member;
     Oauth oauth;
 
@@ -91,7 +91,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
       oauthRepository.save(oauth);
     } else {
       member = findMember;
-      oauth = oauthRepository.findByProviderId(providerId);
+      oauth = oauthRepository.findByProviderId(providerId).orElse(null);
     }
 
     return new CustomOauth2UserDetails(member, oauth, oAuth2User.getAttributes());

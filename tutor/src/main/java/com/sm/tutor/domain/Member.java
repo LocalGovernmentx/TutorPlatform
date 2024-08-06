@@ -9,8 +9,10 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Size;
 import java.time.Instant;
 import java.time.LocalDate;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -18,6 +20,8 @@ import org.hibernate.annotations.ColumnDefault;
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "member", schema = "modu_tutor")
 public class Member {
 
