@@ -2,6 +2,8 @@ sealed class LoginEvent {
   factory LoginEvent.login(String email, String password) = Login;
 
   factory LoginEvent.autoLogin() = AutoLogin;
+
+  factory LoginEvent.stopRememberMe() = StopRememberMe;
 }
 
 class Login implements LoginEvent {
@@ -12,3 +14,5 @@ class Login implements LoginEvent {
 }
 
 class AutoLogin implements LoginEvent {}
+
+class StopRememberMe implements LoginEvent {}

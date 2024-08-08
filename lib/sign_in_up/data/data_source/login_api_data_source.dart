@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:tutor_platform/sign_in_up/data/data_source/result.dart';
+import 'package:tutor_platform/core/result.dart';
 
 class LoginApiDataSource {
   final http.Client client;

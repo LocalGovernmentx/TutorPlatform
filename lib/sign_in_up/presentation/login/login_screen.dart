@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_platform/core/main_view_model.dart';
 import 'package:tutor_platform/core/screen_state.dart';
+import 'package:tutor_platform/sign_in_up/presentation/find_password/find_password_screen.dart';
 import 'package:tutor_platform/sign_in_up/presentation/login/login_event.dart';
 import 'package:tutor_platform/sign_in_up/presentation/login/login_ui_event.dart';
 import 'package:tutor_platform/sign_in_up/presentation/login/login_view_model.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final bool autoLogin;
+  const LoginScreen({super.key, required this.autoLogin});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -25,24 +27,16 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
 
-    Future.microtask(() {
-      final viewModel = context.read<LoginViewModel>();
-      print('object');
+    final viewModel = context.read<LoginViewModel>();
 
+    Future.microtask(() {
       _streamSubscription = viewModel.eventStream.listen((event) {
         switch (event) {
           case Successful():
             final screenState = context.read<MainViewModel>();
 
-
-
-
-
-
-
-
-            // ToDo: goto tutee screen for tutor screen
-            screenState.onEvent(ScreenState.tuteeScreen(event.userInfo));
+            // TODO: goto tutee screen for tutor screen
+            screenState.onEvent(ScreenState.tuteeScreenState(event.userInfo));
           case ErrorMessagePassword():
             _errorMessagePassword = event.message;
           case ErrorMessageEmail():
@@ -53,6 +47,13 @@ class _LoginScreenState extends State<LoginScreen> {
         }
       });
     });
+
+    if (widget.autoLogin) {
+      viewModel.onEvent(AutoLogin());
+    }
+    else {
+      viewModel.onEvent(StopRememberMe());
+    }
   }
 
   @override
@@ -120,13 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       _emailController.text,
                       _passwordController.text,
                     ));
-                    
                   },
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
                   child: const Text('Login'),
                 ),
               ),
@@ -134,12 +129,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+
+                      // ToDo: implement email find screen
+                    },
                     child: const Text('이메일 찾기'),
                   ),
                   const Text(' | '),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FindPasswordScreen(),
+                        ),
+                      );
+                    },
                     child: const Text('비밀번호 찾기'),
                   ),
                 ],
