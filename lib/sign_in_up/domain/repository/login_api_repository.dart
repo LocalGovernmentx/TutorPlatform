@@ -1,5 +1,5 @@
 import 'package:tutor_platform/core/user_info.dart';
-import 'package:tutor_platform/sign_in_up/data/data_source/result.dart';
+import 'package:tutor_platform/core/result.dart';
 
 abstract class LoginApiRepository {
   Future<Result<UserInfo>> login(String email, String password);

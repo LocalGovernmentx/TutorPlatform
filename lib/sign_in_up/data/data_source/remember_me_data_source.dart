@@ -6,9 +6,13 @@ class RememberMeDataSource {
 
   RememberMeDataSource(this.storage);
 
-  Future<void> save(String email, String password) async {
+  Future<void> delete() async {
     await storage.delete(key: 'email');
     await storage.delete(key: 'password');
+  }
+
+  Future<void> save(String email, String password) async {
+    delete();
     await storage.write(key: 'email', value: email);
     await storage.write(key: 'password', value: password);
   }

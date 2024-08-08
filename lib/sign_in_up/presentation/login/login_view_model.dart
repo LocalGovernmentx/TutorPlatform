@@ -2,9 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:tutor_platform/core/user_info.dart';
-import 'package:tutor_platform/sign_in_up/data/data_source/result.dart';
+import 'package:tutor_platform/core/result.dart';
 import 'package:tutor_platform/sign_in_up/domain/model/login_credentials.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/perform_login.dart';
+import 'package:tutor_platform/sign_in_up/domain/use_case/remove_remember_me.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/retrieve_remember_me.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/write_remember_me.dart';
 import 'package:tutor_platform/sign_in_up/presentation/login/login_event.dart';
@@ -14,6 +15,7 @@ class LoginViewModel extends ChangeNotifier {
   final PerformLogin performLogin;
   final WriteRememberMe writeRememberMe;
   final RetrieveRememberMe retrieveRememberMe;
+  final RemoveRememberMe removeRememberMe;
 
   final _eventController = StreamController<LoginUiEvent>.broadcast();
 
@@ -23,6 +25,7 @@ class LoginViewModel extends ChangeNotifier {
     required this.performLogin,
     required this.writeRememberMe,
     required this.retrieveRememberMe,
+    required this.removeRememberMe,
   });
 
   void onEvent(LoginEvent event) {
@@ -31,6 +34,8 @@ class LoginViewModel extends ChangeNotifier {
         _login(event.email, event.password);
       case AutoLogin():
         _autoLogin();
+      case StopRememberMe():
+        _removeRememberMe();
     }
   }
 
@@ -91,5 +96,9 @@ class LoginViewModel extends ChangeNotifier {
     if (loginCredentials != null) {
       _login(loginCredentials.email, loginCredentials.password);
     }
+  }
+
+  void _removeRememberMe() async {
+    await removeRememberMe();
   }
 }

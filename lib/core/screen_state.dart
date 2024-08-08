@@ -1,25 +1,27 @@
 import 'package:tutor_platform/core/user_info.dart';
 
 sealed class ScreenState {
-  const factory ScreenState.signInUpScreen() = SignInUpScreen;
+  const factory ScreenState.signInUpScreenState(bool autoLogin) = SignInUpScreenState;
 
-  const factory ScreenState.tuteeScreen(UserInfo userInfo) = TuteeScreen;
+  const factory ScreenState.tuteeScreenState(UserInfo userInfo) = TuteeScreenState;
 
-  const factory ScreenState.tutorScreen(UserInfo userInfo) = TutorScreen;
+  const factory ScreenState.tutorScreenState(UserInfo userInfo) = TutorScreenState;
 }
 
-class SignInUpScreen implements ScreenState {
-  const SignInUpScreen();
+class SignInUpScreenState implements ScreenState {
+  final bool autoLogin;
+
+  const SignInUpScreenState(this.autoLogin);
 }
 
-class TuteeScreen implements ScreenState {
+class TuteeScreenState implements ScreenState {
   final UserInfo userInfo;
 
-  const TuteeScreen(this.userInfo);
+  const TuteeScreenState(this.userInfo);
 }
 
-class TutorScreen implements ScreenState {
+class TutorScreenState implements ScreenState {
   final UserInfo userInfo;
 
-  const TutorScreen(this.userInfo);
+  const TutorScreenState(this.userInfo);
 }

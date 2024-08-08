@@ -3,7 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tutor_platform/sign_in_up/data/data_source/login_api_data_source.dart';
 import 'package:http/http.dart' as http;
-import 'package:tutor_platform/sign_in_up/data/data_source/result.dart';
+import 'package:tutor_platform/core/result.dart';
 
 import 'login_api_data_source_test.mocks.dart';
 

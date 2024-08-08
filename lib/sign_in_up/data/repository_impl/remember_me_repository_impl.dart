@@ -16,4 +16,9 @@ class RememberMeRepositoryImpl implements RememberMeRepository {
   Future<void> setRememberMe(String email, String password) async {
     await rememberMe.save(email, password);
   }
+
+  @override
+  Future<void> removeRememberMe() async {
+    await rememberMe.delete();
+  }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tutor_platform/core/screen_state.dart';
 
 class MainViewModel with ChangeNotifier {
-  ScreenState screenState = const ScreenState.signInUpScreen();
+  ScreenState screenState = const ScreenState.signInUpScreenState(true);
 
   void onEvent(ScreenState screenState) {
     _changeScreenState(screenState);

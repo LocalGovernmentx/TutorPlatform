@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:provider/single_child_widget.dart';
 import 'package:tutor_platform/core/di/main_provider_setup.dart';
 import 'package:tutor_platform/core/main_view_model.dart';
 import 'package:tutor_platform/core/screen_state.dart';
-import 'package:tutor_platform/sign_in_up/di/login_provider_setup.dart';
-import 'package:tutor_platform/sign_in_up/presentation/login/login_screen.dart';
+import 'package:tutor_platform/sign_in_up/presentation/sign_in_up_screen.dart';
+import 'package:tutor_platform/tutee/presentation/tutee_screen.dart';
+import 'package:tutor_platform/tutor/presentation/tutor_screen.dart';
 
 void main() async {
   final providers = await getProvidersMain();
@@ -23,40 +23,12 @@ class MyApp extends StatelessWidget {
     final screenState = context.watch<MainViewModel>().screenState;
 
     switch (screenState) {
-      case SignInUpScreen():
-        return FutureBuilder<List<SingleChildWidget>>(
-            future: getProvidersLogin(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
-              } else if (snapshot.hasError) {
-                return const Text('Error occurred');
-              } else {
-                return MultiProvider(
-                    providers: snapshot.data!,
-                    child: const TutorPlatformLogin());
-              }
-            });
-      case TuteeScreen():
-        return const Placeholder();
-      case TutorScreen():
-        return const Placeholder();
+      case SignInUpScreenState():
+        return SignInUpScreen(autoLogin: screenState.autoLogin);
+      case TuteeScreenState():
+        return TuteeScreen(userInfo: screenState.userInfo);
+      case TutorScreenState():
+        return const TutorScreen();
     }
-  }
-}
-
-class TutorPlatformLogin extends StatelessWidget {
-  const TutorPlatformLogin({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const LoginScreen(),
-    );
   }
 }
