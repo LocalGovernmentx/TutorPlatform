@@ -1,11 +1,11 @@
 import 'package:tutor_platform/sign_in_up/domain/repository/remember_me_repository.dart';
 
 class WriteRememberMe {
-  final RememberMeRepository repository;
+  final RememberMeRepository _repository;
 
-  WriteRememberMe(this.repository);
+  WriteRememberMe(this._repository);
 
   Future<void> call(String email, String password) async {
-    await repository.setRememberMe(email, password);
+    await _repository.setRememberMe(email, password);
   }
 }

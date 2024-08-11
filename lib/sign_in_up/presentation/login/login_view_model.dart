@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:tutor_platform/core/network_errors.dart';
 import 'package:tutor_platform/core/user_info.dart';
 import 'package:tutor_platform/core/result.dart';
 import 'package:tutor_platform/sign_in_up/domain/model/login_credentials.dart';
@@ -42,6 +43,10 @@ class LoginViewModel extends ChangeNotifier {
   void _login(String email, String password) async {
     // validation
     bool validation = true;
+    _eventController
+        .add(LoginUiEvent.errorMessageEmail(null));
+    _eventController
+        .add(LoginUiEvent.errorMessagePassword(null));
     if (email.isEmpty) {
       validation = false;
       _eventController
@@ -68,24 +73,31 @@ class LoginViewModel extends ChangeNotifier {
     }
 
     // perform login
-    Result<UserInfo> result = await performLogin(email, password);
+    Result<UserInfo, NetworkErrors> result =
+        await performLogin(email, password);
     switch (result) {
-      case Success<UserInfo>():
+      case Success<UserInfo, NetworkErrors>():
         writeRememberMe(email, password);
         _eventController.add(LoginUiEvent.successful(result.value));
-      case Error<UserInfo>():
-        switch (result.message) {
+      case Error<UserInfo, NetworkErrors>():
+        NetworkErrors error = result.error;
+        switch (error) {
           // ToDo: Implement this
-          case 'Invalid email or password':
+          case CredentialsError():
             _eventController.add(
-                LoginUiEvent.errorMessagePassword('Invalid email or password'));
+                LoginUiEvent.errorMessagePassword('이메일이나 비밀번호가 틀렸습니다'));
             _eventController.add(
-                LoginUiEvent.errorMessageEmail('Invalid email or password'));
-          case 'Networking error':
-            _eventController.add(LoginUiEvent.showSnackBar('Networking error'));
-          default:
-            _eventController
-                .add(LoginUiEvent.showSnackBar('An error occurred'));
+                LoginUiEvent.errorMessageEmail('이메일이나 비밀번호가 틀렸습니다'));
+          case TimeoutError():
+            _eventController.add(LoginUiEvent.showSnackBar('불안정한 네트워크 : 다시 시도해주세요'));
+          case ServerError():
+            _eventController.add(LoginUiEvent.showSnackBar(
+                '${error.statusCode} : 서버 에러'));
+          case ClientError():
+            _eventController.add(LoginUiEvent.showSnackBar(
+                '${error.statusCode} : 프런트 구현 에러'));
+          case UnknownError():
+            _eventController.add(LoginUiEvent.showSnackBar('에러가 발생하였습니다'));
         }
     }
     notifyListeners();

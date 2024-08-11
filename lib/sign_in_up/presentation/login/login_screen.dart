@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_platform/core/main_view_model.dart';
 import 'package:tutor_platform/core/screen_state.dart';
-import 'package:tutor_platform/sign_in_up/presentation/find_password/find_password_screen.dart';
+import 'package:tutor_platform/sign_in_up/presentation/find_password/confirm_email/find_password_confirm_email.dart';
 import 'package:tutor_platform/sign_in_up/presentation/login/login_event.dart';
 import 'package:tutor_platform/sign_in_up/presentation/login/login_ui_event.dart';
 import 'package:tutor_platform/sign_in_up/presentation/login/login_view_model.dart';
@@ -32,16 +32,16 @@ class _LoginScreenState extends State<LoginScreen> {
     Future.microtask(() {
       _streamSubscription = viewModel.eventStream.listen((event) {
         switch (event) {
-          case Successful():
+          case SuccessfulLogin():
             final screenState = context.read<MainViewModel>();
 
             // TODO: goto tutee screen for tutor screen
             screenState.onEvent(ScreenState.tuteeScreenState(event.userInfo));
-          case ErrorMessagePassword():
+          case LoginErrorMessagePassword():
             _errorMessagePassword = event.message;
-          case ErrorMessageEmail():
+          case LoginErrorMessageEmail():
             _errorMessageEmail = event.message;
-          case ShowSnackBar():
+          case LoginShowSnackBar():
             final snackBar = SnackBar(content: Text(event.message));
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
         }
@@ -133,15 +133,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // ToDo: implement email find screen
                     },
-                    child: const Text('이메일 찾기'),
+                    child: const Text('회원가입'),
                   ),
                   const Text(' | '),
                   TextButton(
                     onPressed: () async {
+                      _errorMessageEmail = null;
+                      _errorMessagePassword = null;
+                      _emailController.clear();
+                      _passwordController.clear();
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const FindPasswordScreen(),
+                          builder: (context) => const FindPasswordConfirmEmail(),
                         ),
                       );
                     },
