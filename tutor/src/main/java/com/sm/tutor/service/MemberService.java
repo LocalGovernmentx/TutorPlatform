@@ -60,15 +60,6 @@ public class MemberService {
     memberRepository.deleteById(Long.valueOf(getMemberByEmail(email).getId()));
   }
 
-  public boolean authenticateMember(String email, String rawPassword) {
-    Member member = getMemberByEmail(email);
-    System.out.println(member.toString());
-    if (member != null) {
-      return passwordEncoder.matches(rawPassword, member.getPassword());
-    }
-    return false;
-  }
-
   public void sendCodeToEmail(String toEmail) {
     this.checkDuplicatedEmail(toEmail);
     String title = "TutorPlatform 이메일 인증 번호";

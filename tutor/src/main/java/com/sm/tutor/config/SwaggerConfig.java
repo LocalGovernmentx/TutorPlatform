@@ -3,56 +3,33 @@ package com.sm.tutor.config;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
 @Configuration
 public class SwaggerConfig {
-    // Java
-    @Bean
-    public InternalResourceViewResolver defaultViewResolver() {
-        return new InternalResourceViewResolver();
-    }
+
     @Bean
     public OpenAPI openAPI() {
+        String jwtScheme = "bearerAuth";
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtScheme);
+        Components components = new Components().addSecuritySchemes(jwtScheme, new SecurityScheme()
+                .name(jwtScheme)
+                .type(SecurityScheme.Type.HTTP)
+                .bearerFormat("JWT")
+        );
         return new OpenAPI()
-                .components(new Components())
-                .info(apiInfo());
+                .components(components)
+                .info(apiInfo())
+                .addSecurityItem(securityRequirement);
     }
 
     private Info apiInfo() {
         return new Info()
-                .title("API Test") // API의 제목
-                .description("Let's practice Swagger UI") // API에 대한 설명
-                .version("1.0.0"); // API의 버전
+                .title("API Test")
+                .description("Let's practice Swagger UI")
+                .version("1.0.0");
     }
 }
-
-
-// jwt 사용시
-//@Configuration
-//public class SwaggerConfig {
-//    @Bean
-//    public OpenAPI openAPI() {
-//        String jwt = "JWT";
-//        SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwt);
-//        Components components = new Components().addSecuritySchemes(jwt, new SecurityScheme()
-//                .name(jwt)
-//                .type(SecurityScheme.Type.HTTP)
-//                .scheme("bearer")
-//                .bearerFormat("JWT")
-//        );
-//        return new OpenAPI()
-//                .components(new Components())
-//                .info(apiInfo())
-//                .addSecurityItem(securityRequirement)
-//                .components(components);
-//    }
-//    private Info apiInfo() {
-//        return new Info()
-//                .title("API Test") // API의 제목
-//                .description("Let's practice Swagger UI") // API에 대한 설명
-//                .version("1.0.0"); // API의 버전
-//    }
-//}
