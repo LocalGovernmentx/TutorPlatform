@@ -48,7 +48,7 @@ class TmpTuteeScreen extends StatelessWidget {
                 final viewModel = context.read<MainViewModel>();
                 viewModel.onEvent(const ScreenState.signInUpScreenState(false));
               },
-              child: const Text('Switch to Tutor Screen'),
+              child: const Text('logout'),
             ),
           ],
         ),

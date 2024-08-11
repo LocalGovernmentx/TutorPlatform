@@ -10,14 +10,23 @@ import 'login_api_data_source_test.mocks.dart';
 @GenerateMocks([http.Client])
 void main() {
   test(
-    'login_api_data_source가 (서버가 제대로 작동한다는 가정 하에) 로그인 정보를 제대로 가져와야 한다',
-        () async {
+    'login_api_data_source가 (서버가 제대로 작동한다는 가정 하에) 제대로 작동 해야 한다',
+    () async {
       final client = MockClient();
       final loginApi = LoginApiDataSource(client);
 
-      when(client.get(
-          Uri.parse('${LoginApiDataSource.baseUrl}?email=1234&password=1234')))
-          .thenAnswer((_) async => http.Response(fakeJsonBody, 200));
+      when(client.post(Uri.parse(
+              '${LoginApiDataSource.baseUrl}/members/login?email=1234&password=1234')))
+          .thenAnswer(
+        (_) async => http.Response(fakeJsonBody, 200),
+      );
+      when(client.post(Uri.parse(
+              '${LoginApiDataSource.baseUrl}/members/emails/verification-requests?email=1234')))
+          .thenAnswer(
+        (_) async => http.Response(fakeJsonBody, 200),
+      );
+
+
 
       // ToDo : Write test codes here
 

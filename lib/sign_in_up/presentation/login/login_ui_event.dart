@@ -1,32 +1,32 @@
 import 'package:tutor_platform/core/user_info.dart';
 
 sealed class LoginUiEvent {
-  factory LoginUiEvent.successful(UserInfo userInfo) = Successful;
-  factory LoginUiEvent.errorMessagePassword(String message) = ErrorMessagePassword;
-  factory LoginUiEvent.errorMessageEmail(String message) = ErrorMessageEmail;
-  factory LoginUiEvent.showSnackBar(String message) = ShowSnackBar;
+  factory LoginUiEvent.successful(UserInfo userInfo) = SuccessfulLogin;
+  factory LoginUiEvent.errorMessagePassword(String? message) = LoginErrorMessagePassword;
+  factory LoginUiEvent.errorMessageEmail(String? message) = LoginErrorMessageEmail;
+  factory LoginUiEvent.showSnackBar(String message) = LoginShowSnackBar;
 }
 
-class Successful implements LoginUiEvent {
+class SuccessfulLogin implements LoginUiEvent {
   final UserInfo userInfo;
 
-  Successful(this.userInfo);
+  SuccessfulLogin(this.userInfo);
 }
 
-class ErrorMessagePassword implements LoginUiEvent {
-  final String message;
+class LoginErrorMessagePassword implements LoginUiEvent {
+  final String? message;
 
-  ErrorMessagePassword(this.message);
+  LoginErrorMessagePassword(this.message);
 }
 
-class ErrorMessageEmail implements LoginUiEvent {
-  final String message;
+class LoginErrorMessageEmail implements LoginUiEvent {
+  final String? message;
 
-  ErrorMessageEmail(this.message);
+  LoginErrorMessageEmail(this.message);
 }
 
-class ShowSnackBar implements LoginUiEvent {
+class LoginShowSnackBar implements LoginUiEvent {
   final String message;
 
-  ShowSnackBar(this.message);
+  LoginShowSnackBar(this.message);
 }

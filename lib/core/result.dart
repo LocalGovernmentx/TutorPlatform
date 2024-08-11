@@ -1,17 +1,17 @@
-sealed class Result<T> {
-  factory Result.success(T value) = Success;
+sealed class Result<S, E> {
+  factory Result.success(S value) = Success;
 
-  factory Result.error(String message) = Error;
+  factory Result.error(E error) = Error;
 }
 
-class Success<T> implements Result<T> {
-  final T value;
+class Success<S, E> implements Result<S, E> {
+  final S value;
 
   Success(this.value);
 }
 
-class Error<T> implements Result<T> {
-  final String message;
+class Error<S, E> implements Result<S, E> {
+  final E error;
 
-  Error(this.message);
+  Error(this.error);
 }

@@ -8,7 +8,7 @@ import 'package:tutor_platform/tutee/presentation/tutee_screen.dart';
 import 'package:tutor_platform/tutor/presentation/tutor_screen.dart';
 
 void main() async {
-  final providers = await getProvidersMain();
+  final providers = globalProvidersMain;
   runApp(MultiProvider(
     providers: providers,
     child: const MyApp(),
@@ -18,9 +18,12 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+
+
   @override
   Widget build(BuildContext context) {
     final screenState = context.watch<MainViewModel>().screenState;
+    print(1);
 
     switch (screenState) {
       case SignInUpScreenState():
