@@ -41,15 +41,15 @@ public class Member {
   private String password;
 
   @Size(max = 45)
-  @Column(name = "email", length = 45)
+  @Column(name = "email", length = 45, unique = true)
   private String email;
 
   @Size(max = 45)
-  @Column(name = "nickname", length = 45)
+  @Column(name = "nickname", length = 45, unique = true)
   private String nickname;
 
   @Size(max = 20)
-  @Column(name = "phone_number", length = 20)
+  @Column(name = "phone_number", length = 20, unique = true )
   private String phoneNumber;
 
   @Size(max = 10)

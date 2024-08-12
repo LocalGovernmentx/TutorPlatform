@@ -123,4 +123,8 @@ public class MemberService {
 
     return true;
   }
+
+  public boolean checkNickname(String nickname) {
+    return memberRepository.findByNickname(nickname).isPresent();
+  }
 }
