@@ -2,6 +2,7 @@ package com.sm.tutor.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,7 +28,7 @@ public class LectureImage {
   @Column(name = "lecture_image_id", nullable = false)
   private Integer id;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.CASCADE)
   @JoinColumn(name = "lecture_id")
   private Lecture lecture;

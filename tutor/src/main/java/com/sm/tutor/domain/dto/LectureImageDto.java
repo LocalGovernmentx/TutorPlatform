@@ -1,5 +1,7 @@
 package com.sm.tutor.domain.dto;
 
+import com.sm.tutor.domain.Lecture;
+import com.sm.tutor.domain.LectureImage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,4 +19,8 @@ public class LectureImageDto {
   private Integer lectureId;
   private String image;
   private Boolean mainImage;
+
+  public LectureImage toEntity(Lecture lecture) {
+    return new LectureImage(lecture, this.image, this.mainImage);
+  }
 }

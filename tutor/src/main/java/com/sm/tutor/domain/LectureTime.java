@@ -2,13 +2,14 @@ package com.sm.tutor.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import java.sql.Time;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,7 @@ public class LectureTime {
   @Column(name = "lecture_time_id", nullable = false)
   private Integer id;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.CASCADE)
   @JoinColumn(name = "lecture_id")
   private Lecture lecture;
@@ -37,13 +38,13 @@ public class LectureTime {
   private Integer day;
 
   @Column(name = "start_time")
-  private Time startTime;
+  private LocalDateTime startTime;
 
   @Column(name = "end_time")
-  private Time endTime;
+  private LocalDateTime endTime;
 
   @Builder
-  public LectureTime(Lecture lecture, Integer day, Time startTime, Time endTime) {
+  public LectureTime(Lecture lecture, Integer day, LocalDateTime startTime, LocalDateTime endTime) {
     this.lecture = lecture;
     this.lecture.getTimes().add(this);
     this.day = day;

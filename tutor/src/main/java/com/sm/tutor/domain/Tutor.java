@@ -1,5 +1,6 @@
 package com.sm.tutor.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -35,7 +36,7 @@ public class Tutor {
   @JoinColumn(name = "member_id")
   private Member member;
 
-  @OneToMany(mappedBy = "tutor")
+  @OneToMany(mappedBy = "tutor", cascade = CascadeType.ALL)
   private List<Lecture> lectures = new ArrayList<>();
 }
 

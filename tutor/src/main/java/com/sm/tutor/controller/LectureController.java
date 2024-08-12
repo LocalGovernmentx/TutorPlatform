@@ -1,8 +1,10 @@
 package com.sm.tutor.controller;
 
-import com.sm.tutor.domain.Lecture;
 import com.sm.tutor.domain.dto.LectureDto;
 import com.sm.tutor.service.LectureService;
+import com.sm.tutor.service.LocationService;
+import com.sm.tutor.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,26 +26,38 @@ public class LectureController {
   @Autowired
   private LectureService lectureService;
 
+  @Autowired
+  private MemberService memberService;
+
+  @Autowired
+  private LocationService locationService;
+
+
+  @Operation(summary = "강의 목록 조회")
   @GetMapping
   public List<LectureDto> getAllLectures() {
     return lectureService.getAllLecturesWithDetails();
   }
 
+  @Operation(summary = "강의 생성")
   @PostMapping
-  public LectureDto createLecture(@RequestBody Lecture lecture) {
-    return lectureService.createLecture(lecture);
+  public LectureDto createLecture(@RequestBody LectureDto lectureDto) {
+    return lectureService.createLecture(lectureDto);
   }
 
-  /*@PutMapping("/{id}")
+  /*@Operation(summary = "강의 수정")
+  @PutMapping("/{id}")
   public Lecture updateLecture(@PathVariable Integer id, @RequestBody Lecture lecture) {
     return lectureService.updateLecture(id, lecture);
   }*/
 
+  @Operation(summary = "강의 삭제")
   @DeleteMapping("/{id}")
   public void deleteLecture(@PathVariable Long id) {
-    lectureService.deleteLecture(id);
+    lectureService.deleteLectureByid(id);
   }
 
+  @Operation(summary = "선택한 강의 조회")
   @GetMapping("/{id}")
   public ResponseEntity<LectureDto> getLectureById(@PathVariable Long id) {
     LectureDto lecture = lectureService.getLectureById(id);

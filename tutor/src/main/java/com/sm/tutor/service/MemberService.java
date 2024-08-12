@@ -50,6 +50,11 @@ public class MemberService {
     return member.orElse(null);
   }
 
+  public Member getMemberById(Long id) {
+    Optional<Member> member = memberRepository.findById(id);
+    return member.orElse(null);
+  }
+
   public Member saveMember(Member member) {
     String encodedPassword = passwordEncoder.encode(member.getPassword()); // 비밀번호 암호화
     member.setPassword(encodedPassword);

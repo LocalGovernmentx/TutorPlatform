@@ -14,6 +14,8 @@ public class LectureReviewConverter {
         .tuteeId(lectureReview.getTutee().getId())
         .content(lectureReview.getContent())
         .score(lectureReview.getScore())
+        .reviewTime(lectureReview.getReviewTime())
+        .online(lectureReview.getOnline())
         .build();
   }
 }

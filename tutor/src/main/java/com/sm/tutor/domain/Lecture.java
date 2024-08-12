@@ -1,7 +1,9 @@
 package com.sm.tutor.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,7 +34,7 @@ public class Lecture {
   @Column(name = "lecture_id", nullable = false)
   private Integer id;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.CASCADE)
   @JoinColumn(name = "member_id", nullable = false)
   private Tutor tutor;
@@ -67,25 +69,26 @@ public class Lecture {
   @Column(name = "level", nullable = false)
   private Integer level;
 
-  @OneToMany(mappedBy = "lecture")
+  @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
   private List<LectureAge> ages = new ArrayList<>();
 
-  @OneToMany(mappedBy = "lecture")
+  @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
   private List<LectureImage> images = new ArrayList<>();
 
-  @OneToMany(mappedBy = "lecture")
+  @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
   private List<LectureLocation> locations = new ArrayList<>();
 
-  @OneToMany(mappedBy = "lecture")
+  @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
   private List<LectureReview> reviews = new ArrayList<>();
 
-  @OneToMany(mappedBy = "lecture")
+  @OneToMany(mappedBy = "lecture", cascade = CascadeType.ALL)
   private List<LectureTime> times = new ArrayList<>();
 
   @Builder
   public Lecture(Tutor tutor, Integer categoryId, String title, String content, Boolean activation,
       Integer online, Integer tuitionMaximum, Integer tuitionMinimum, Integer tuteeNumber,
-      Integer gender, Integer level) {
+      Integer gender, Integer level, List<LectureAge> ages, List<LectureImage> images,
+      List<LectureLocation> locations, List<LectureReview> reviews, List<LectureTime> times) {
     this.tutor = tutor;
     this.tutor.getLectures().add(this);
     this.categoryId = categoryId;
@@ -98,5 +101,10 @@ public class Lecture {
     this.tuteeNumber = tuteeNumber;
     this.gender = gender;
     this.level = level;
+    this.ages = ages;
+    this.images = images;
+    this.locations = locations;
+    this.reviews = reviews;
+    this.times = times;
   }
 }

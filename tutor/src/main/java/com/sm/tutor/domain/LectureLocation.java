@@ -2,6 +2,7 @@ package com.sm.tutor.domain;
 
 import com.sm.tutor.domain.pk.LectureLocationPK;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.JoinColumn;
@@ -23,15 +24,15 @@ import org.hibernate.annotations.OnDeleteAction;
 public class LectureLocation {
 
   @Id
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.CASCADE)
   @JoinColumn(name = "lecture_id")
   private Lecture lecture;
 
   @Id
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @OnDelete(action = OnDeleteAction.CASCADE)
-  @JoinColumn(name = "address_id")
+  @JoinColumn(name = "location_id")
   private LocationData location;
 
   @Builder

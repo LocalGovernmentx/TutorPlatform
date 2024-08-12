@@ -23,7 +23,7 @@ public class LocationData {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "address_id", nullable = false)
+  @Column(name = "location_id", nullable = false)
   private Integer id;
 
   @Column(name = "city", nullable = false)
