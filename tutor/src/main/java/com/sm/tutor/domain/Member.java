@@ -61,7 +61,7 @@ public class Member {
 
   @Size(max = 45)
   @Column(name = "verified_oauth", length = 45)
-  private boolean verifiedOauth;
+  private Boolean verifiedOauth;
 
   @ColumnDefault("CURRENT_TIMESTAMP")
   @Column(name = "lastlogin")
@@ -74,4 +74,8 @@ public class Member {
   @Size(max = 45)
   @Column(name = "invite_code", length = 45)
   private String inviteCode;
+/*
+  @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+  @PrimaryKeyJoinColumn
+  private Tutor tutor;*/
 }
