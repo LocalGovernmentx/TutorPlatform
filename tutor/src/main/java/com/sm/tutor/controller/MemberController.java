@@ -108,9 +108,9 @@ public class MemberController {
 
   @Operation(summary = "리프레시 토큰으로 액세스 토큰 재발급")
   @PostMapping("/refresh")
-  public ResponseEntity<String> refreshToken(@RequestParam String userId, @RequestParam String refreshToken) {
-    if (tokenProvider.validateRefreshToken(userId, refreshToken)) {
-      String newAccessToken = tokenProvider.createAccessToken(userId);
+  public ResponseEntity<String> refreshToken(@RequestParam String userEmail, @RequestParam String refreshToken) {
+    if (tokenProvider.validateRefreshToken(userEmail, refreshToken)) {
+      String newAccessToken = tokenProvider.createAccessToken(userEmail);
       return new ResponseEntity<>(newAccessToken, HttpStatus.OK);
     } else {
       return new ResponseEntity<>("유효하지 않은 리프레시 토큰", HttpStatus.UNAUTHORIZED);
