@@ -5,8 +5,6 @@ import com.sm.tutor.service.LectureService;
 import com.sm.tutor.service.LocationService;
 import com.sm.tutor.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.Collections;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,18 +35,14 @@ public class LectureController {
 
   @Operation(summary = "강의 목록 조회")
   @GetMapping
-  public ResponseEntity<List<LectureDto>> getAllLectures(HttpServletRequest request) {
-    String email = (String) request.getAttribute("userEmail");
-
-    return new ResponseEntity<>(lectureService.getAllLecturesWithDetails(), HttpStatus.OK);
+  public List<LectureDto> getAllLectures() {
+    return lectureService.getAllLecturesWithDetails();
   }
 
   @Operation(summary = "강의 생성")
   @PostMapping
-  public ResponseEntity<?> createLecture(@RequestBody LectureDto lectureDto) {
-    LectureDto lectureDtoResult = lectureService.createLecture(lectureDto);
-    return new ResponseEntity<>(Collections.singletonMap("message", "Lecture created successfully"),
-        HttpStatus.CREATED);
+  public LectureDto createLecture(@RequestBody LectureDto lectureDto) {
+    return lectureService.createLecture(lectureDto);
   }
 
   /*@Operation(summary = "강의 수정")
@@ -59,26 +53,18 @@ public class LectureController {
 
   @Operation(summary = "강의 삭제")
   @DeleteMapping("/{id}")
-  public ResponseEntity<?> deleteLecture(@PathVariable Long id) {
-    boolean status = lectureService.deleteLectureById(id);
-    if (status) {
-      return new ResponseEntity<>(
-          Collections.singletonMap("message", "Lecture deleted successfully"), HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(Collections.singletonMap("message", "Lecture not found"),
-          HttpStatus.NOT_FOUND);
-    }
+  public void deleteLecture(@PathVariable Long id) {
+    lectureService.deleteLectureByid(id);
   }
 
   @Operation(summary = "선택한 강의 조회")
   @GetMapping("/{id}")
-  public ResponseEntity<?> getLectureById(@PathVariable Long id) {
+  public ResponseEntity<LectureDto> getLectureById(@PathVariable Long id) {
     LectureDto lecture = lectureService.getLectureById(id);
     if (lecture != null) {
       return new ResponseEntity<>(lecture, HttpStatus.OK);
     } else {
-      return new ResponseEntity<>(Collections.singletonMap("message", "Lecture not found"),
-          HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(HttpStatus.OK);
     }
   }
 }
