@@ -62,35 +62,80 @@ public class MemberController {
     }
   }
 
-  @Operation(summary = "회원가입")
+  @Operation(summary = "회원가입",
+    description =         "1. **이메일 형식 검증**: 유효하지 않은 이메일 형식인 경우, `422 Unprocessable Entity` 상태 코드와 'Invalid email format' 메시지를 반환합니다.\n" +
+        "2. **비밀번호 길이 검증**: 비밀번호 길이가 8자 미만인 경우, `411 Length Required` 상태 코드와 'Password is too short' 메시지를 반환합니다.\n" +
+        "3. **닉네임 길이 검증**: 닉네임 길이가 2자 미만 또는 8자 초과인 경우, `400 Bad Request` 상태 코드와 'Nickname must be between 2 and 8 characters long' 메시지를 반환합니다.\n" +
+        "4. **닉네임 중복 검증**: 닉네임이 이미 사용 중인 경우, `409 Conflict` 상태 코드와 'Nickname is already in use' 메시지를 반환합니다.\n" +
+        "5. **전화번호 중복 검증**: 전화번호가 이미 사용 중인 경우, `406 Not Acceptable` 상태 코드와 'Phone number is already in use' 메시지를 반환합니다.\n" +
+        "6. **이메일 인증 여부 검증**: 이메일이 인증되지 않은 경우, `403 Forbidden` 상태 코드와 'Email is not verified' 메시지를 반환합니다.\n" +
+        "7. **이메일 중복 검증**: 이메일이 이미 사용 중인 경우, `409 Conflict` 상태 코드와 'Email is already in use' 메시지를 반환합니다.\n" +
+        "회원 가입이 성공적으로 처리된 경우, `200 OK` 상태 코드와 'Member created successfully' 메시지를 반환합니다.\n")
   @PostMapping
   public ResponseEntity<?> createMember(@RequestBody Member member) {
+    // 이메일 형식 검증
     if (!EmailValidator.isValidEmail(member.getEmail())) {
-      return new ResponseEntity<>(Collections.singletonMap("message", "Invalid email format"),
-          HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          Collections.singletonMap("message", "Invalid email format"),
+          HttpStatus.UNPROCESSABLE_ENTITY // 422 Unprocessable Entity: 요청을 이해했으나 처리할 수 없는 경우
+      );
     }
+
+    // 비밀번호 길이 검증
+    if (member.getPassword().length() < 8) {
+      return new ResponseEntity<>(
+          Collections.singletonMap("message", "Password is too short"),
+          HttpStatus.LENGTH_REQUIRED // 411 Length Required: 요청에 필요한 길이가 충족되지 않는 경우
+      );
+    }
+
+    // 닉네임 길이 검증
+    if (member.getNickname().length() < 2 || member.getNickname().length() > 8) {
+      return new ResponseEntity<>(
+          Collections.singletonMap("message", "Nickname must be between 2 and 8 characters long"),
+          HttpStatus.BAD_REQUEST // 400 Bad Request: 클라이언트 요청이 잘못된 경우
+      );
+    }
+
+    // 닉네임 중복 검증
     if (memberService.checkNickname(member.getNickname())) {
-      return new ResponseEntity<>(Collections.singletonMap("message", "Nickname is already in use"),
-          HttpStatus.CONFLICT);
+      return new ResponseEntity<>(
+          Collections.singletonMap("message", "Nickname is already in use"),
+          HttpStatus.CONFLICT // 409 Conflict: 닉네임이 이미 사용 중인 경우
+      );
     }
+
+    // 전화번호 중복 검증
     if (memberService.checkPhoneNumber(member.getPhoneNumber())) {
       return new ResponseEntity<>(
-          Collections.singletonMap("message", "PhoneNumber is already in use"),
-          HttpStatus.CONFLICT);
+          Collections.singletonMap("message", "Phone number is already in use"),
+          HttpStatus.NOT_ACCEPTABLE // 406 Not Acceptable: 요청된 자원이 수용할 수 없는 경우
+      );
     }
-    // 이메일 인증 여부 확인
+
+    // 이메일 인증 여부 검증
     String verificationStatus = memberService.getEmailVerificationStatus(member.getEmail());
     if ("unverified".equals(verificationStatus)) {
-      return new ResponseEntity<>(Collections.singletonMap("message", "Email is not verified"),
-          HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          Collections.singletonMap("message", "Email is not verified"),
+          HttpStatus.FORBIDDEN // 403 Forbidden: 요청이 서버에서 거부된 경우
+      );
     }
+
+    // 이메일 중복 검증
     if (memberService.getMemberByEmail(member.getEmail()) != null) {
-      return new ResponseEntity<>(Collections.singletonMap("message", "Email is already in use"),
-          HttpStatus.CONFLICT);
+      return new ResponseEntity<>(
+          Collections.singletonMap("message", "Email is already in use"),
+          HttpStatus.CONFLICT // 409 Conflict: 이메일이 이미 사용 중인 경우
+      );
     }
+
+    // 회원 가입 처리
     Member createdMember = memberService.saveMember(member);
-    return new ResponseEntity<>(Collections.singletonMap("message", "Member created successfully"),
-        HttpStatus.CREATED);
+    return new ResponseEntity<>(
+        Collections.singletonMap("message", "Member created successfully"),
+        HttpStatus.OK
+    );
   }
 
   @Operation(summary = "이메일 중복확인")
