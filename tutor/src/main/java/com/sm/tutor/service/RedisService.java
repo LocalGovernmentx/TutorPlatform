@@ -68,4 +68,15 @@ public class RedisService {
   public boolean checkExistsValue(String value) {
     return !value.equals("false");
   }
+
+  public void setEmailVerificationStatus(String email, boolean status, Duration duration) {
+    ValueOperations<String, Object> values = redisTemplate.opsForValue();
+    values.set("EmailVerificationStatus:" + email, status ? "verified" : "unverified", duration);
+  }
+
+  public String getEmailVerificationStatus(String email) {
+    ValueOperations<String, Object> values = redisTemplate.opsForValue();
+    Object status = values.get("EmailVerificationStatus:" + email);
+    return status != null ? (String) status : "unverified";
+  }
 }
