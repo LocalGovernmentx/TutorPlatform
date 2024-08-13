@@ -29,11 +29,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
   @Autowired
-  private final JwtTokenProvider tokenProvider;
-  @Autowired
   private MemberService memberService;
   @Autowired
   private PasswordEncoder passwordEncoder;
+  @Autowired
+  private final JwtTokenProvider tokenProvider;
 
   public MemberController(JwtTokenProvider tokenProvider) {
     this.tokenProvider = tokenProvider;
@@ -67,21 +67,6 @@ public class MemberController {
   public ResponseEntity<?> createMember(@RequestBody Member member) {
     if (!EmailValidator.isValidEmail(member.getEmail())) {
       return new ResponseEntity<>(Collections.singletonMap("message", "Invalid email format"),
-          HttpStatus.BAD_REQUEST);
-    }
-    if (memberService.checkNickname(member.getNickname())) {
-      return new ResponseEntity<>(Collections.singletonMap("message", "Nickname is already in use"),
-          HttpStatus.CONFLICT);
-    }
-    if (memberService.checkPhoneNumber(member.getPhoneNumber())) {
-      return new ResponseEntity<>(
-          Collections.singletonMap("message", "PhoneNumber is already in use"),
-          HttpStatus.CONFLICT);
-    }
-    // 이메일 인증 여부 확인
-    String verificationStatus = memberService.getEmailVerificationStatus(member.getEmail());
-    if ("unverified".equals(verificationStatus)) {
-      return new ResponseEntity<>(Collections.singletonMap("message", "Email is not verified"),
           HttpStatus.BAD_REQUEST);
     }
     if (memberService.getMemberByEmail(member.getEmail()) != null) {
@@ -202,7 +187,6 @@ public class MemberController {
     if (!EmailValidator.isValidEmail(email)) {
       return new ResponseEntity<>(Collections.singletonMap("message", "Invalid email format"),
           HttpStatus.BAD_REQUEST);
-
     }
     if (memberService.getMemberByEmail(email) == null) {
       return new ResponseEntity<>(Collections.singletonMap("message", "Email not found"),
