@@ -14,7 +14,6 @@ import com.sm.tutor.repository.LectureLocationRepository;
 import com.sm.tutor.repository.LectureRepository;
 import com.sm.tutor.repository.LectureReviewRepository;
 import com.sm.tutor.repository.LectureTimeRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -97,11 +96,13 @@ public class LectureService {
     throw new EntityNotFoundException("Lecture not found with id " + id);
   }*/
 
-  public void deleteLectureByid(Long id) {
+  public boolean deleteLectureById(Long id) {
     if (lectureRepository.existsById(id)) {
       lectureRepository.deleteById(id);
+      return true;
     } else {
-      throw new EntityNotFoundException("Lecture not found with id " + id);
+      return false;
+      //throw new EntityNotFoundException("Lecture not found with id " + id);
     }
   }
 

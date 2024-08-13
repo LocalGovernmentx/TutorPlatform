@@ -9,19 +9,20 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Autowired
-    private JwtAuthInterceptor jwtAuthInterceptor;
+  @Autowired
+  private JwtAuthInterceptor jwtAuthInterceptor;
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(jwtAuthInterceptor)
-                .addPathPatterns("/api/members/**")
-                .excludePathPatterns("/api/members/login",
-                        "/api/members",
-                        "/api/members/check-email",
-                        "/api/members/check-nickname",
-                        "/api/members/emails/verification-requests",
-                        "/api/members/emails/verifications");
-    }
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(jwtAuthInterceptor)
+        .addPathPatterns("/api/members/**", "api/lectures/**")
+        .excludePathPatterns("/api/members/login",
+            "/api/members",
+            "/api/members/check-email",
+            "/api/members/check-nickname",
+            "/api/members/emails/verification-requests",
+            "/api/members/emails/verifications",
+            "/api/members/emails/verifications-signup");
+  }
 }
 

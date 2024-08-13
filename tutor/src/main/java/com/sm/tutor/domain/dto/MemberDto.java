@@ -28,6 +28,7 @@ public class MemberDto {
   private Instant lastlogin;
   private Integer type;
   private String inviteCode;
+  private String image;
 //  private Integer tutorId;
 
   public Member toEntity(/*Tutor tutor*/) {
@@ -44,6 +45,7 @@ public class MemberDto {
         .lastlogin(this.lastlogin)
         .type(this.type)
         .inviteCode(this.inviteCode)
+        .image(this.image)
         .build();
     /*if (tutor != null) {
       member.setTutorId(tutor.getId());

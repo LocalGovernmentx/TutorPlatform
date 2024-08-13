@@ -9,10 +9,14 @@ import com.sm.tutor.domain.dto.GoogleUserDetails;
 import com.sm.tutor.domain.dto.KakaoUserDetails;
 import com.sm.tutor.domain.dto.NaverUserDetails;
 import com.sm.tutor.domain.dto.OAuth2UserInfo;
+import com.sm.tutor.exception.OAuth2AuthenticationProcessingException;
 import com.sm.tutor.repository.MemberRepository;
 import com.sm.tutor.repository.OauthRepository;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Random;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -42,7 +46,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     log.info("getAttributes : {}", oAuth2User.getAttributes());
 
     String provider = userRequest.getClientRegistration().getRegistrationId();
-
+    log.info("access token: {}", userRequest.getAccessToken().getTokenValue());
     OAuth2UserInfo oAuth2UserInfo = null;
 
     if (provider.equals("google")) {
@@ -57,7 +61,14 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     } else if (provider.equals("facebook")) {
       log.info("페이스북 로그인");
       oAuth2UserInfo = new FacebookUserDetails(oAuth2User.getAttributes());
+    } else {
+      throw new OAuth2AuthenticationProcessingException(
+          "Login with " + provider + " is not supported");
     }
+
+    /*if (!StringUtils.hasText(oAuth2UserInfo.getEmail())) {
+      throw new OAuth2AuthenticationProcessingException("Email not found from OAuth2 provider");
+    }*/
 
     String providerId = oAuth2UserInfo.getProviderId();
     // String email = oAuth2UserInfo.getEmail();
@@ -68,16 +79,37 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
     Member member;
     Oauth oauth;
 
+    String phoneNumber = "phoneNumber";
+    String nickname = "nickname";
+    // phone number test code
+    try {
+      Random random = SecureRandom.getInstanceStrong();
+      StringBuilder builder = new StringBuilder();
+      builder.append("010-");
+
+      for (int i = 0; i < 8; i++) {
+        if (i == 4) {
+          builder.append("-");
+        }
+        builder.append(random.nextInt(10));
+      }
+      phoneNumber = builder.toString();
+
+      nickname = nickname.concat(String.valueOf(random.nextInt(10)));
+    } catch (NoSuchAlgorithmException e) {
+      log.info(e.toString());
+    }
+
     if (findMember == null) {
       member = Member.builder()
           .email(email)
           .password("password")
-          .phoneNumber("phoneNumber")
+          .phoneNumber(phoneNumber)
           .name(name)
-          .nickname("nickname")
+          .nickname(nickname)
           .gender(1)
           .birth(LocalDate.now())
-          .verifiedOauth(false)
+          .verifiedOauth(true)
           .lastlogin(Instant.now())
           .type(1)
           .inviteCode("inviteCode")
