@@ -72,7 +72,7 @@ public class CustomOauth2UserService extends DefaultOAuth2UserService {
 
     String providerId = oAuth2UserInfo.getProviderId();
     // String email = oAuth2UserInfo.getEmail();
-    String email = provider + "_" + providerId;
+    String email = providerId + "@gmail.com";
     String name = oAuth2UserInfo.getName();
 
     Member findMember = memberRepository.findByEmail(email).orElse(null);
