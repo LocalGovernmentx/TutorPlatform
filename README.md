@@ -19,7 +19,7 @@
     
     body
     
-    footer
+    footer 
     ```
     
 - 커밋 타입(Type)
