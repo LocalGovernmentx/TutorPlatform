@@ -1,19 +1,18 @@
 package com.sm.tutor.config;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.JwtParser;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-
-import java.util.Date;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtTokenProvider {

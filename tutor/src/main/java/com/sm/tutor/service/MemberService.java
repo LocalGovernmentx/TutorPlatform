@@ -20,11 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 //@RequiredArgsConstructor
 public class MemberService {
 
+  private static final String AUTH_CODE_PREFIX = "AuthCode ";
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder; //
-
-  private static final String AUTH_CODE_PREFIX = "AuthCode ";
-
   private final EmailService emailService;
 
   private final RedisService redisService;
@@ -109,8 +107,13 @@ public class MemberService {
       log.debug("MemberService.verifiedCode() exception occur");
       return false;
     } else {
+      redisService.setEmailVerificationStatus(email, true, Duration.ofMinutes(10)); // 인증 완료 상태 저장
       return true;
     }
+  }
+
+  public String getEmailVerificationStatus(String email) {
+    return redisService.getEmailVerificationStatus(email);
   }
 
   public boolean modifyPassword(String email, String password) {
@@ -127,5 +130,13 @@ public class MemberService {
 
   public boolean checkNickname(String nickname) {
     return memberRepository.findByNickname(nickname).isPresent();
+  }
+
+  public void modifyMemberInfo(Member member) {
+    memberRepository.save(member);
+  }
+
+  public boolean checkPhoneNumber(String phoneNumber) {
+    return memberRepository.findByPhoneNumber(phoneNumber).isPresent();
   }
 }
