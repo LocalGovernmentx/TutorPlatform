@@ -90,7 +90,7 @@ public class MemberController {
     }
     Member createdMember = memberService.saveMember(member);
     return new ResponseEntity<>(Collections.singletonMap("message", "Member created successfully"),
-        HttpStatus.CREATED);
+        HttpStatus.OK);
   }
 
   @Operation(summary = "이메일 중복확인")

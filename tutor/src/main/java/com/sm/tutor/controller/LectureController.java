@@ -39,7 +39,6 @@ public class LectureController {
   @GetMapping
   public ResponseEntity<List<LectureDto>> getAllLectures(HttpServletRequest request) {
     String email = (String) request.getAttribute("userEmail");
-
     return new ResponseEntity<>(lectureService.getAllLecturesWithDetails(), HttpStatus.OK);
   }
 

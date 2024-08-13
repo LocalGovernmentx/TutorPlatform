@@ -36,31 +36,17 @@ public class SecurityConfig {
 
     http
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/members/login").permitAll()
-            .requestMatchers("/api/members/logout").permitAll()
-            .requestMatchers("/oauth-login/info").authenticated()
-            .requestMatchers("/home").authenticated()
+            .requestMatchers("/api/members/login", "/api/members/logout").permitAll()
+            .requestMatchers("/oauth-login/info", "/home").authenticated()
             .anyRequest().permitAll()
         )
-        .formLogin(formLogin -> formLogin
-            .loginPage("/api/members/login")
-            .loginProcessingUrl("/api/members/login")
-            .usernameParameter("email")
-            .passwordParameter("password")
-            .defaultSuccessUrl("/home", true)
-            .failureUrl("/login?error=true")
-            .permitAll()
-        )
-        .oauth2Login((auth) ->
-                auth.userInfoEndpoint(c -> c.userService(customOauth2UserService))
-                    //auth.loginPage("/oauth-login/login")
-                    //.defaultSuccessUrl("/oauth-login")
-                    .successHandler(oauth2AuthenticationSuccessHandler)
-                    .failureHandler(oAuth2AuthenticationFailureHandler)
-            //.defaultSuccessUrl("/oauth/loginInfo")
+        .oauth2Login(auth -> auth
+            .userInfoEndpoint(userInfo -> userInfo.userService(customOauth2UserService))
+            .successHandler(oauth2AuthenticationSuccessHandler)
+            .failureHandler(oAuth2AuthenticationFailureHandler)
         )
         .logout(logout -> logout
-            .logoutUrl("/api/member/logout")
+            .logoutUrl("/api/members/logout")
             .logoutSuccessUrl("/login?logout=true")
             .permitAll()
         )
@@ -69,6 +55,7 @@ public class SecurityConfig {
 
     return http.build();
   }
+
 
   // CORS 설정 빈 추가
   @Bean
