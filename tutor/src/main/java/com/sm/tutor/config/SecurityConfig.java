@@ -1,13 +1,13 @@
 package com.sm.tutor.config;
 
-import com.sm.tutor.handler.Oauth2SuccessHandler;
+import com.sm.tutor.handler.OAuth2AuthenticationFailureHandler;
+import com.sm.tutor.handler.OAuth2AuthenticationSuccessHandler;
 import com.sm.tutor.service.CustomOauth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -21,15 +21,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class SecurityConfig {
 
   private final CustomOauth2UserService customOauth2UserService;
-  private final Oauth2SuccessHandler oauth2SuccessHandler;
+  private final OAuth2AuthenticationSuccessHandler oauth2AuthenticationSuccessHandler;
+  private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
   private final JwtTokenProvider tokenProvider;
-
-
-  public WebSecurityCustomizer webSecurityCustomizer() { // security를 적용하지 않을 리소스
-    return web -> web.ignoring()
-        // error endpoint를 열어줘야 함, favicon.ico 추가!
-        .requestMatchers("/error", "/favicon.ico");
-  }
 
   @Bean
   public PasswordEncoder passwordEncoder() {
@@ -41,64 +35,37 @@ public class SecurityConfig {
     JwtAuthenticationFilter jwtAuthenticationFilter = new JwtAuthenticationFilter(tokenProvider);
 
     http
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/members/login").permitAll()
-                    .requestMatchers("/api/members/logout").permitAll()
-                    .requestMatchers("/oauth-login/info").authenticated()
-                    .requestMatchers("/home").authenticated()
-                    .anyRequest().permitAll()
-            )
-            .formLogin(formLogin -> formLogin
-                    .loginPage("/api/members/login")
-                    .loginProcessingUrl("/api/members/login")
-                    .usernameParameter("email")
-                    .passwordParameter("password")
-                    .defaultSuccessUrl("/home", true)
-                    .failureUrl("/login?error=true")
-                    .permitAll()
-            )
-            .logout(logout -> logout
-                    .logoutUrl("/api/member/logout")
-                    .logoutSuccessUrl("/login?logout=true")
-                    .permitAll()
-            )
-            .csrf(csrf -> csrf.disable())
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-    // ========= oauth login =========== //
-//    http
-//        .authorizeHttpRequests((auth) -> auth
-//            .requestMatchers("/oauth-login/info").authenticated()
-//            .anyRequest().permitAll()
-//        );
-
-    http
-        .formLogin((auth) -> auth.disable());
-        /*.formLogin((auth) -> auth.loginPage("/oauth-login/login")
-        .loginProcessingUrl("/oauth-login/loginProc")
-            .usernameParameter("loginId")
+        .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/members/login").permitAll()
+            .requestMatchers("/api/members/logout").permitAll()
+            .requestMatchers("/oauth-login/info").authenticated()
+            .requestMatchers("/home").authenticated()
+            .anyRequest().permitAll()
+        )
+        .formLogin(formLogin -> formLogin
+            .loginPage("/api/members/login")
+            .loginProcessingUrl("/api/members/login")
+            .usernameParameter("email")
             .passwordParameter("password")
-            //.defaultSuccessUrl("/oauth-login")
-            .defaultSuccessUrl("/oauth/info")
-            .failureUrl("/oauth-login")
-            .permitAll());*/
-
-    http
+            .defaultSuccessUrl("/home", true)
+            .failureUrl("/login?error=true")
+            .permitAll()
+        )
         .oauth2Login((auth) ->
-            auth.userInfoEndpoint(c -> c.userService(customOauth2UserService))
-                //auth.loginPage("/oauth-login/login")
-                //.defaultSuccessUrl("/oauth-login")
-                .successHandler(oauth2SuccessHandler)
-                .defaultSuccessUrl("/oauth/loginInfo")
-                .failureUrl("/oauth-login/login")
-                .permitAll());
-
-    http
-        .logout((auth) -> auth
-            .logoutUrl("/oauth-login/logout"));
-
-    http
-        .csrf((auth) -> auth.disable());
+                auth.userInfoEndpoint(c -> c.userService(customOauth2UserService))
+                    //auth.loginPage("/oauth-login/login")
+                    //.defaultSuccessUrl("/oauth-login")
+                    .successHandler(oauth2AuthenticationSuccessHandler)
+                    .failureHandler(oAuth2AuthenticationFailureHandler)
+            //.defaultSuccessUrl("/oauth/loginInfo")
+        )
+        .logout(logout -> logout
+            .logoutUrl("/api/member/logout")
+            .logoutSuccessUrl("/login?logout=true")
+            .permitAll()
+        )
+        .csrf(csrf -> csrf.disable())
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

@@ -66,7 +66,7 @@ public class MemberService {
   }
 
   public void sendCodeToEmail(String toEmail) {
-    this.checkDuplicatedEmail(toEmail);
+    // this.checkDuplicatedEmail(toEmail);
     String title = "TutorPlatform 이메일 인증 번호";
     String authCode = this.createCode();
     emailService.sendEmail(toEmail, title, authCode);
@@ -75,12 +75,13 @@ public class MemberService {
         authCode, Duration.ofMillis(this.authCodeExpirationMillis));
   }
 
-  private void checkDuplicatedEmail(String email) {
+  private boolean checkDuplicatedEmail(String email) {
     Optional<Member> member = memberRepository.findByEmail(email);
-    if (member.isPresent()) {
+    return member.isEmpty();
+    /*if (member.isPresent()) {
       log.debug("MemberServiceImpl.checkDuplicatedEmail exception occur email: {}", email);
       // throw new RuntimeException(404, "MEMBER_EXISTS");
-    }
+    }*/
   }
 
   private String createCode() {
@@ -100,7 +101,9 @@ public class MemberService {
   }
 
   public boolean verifiedCode(String email, String authCode) {
-    this.checkDuplicatedEmail(email);
+    if (this.checkDuplicatedEmail(email)) {
+
+    }
     String redisAuthCode = redisService.getValues(AUTH_CODE_PREFIX + email);
     boolean authResult =
         redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(authCode);

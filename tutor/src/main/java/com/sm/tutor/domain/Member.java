@@ -49,7 +49,7 @@ public class Member {
   private String nickname;
 
   @Size(max = 20)
-  @Column(name = "phone_number", length = 20, unique = true )
+  @Column(name = "phone_number", length = 20, unique = true)
   private String phoneNumber;
 
   @Size(max = 10)
@@ -74,6 +74,10 @@ public class Member {
   @Size(max = 45)
   @Column(name = "invite_code", length = 45)
   private String inviteCode;
+
+  @Size(max = 200)
+  @Column(name = "image", length = 200)
+  private String image;
 /*
   @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
   @PrimaryKeyJoinColumn
