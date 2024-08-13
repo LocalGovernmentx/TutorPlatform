@@ -5,6 +5,7 @@ import com.sm.tutor.service.LectureService;
 import com.sm.tutor.service.LocationService;
 import com.sm.tutor.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,9 @@ public class LectureController {
 
   @Operation(summary = "강의 목록 조회")
   @GetMapping
-  public List<LectureDto> getAllLectures() {
+  public List<LectureDto> getAllLectures(HttpServletRequest request) {
+    String email = (String) request.getAttribute("userEmail");
+
     return lectureService.getAllLecturesWithDetails();
   }
 
