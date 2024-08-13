@@ -101,9 +101,7 @@ public class MemberService {
   }
 
   public boolean verifiedCode(String email, String authCode) {
-    if (this.checkDuplicatedEmail(email)) {
-
-    }
+    // this.checkDuplicatedEmail(email);
     String redisAuthCode = redisService.getValues(AUTH_CODE_PREFIX + email);
     boolean authResult =
         redisService.checkExistsValue(redisAuthCode) && redisAuthCode.equals(authCode);

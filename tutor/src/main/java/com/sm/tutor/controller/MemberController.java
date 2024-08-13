@@ -188,6 +188,10 @@ public class MemberController {
       return new ResponseEntity<>(Collections.singletonMap("message", "Invalid email format"),
           HttpStatus.BAD_REQUEST);
     }
+    if (memberService.getMemberByEmail(email) == null) {
+      return new ResponseEntity<>(Collections.singletonMap("message", "Email not found"),
+          HttpStatus.NOT_FOUND);
+    }
     boolean status = memberService.verifiedCode(email, authCode);
     if (status) {
       // 일치할 경우 토큰 생성 및 할당
@@ -210,6 +214,10 @@ public class MemberController {
     if (!EmailValidator.isValidEmail(email)) {
       return new ResponseEntity<>(Collections.singletonMap("message", "Invalid email format"),
           HttpStatus.BAD_REQUEST);
+    }
+    if (memberService.getMemberByEmail(email) != null) {
+      return new ResponseEntity<>(Collections.singletonMap("message", "Email is already in use"),
+          HttpStatus.CONFLICT);
     }
     boolean status = memberService.verifiedCode(email, authCode);
     if (status) {
