@@ -23,6 +23,7 @@ public class WebConfig implements WebMvcConfigurer {
             "/api/members/emails/verification-requests",
             "/api/members/emails/verifications",
             "/api/members/emails/verifications-signup",
+            "/api/members/emails/password-email");
             "/api/members/refresh");
   }
 }

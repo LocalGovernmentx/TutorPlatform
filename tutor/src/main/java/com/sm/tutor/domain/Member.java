@@ -1,6 +1,6 @@
 package com.sm.tutor.domain;
 
-import io.swagger.v3.oas.annotations.media.Schema; // Swagger v3
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -45,9 +45,9 @@ public class Member {
   @Schema(description = "회원 비밀번호", example = "password123", maxLength = 512)
   private String password;
 
-  @Size(max = 45)
-  @Column(name = "email", length = 45, unique = true)
-  @Schema(description = "회원 이메일 (유니크)", example = "john.doe@example.com", maxLength = 45)
+  @Size(max = 320)
+  @Column(name = "email", length = 320, unique = true)
+  @Schema(description = "회원 이메일 (유니크)", example = "john.doe@example.com", maxLength = 320)
   private String email;
 
   @Size(max = 45)
