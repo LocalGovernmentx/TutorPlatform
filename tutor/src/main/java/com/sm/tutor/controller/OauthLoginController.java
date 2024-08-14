@@ -4,6 +4,7 @@ package com.sm.tutor.controller;
 import com.sm.tutor.config.JwtTokenProvider;
 import com.sm.tutor.service.KakaoService;
 import com.sm.tutor.service.MemberService;
+import com.sm.tutor.service.NaverService;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
@@ -31,6 +32,8 @@ public class OauthLoginController {
   private final MemberService memberService;
 
   private final KakaoService kakaoService;
+
+  private final NaverService naverService;
 
   private final JwtTokenProvider tokenProvider;
 
@@ -114,7 +117,7 @@ public class OauthLoginController {
   로 접속시, 해당 주소로 redirect
   */
   @GetMapping("/kakao/mobile")
-  public ResponseEntity<?> kakaoSignIn(@RequestParam("code") String code) {
+  public ResponseEntity<?> kakaoSignIn(@RequestParam("code") String code) { // 인가코드
     Map<String, Object> result = kakaoService.execKakaoLogin(code);
     if (result.get("email") != null) {
       String accessToken = tokenProvider.createAccessToken(String.valueOf(result.get("email")));
@@ -128,4 +131,25 @@ public class OauthLoginController {
     return new ResponseEntity<>(Collections.singletonMap("message", "Member not found"),
         HttpStatus.NOT_FOUND);
   }
+
+  /*
+  uri: https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=AhwyCbYfeYAcdjVkm3ZU&redirect_uri=http://localhost:8080/oauth/naver/mobile
+  로 접속시, 해당 주소로 redirect
+  */
+  @GetMapping("/naver/mobile")
+  public ResponseEntity<?> naverSignIn(@RequestParam("code") String code) { // 인가코드
+    Map<String, Object> result = naverService.execNaverLogin(code);
+    if (result.get("email") != null) {
+      String accessToken = tokenProvider.createAccessToken(String.valueOf(result.get("email")));
+      String refreshToken = tokenProvider.createRefreshToken(
+          String.valueOf(result.get("email")));
+      Map<String, String> response = new HashMap<>();
+      response.put("accessToken", "Bearer " + accessToken);
+      response.put("refreshToken", refreshToken);
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    return new ResponseEntity<>(Collections.singletonMap("message", "Member not found"),
+        HttpStatus.NOT_FOUND);
+  }
+
 }
