@@ -48,8 +48,11 @@ public class MemberController {
   }
 
   @Operation(summary = "내 정보 조회",
-      description = "오른쪽위 authorize에 토큰값 넣기"
-  )
+      description = "오른쪽위 authorize에 토큰값 넣기\n" +
+          "현재 로그인된 사용자의 정보를 조회합니다. \n" +
+          "요청에 포함된 토큰에서 이메일을 추출하여 해당 사용자의 정보를 검색합니다. \n" +
+          "사용자를 찾을 수 없는 경우 `404 Not Found` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "성공적으로 사용자 정보를 조회하면 `200 OK` 상태 코드와 함께 반환됩니다.")
   @GetMapping("/me")
   public ResponseEntity<?> getMyInfo(HttpServletRequest request) {
     String email = (String) request.getAttribute("userEmail");
@@ -138,7 +141,12 @@ public class MemberController {
     );
   }
 
-  @Operation(summary = "이메일 중복확인")
+  @Operation(summary = "이메일 중복확인",
+      description = "이메일의 중복 여부를 확인합니다. \n" +
+          "요청된 이메일이 유효한지 검증하고, 데이터베이스에서 해당 이메일이 존재하는지 확인합니다. \n" +
+          "이메일 형식이 유효하지 않은 경우 `400 Bad Request` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "이메일이 이미 사용 중인 경우 `409 Conflict` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "이메일이 사용 중이지 않은 경우 `200 OK` 상태 코드와 함께 사용 가능 메시지를 반환합니다.")
   @GetMapping("/check-email")
   public ResponseEntity<?> checkEmailDuplicate(@RequestParam String email) {
     if (!EmailValidator.isValidEmail(email)) {
@@ -155,7 +163,11 @@ public class MemberController {
     }
   }
 
-  @Operation(summary = "닉네임 중복확인")
+  @Operation(summary = "닉네임 중복확인",
+      description = "닉네임의 중복 여부를 확인합니다. \n" +
+          "요청된 닉네임이 데이터베이스에 이미 존재하는지 확인합니다. \n" +
+          "닉네임이 이미 사용 중인 경우 `409 Conflict` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "닉네임이 사용 중이지 않은 경우 `200 OK` 상태 코드와 함께 사용 가능 메시지를 반환합니다.")
   @GetMapping("/check-nickname")
   public ResponseEntity<?> checkNicknameDuplicate(@RequestParam String nickname) {
     boolean isDuplicate = memberService.checkNickname(nickname);
@@ -168,7 +180,11 @@ public class MemberController {
     }
   }
 
-  @Operation(summary = "회원탈퇴")
+  @Operation(summary = "회원탈퇴",
+      description = "현재 로그인된 사용자를 삭제합니다. \n" +
+          "요청에 포함된 토큰에서 이메일을 추출하여 해당 사용자를 검색합니다. \n" +
+          "사용자를 찾을 수 없는 경우 `404 Not Found` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "회원 탈퇴가 성공적으로 처리되면 `200 OK` 상태 코드와 함께 성공 메시지를 반환합니다.")
   @DeleteMapping("/resign")
   public ResponseEntity<?> deleteMember(HttpServletRequest request) {
     String email = (String) request.getAttribute("userEmail");
@@ -181,7 +197,10 @@ public class MemberController {
         HttpStatus.OK);
   }
 
-  @Operation(summary = "로그인")
+  @Operation(summary = "로그인",
+      description = "이메일과 비밀번호를 사용하여 로그인합니다. \n" +
+          "요청된 이메일이 데이터베이스에 존재하지 않거나 비밀번호가 일치하지 않는 경우 각각 `404 Not Found` 또는 `401 Unauthorized` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "로그인이 성공하면 새로운 액세스 토큰과 리프레시 토큰을 생성하여 반환하며, `200 OK` 상태 코드와 함께 반환됩니다.")
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
     Member member = memberService.getMemberByEmail(email);
@@ -202,7 +221,11 @@ public class MemberController {
   }
 
 
-  @Operation(summary = "로그아웃")
+  @Operation(summary = "로그아웃",
+      description = "현재 로그인된 사용자의 리프레시 토큰을 삭제하여 로그아웃을 처리합니다. \n" +
+          "요청에 포함된 토큰에서 이메일을 추출하고, 해당 이메일로 리프레시 토큰을 삭제합니다. \n" +
+          "토큰이 유효하지 않은 경우 `401 Unauthorized` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "로그아웃이 성공적으로 처리되면 `200 OK` 상태 코드와 함께 성공 메시지를 반환합니다.")
   @PostMapping("/logout")
   public ResponseEntity<?> logout(HttpServletRequest request) {
     String email = (String) request.getAttribute("userEmail");
@@ -215,7 +238,10 @@ public class MemberController {
         HttpStatus.OK);
   }
 
-  @Operation(summary = "리프레시 토큰으로 액세스 토큰 재발급")
+  @Operation(summary = "리프레시 토큰으로 액세스 토큰 재발급",
+      description = "리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다. \n" +
+          "요청된 리프레시 토큰이 유효하지 않은 경우 `401 Unauthorized` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "리프레시 토큰이 유효하면 새로운 액세스 토큰을 생성하여 반환하며, `200 OK` 상태 코드와 함께 반환됩니다.")
   @PostMapping("/refresh")
   public ResponseEntity<?> refreshToken(@RequestParam String userEmail,
       @RequestParam String refreshToken) {
@@ -228,7 +254,10 @@ public class MemberController {
         HttpStatus.OK);
   }
 
-  @Operation(summary = "이메일 인증 코드 전송 요청")
+  @Operation(summary = "이메일 인증 코드 전송 요청",
+      description = "지정된 이메일 주소로 인증 코드를 전송합니다. \n" +
+          "요청된 이메일이 유효하지 않은 경우 `400 Bad Request` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "인증 코드 전송이 성공적으로 처리되면 `200 OK` 상태 코드와 함께 성공 메시지를 반환합니다.")
   @PostMapping("/emails/verification-requests")
   public ResponseEntity<?> sendVerificationCode(@RequestParam("email") String email) {
     if (!EmailValidator.isValidEmail(email)) {
@@ -240,7 +269,10 @@ public class MemberController {
         HttpStatus.OK);
   }
 
-  @Operation(summary = "이메일 인증 코드 확인 - 비밀번호 찾기할 때 사용", description = "성공 return 값: token")
+  @Operation(summary = "이메일 인증 코드 확인 - 비밀번호 찾기할 때 사용",
+      description = "이메일 인증 코드를 확인하여 비밀번호 재설정을 위한 토큰을 발급합니다. \n" +
+          "요청된 이메일이 유효하지 않거나 해당 이메일이 데이터베이스에 존재하지 않는 경우 각각 `400 Bad Request` 또는 `404 Not Found` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "인증 코드가 유효하면 액세스 토큰과 리프레시 토큰을 생성하여 반환하며, `200 OK` 상태 코드와 함께 반환됩니다.")
   @GetMapping("/emails/verifications")
   public ResponseEntity<?> verificationEmail(@RequestParam("email") String email,
       @RequestParam("code") String authCode) {
@@ -268,7 +300,10 @@ public class MemberController {
     }
   }
 
-  @Operation(summary = "이메일 인증 코드 확인 - 회원가입할 때 사용", description = "성공 return 값: message")
+  @Operation(summary = "이메일 인증 코드 확인 - 회원가입할 때 사용",
+      description = "이메일 인증 코드를 확인하여 회원가입을 완료합니다. \n" +
+          "요청된 이메일이 유효하지 않거나 해당 이메일이 이미 데이터베이스에 존재하는 경우 각각 `400 Bad Request` 또는 `409 Conflict` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "인증 코드가 유효하면 회원가입이 완료되었음을 알리는 메시지를 반환하며, `200 OK` 상태 코드와 함께 반환됩니다.")
   @GetMapping("/emails/verifications-signup")
   public ResponseEntity<?> verificationEmailForSignup(@RequestParam("email") String email,
       @RequestParam("code") String authCode) {
@@ -291,7 +326,11 @@ public class MemberController {
     }
   }
 
-  @Operation(summary = "비밀번호 바꾸기")
+  @Operation(summary = "비밀번호 바꾸기",
+      description = "현재 로그인된 사용자의 비밀번호를 변경합니다. \n" +
+          "요청에 포함된 토큰에서 이메일을 추출하고, 해당 이메일에 대해 비밀번호를 수정합니다. \n" +
+          "토큰이 유효하지 않은 경우 `401 Unauthorized` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "비밀번호 변경이 성공적으로 처리되면 `200 OK` 상태 코드와 함께 성공 메시지를 반환합니다.")
   @PostMapping("/emails/password")
   public ResponseEntity<?> modifyPassword(HttpServletRequest request,
       @RequestParam String password) {
