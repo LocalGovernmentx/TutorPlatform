@@ -20,6 +20,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -109,5 +111,13 @@ public class LectureService {
   public LectureDto getLectureById(Long id) {
     Optional<Lecture> lecture = lectureRepository.findById(id);
     return lecture.map(lectureConverter::toDto).orElse(null);
+  }
+
+  public Page<LectureDto> paging(Pageable pageable) {
+    // 한 페이지당 3개식 글을 보여주고 정렬 기준은 ID 기준으로 내림차순
+    // Page<Lecture> lecturePages = lectureRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Direction.DESC, "id")));
+    Page<Lecture> lecturePages = lectureRepository.findAll(pageable);
+
+    return lecturePages.map(lectureConverter::toDto);
   }
 }

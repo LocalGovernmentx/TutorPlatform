@@ -5,6 +5,10 @@ import com.sm.tutor.domain.Member;
 import com.sm.tutor.service.MemberService;
 import com.sm.tutor.util.EmailValidator;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,6 +51,10 @@ public class MemberController {
     return new ResponseEntity<>(members, HttpStatus.OK);
   }
 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: 성공", content = {@Content(schema = @Schema(implementation = Member.class))}),
+      @ApiResponse(responseCode = "404", description = "NOT_FOUND: Member not found")
+  })
   @Operation(summary = "내 정보 조회",
       description = "오른쪽위 authorize에 토큰값 넣기\n" +
           "현재 로그인된 사용자의 정보를 조회합니다. \n" +
@@ -65,6 +73,16 @@ public class MemberController {
     }
   }
 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: Member created successfully"),
+      @ApiResponse(responseCode = "422", description = "UNPROCESSABLE_ENTITY: Invalid email format"),
+      @ApiResponse(responseCode = "411", description = "LENGTH_REQUIRED: Password is too short"),
+      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Nickname must be between 2 and 8 characters long"),
+      @ApiResponse(responseCode = "409", description = "CONFLICT: Nickname is already in use"),
+      @ApiResponse(responseCode = "406", description = "NOT_ACCEPTABLE: Phone number is already in use"),
+      @ApiResponse(responseCode = "403", description = "FORBIDDEN: Email is not verified"),
+      @ApiResponse(responseCode = "409", description = "CONFLICT: Email is already in use")
+  })
   @Operation(summary = "회원가입",
       description = "1. **이메일 형식 검증**: 유효하지 않은 이메일 형식인 경우, `422 Unprocessable Entity` 상태 코드와 'Invalid email format' 메시지를 반환합니다.\n" +
           "2. **비밀번호 길이 검증**: 비밀번호 길이가 8자 미만인 경우, `411 Length Required` 상태 코드와 'Password is too short' 메시지를 반환합니다.\n" +
@@ -141,6 +159,11 @@ public class MemberController {
     );
   }
 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: Email is available"),
+      @ApiResponse(responseCode = "422", description = "UNPROCESSABLE_ENTITY: Invalid email format"),
+      @ApiResponse(responseCode = "409", description = "CONFLICT: Nickname is already in use")
+  })
   @Operation(summary = "이메일 중복확인",
       description = "이메일의 중복 여부를 확인합니다. \n" +
           "요청된 이메일이 유효한지 검증하고, 데이터베이스에서 해당 이메일이 존재하는지 확인합니다. \n" +
@@ -163,6 +186,10 @@ public class MemberController {
     }
   }
 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: Nickname is available"),
+      @ApiResponse(responseCode = "409", description = "CONFLICT: Nickname is already in use")
+  })
   @Operation(summary = "닉네임 중복확인",
       description = "닉네임의 중복 여부를 확인합니다. \n" +
           "요청된 닉네임이 데이터베이스에 이미 존재하는지 확인합니다. \n" +
@@ -180,6 +207,10 @@ public class MemberController {
     }
   }
 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: Member resigned successfully"),
+      @ApiResponse(responseCode = "404", description = "NOT_FOUND: Member not found")
+  })
   @Operation(summary = "회원탈퇴",
       description = "현재 로그인된 사용자를 삭제합니다. \n" +
           "요청에 포함된 토큰에서 이메일을 추출하여 해당 사용자를 검색합니다. \n" +
@@ -197,6 +228,11 @@ public class MemberController {
         HttpStatus.OK);
   }
 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: 성공"),
+      @ApiResponse(responseCode = "404", description = "NOT_FOUND: Member not found"),
+      @ApiResponse(responseCode = "401", description = "UNAUTHORIZED: Invalid password")
+  })
   @Operation(summary = "로그인",
       description = "이메일과 비밀번호를 사용하여 로그인합니다. \n" +
           "요청된 이메일이 데이터베이스에 존재하지 않거나 비밀번호가 일치하지 않는 경우 각각 `404 Not Found` 또는 `401 Unauthorized` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
@@ -220,7 +256,10 @@ public class MemberController {
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
-
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: Logout successful"),
+      @ApiResponse(responseCode = "401", description = "UNAUTHORIZED: Invalid token")
+  })
   @Operation(summary = "로그아웃",
       description = "현재 로그인된 사용자의 리프레시 토큰을 삭제하여 로그아웃을 처리합니다. \n" +
           "요청에 포함된 토큰에서 이메일을 추출하고, 해당 이메일로 리프레시 토큰을 삭제합니다. \n" +
@@ -238,6 +277,10 @@ public class MemberController {
         HttpStatus.OK);
   }
 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: 성공"),
+      @ApiResponse(responseCode = "401", description = "UNAUTHORIZED: Invalid refresh token")
+  })
   @Operation(summary = "리프레시 토큰으로 액세스 토큰 재발급",
       description = "리프레시 토큰을 사용하여 새로운 액세스 토큰을 발급받습니다. \n" +
           "요청된 리프레시 토큰이 유효하지 않은 경우 `401 Unauthorized` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
@@ -254,6 +297,10 @@ public class MemberController {
         HttpStatus.OK);
   }
 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: Verification code sent"),
+      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Invalid email format")
+  })
   @Operation(summary = "이메일 인증 코드 전송 요청",
       description = "지정된 이메일 주소로 인증 코드를 전송합니다. \n" +
           "요청된 이메일이 유효하지 않은 경우 `400 Bad Request` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
@@ -269,6 +316,12 @@ public class MemberController {
         HttpStatus.OK);
   }
 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: Email verified successfully"),
+      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Invalid email format"),
+      @ApiResponse(responseCode = "404", description = "NOT_FOUND: Email not found"),
+      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Invalid verification code")
+  })
   @Operation(summary = "이메일 인증 코드 확인 - 비밀번호 찾기할 때 사용",
       description = "이메일 인증 코드를 확인하여 비밀번호 재설정을 위한 토큰을 발급합니다. \n" +
           "요청된 이메일이 유효하지 않거나 해당 이메일이 데이터베이스에 존재하지 않는 경우 각각 `400 Bad Request` 또는 `404 Not Found` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
@@ -297,6 +350,12 @@ public class MemberController {
     }
   }
 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: Email verified successfully"),
+      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Invalid email format"),
+      @ApiResponse(responseCode = "409", description = "CONFLICT: Email is already in use"),
+      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Invalid verification code")
+  })
   @Operation(summary = "이메일 인증 코드 확인 - 회원가입할 때 사용",
       description = "이메일 인증 코드를 확인하여 회원가입을 완료합니다. \n" +
           "요청된 이메일이 유효하지 않거나 해당 이메일이 이미 데이터베이스에 존재하는 경우 각각 `400 Bad Request` 또는 `409 Conflict` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
@@ -324,6 +383,11 @@ public class MemberController {
     }
   }
 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: Password changed successfully"),
+      @ApiResponse(responseCode = "401", description = "UNAUTHORIZED: Invalid token"),
+      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Password change failed")
+  })
   @Operation(summary = "비밀번호 수정에서의 비밀번호 바꾸기",
       description = "현재 로그인된 사용자의 비밀번호를 변경합니다. \n" +
           "요청에 포함된 토큰에서 이메일을 추출하고, 해당 이메일에 대해 비밀번호를 수정합니다. \n" +
@@ -348,6 +412,12 @@ public class MemberController {
     }
   }
 
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "OK: Password changed successfully"),
+      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Invalid email format"),
+      @ApiResponse(responseCode = "404", description = "NOT_FOUND: Email not found"),
+      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Password change failed")
+  })
   @Operation(summary = "비밀번호 찾기에서의 비밀번호 바꾸기",
       description = "비밀번호 찾기를 통해서 사용자의 비밀번호를 변경합니다. \n" +
           "요청에서 이메일을 받고, 해당 이메일에 대해 비밀번호를 수정합니다. \n" +
