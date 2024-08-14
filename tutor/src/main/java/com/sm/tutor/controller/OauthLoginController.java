@@ -2,6 +2,7 @@ package com.sm.tutor.controller;
 
 
 import com.sm.tutor.config.JwtTokenProvider;
+import com.sm.tutor.service.GoogleService;
 import com.sm.tutor.service.KakaoService;
 import com.sm.tutor.service.MemberService;
 import com.sm.tutor.service.NaverService;
@@ -34,6 +35,8 @@ public class OauthLoginController {
   private final KakaoService kakaoService;
 
   private final NaverService naverService;
+
+  private final GoogleService googleService;
 
   private final JwtTokenProvider tokenProvider;
 
@@ -139,6 +142,26 @@ public class OauthLoginController {
   @GetMapping("/naver/mobile")
   public ResponseEntity<?> naverSignIn(@RequestParam("code") String code) { // 인가코드
     Map<String, Object> result = naverService.execNaverLogin(code);
+    if (result.get("email") != null) {
+      String accessToken = tokenProvider.createAccessToken(String.valueOf(result.get("email")));
+      String refreshToken = tokenProvider.createRefreshToken(
+          String.valueOf(result.get("email")));
+      Map<String, String> response = new HashMap<>();
+      response.put("accessToken", "Bearer " + accessToken);
+      response.put("refreshToken", refreshToken);
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    return new ResponseEntity<>(Collections.singletonMap("message", "Member not found"),
+        HttpStatus.NOT_FOUND);
+  }
+
+  /*
+  uri: https://accounts.google.com/o/oauth2/auth?client_id=770120720911-0l34151n4bu7ro48pdr6b3ecd1qkkmt5.apps.googleusercontent.com&redirect_uri=http://localhost:8080/oauth/google/mobile&response_type=code&scope=email,profile&access_type=offline
+  로 접속시, 해당 주소로 redirect
+  */
+  @GetMapping("/google/mobile")
+  public ResponseEntity<?> googleSignIn(@RequestParam("code") String code) { // 인가코드
+    Map<String, Object> result = googleService.execGoogleLogin(code);
     if (result.get("email") != null) {
       String accessToken = tokenProvider.createAccessToken(String.valueOf(result.get("email")));
       String refreshToken = tokenProvider.createRefreshToken(

@@ -1,7 +1,6 @@
 package com.sm.tutor.service;
 
 import com.nimbusds.jose.shaded.gson.JsonElement;
-import com.nimbusds.jose.shaded.gson.JsonObject;
 import com.nimbusds.jose.shaded.gson.JsonParser;
 import com.sm.tutor.domain.Member;
 import com.sm.tutor.domain.Oauth;
@@ -29,28 +28,31 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KakaoService {
+public class GoogleService {
 
   private final OauthRepository oauthRepository;
 
   private final MemberRepository memberRepository;
 
-  @Value("${spring.security.oauth2.client.registration.kakao.authorization-grant-type}")
+  @Value("${spring.security.oauth2.client.registration.google.authorization-grant-type}")
   private String authorization_grant_type;
 
-  @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}")
+  @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
   private String redirect_uri;
 
-  @Value("${spring.security.oauth2.client.registration.kakao.client-id}")
+  @Value("${spring.security.oauth2.client.registration.google.client-id}")
   private String client_id;
 
-  @Value("${spring.security.oauth2.client.provider.kakao.token-uri}")
+  @Value("${spring.security.oauth2.client.provider.google.token-uri}")
   private String token_uri;
 
-  @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}")
+  @Value("${spring.security.oauth2.client.provider.google.user-info-uri}")
   private String user_info_uri;
 
-  public Map<String, Object> execKakaoLogin(String authorize_code) {
+  @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+  private String client_secret;
+
+  public Map<String, Object> execGoogleLogin(String authorize_code) {
     log.info("authorize_code: {}", authorize_code);
     String accessToken = getAccessToken(authorize_code);
     Map<String, Object> userInfo = getUserInfo(accessToken);
@@ -60,6 +62,8 @@ public class KakaoService {
     String provider = String.valueOf(userInfo.get("provider"));
     String email = String.valueOf(userInfo.get("email"));
     String nickname = String.valueOf(userInfo.get("nickname"));
+    String name = String.valueOf(userInfo.get("name"));
+
     log.info("email: {}", email);
 
     if (oauthRepository.findByProviderId(providerId).isEmpty()) {
@@ -132,6 +136,7 @@ public class KakaoService {
       sb.append("grant_type=" + authorization_grant_type);
       sb.append("&client_id=" + client_id);
       sb.append("&redirect_uri=" + redirect_uri);
+      sb.append("&client_secret=" + client_secret);
       sb.append("&code=" + authorize_code);
       bw.write(sb.toString());
       bw.flush();
@@ -150,6 +155,8 @@ public class KakaoService {
       }
 
       JsonElement element = JsonParser.parseString(result);
+
+      log.info(element.toString());
 
       accessToken = element.getAsJsonObject().get("access_token").getAsString();
       refreshToken = element.getAsJsonObject().get("refresh_token").getAsString();
@@ -187,26 +194,26 @@ public class KakaoService {
       }
 
       JsonElement element = JsonParser.parseString(result);
+      log.info("element2: {}", element.toString());
 
-      JsonObject properties = element.getAsJsonObject().get("properties").getAsJsonObject();
-      JsonObject kakao_account = element.getAsJsonObject().get("kakao_account").getAsJsonObject();
       String id = element.getAsJsonObject().get("id").getAsString();
-
-      String nickname = properties.getAsJsonObject().get("nickname").getAsString();
+      String email = element.getAsJsonObject().get("email").getAsString();
+      String nickname = element.getAsJsonObject().get("name").getAsString();
 
       //log.info("properties: {}", properties.getAsJsonObject().toString());
       //log.info("kakao account: {}", kakao_account.getAsJsonObject().toString());
       log.info("id: {}", id);
       log.info("element: {}", element.getAsJsonObject().toString());
       userInfo.put("nickname", nickname);
-      userInfo.put("provider", "KAKAO");
+      userInfo.put("provider", "GOOGLE");
       userInfo.put("providerId", id);
-
-      userInfo.put("email", "KAKAO" + id + "@gmail.com");
+      userInfo.put("email", email);
     } catch (IOException e) {
       e.printStackTrace();
     }
 
     return userInfo;
   }
+
+
 }
