@@ -17,6 +17,8 @@ dependencies:
   freezed_annotation: ^2.4.4
   flutter_secure_storage: ^4.2.1
   http: ^1.2.2
+  syncfusion_flutter_datepicker: ^26.2.9
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
@@ -31,6 +33,15 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Regular.otf
+        - asset: assets/fonts/Pretendard-SemiBold.otf
+          weight: 600
+
   assets:
     - assets/images/
-    - assets/images/logo_with_name.png
+    - assets/images/starting_screen/
+    - assets/icons/
+    - assets/images/successful_register/

@@ -6,6 +6,6 @@ part 'login_credentials.freezed.dart';
 class LoginCredentials with _$LoginCredentials {
   const factory LoginCredentials({
     required String email,
-    required String password,
+    required String refreshToken,
   }) = _LoginCredentials;
 }

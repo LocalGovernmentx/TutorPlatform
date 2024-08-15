@@ -3,12 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:tutor_platform/core/di/main_provider_setup.dart';
 import 'package:tutor_platform/core/main_view_model.dart';
 import 'package:tutor_platform/core/screen_state.dart';
-import 'package:tutor_platform/sign_in_up/presentation/sign_in_up_screen.dart';
+import 'package:tutor_platform/sign_in_up/di/login_provider_setup.dart';
+import 'package:tutor_platform/sign_in_up/presentation/auto_login_view.dart';
 import 'package:tutor_platform/tutee/presentation/tutee_screen.dart';
 import 'package:tutor_platform/tutor/presentation/tutor_screen.dart';
+import 'package:tutor_platform/ui/tutee_theme.dart';
+import 'package:tutor_platform/ui/tutor_theme.dart';
 
 void main() async {
-  final providers = globalProvidersMain;
+  final providers = [...globalProvidersMain, ...globalProvidersLogin];
   runApp(MultiProvider(
     providers: providers,
     child: const MyApp(),
@@ -18,20 +21,29 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
-
   @override
   Widget build(BuildContext context) {
     final screenState = context.watch<MainViewModel>().screenState;
-    print(1);
 
     switch (screenState) {
       case SignInUpScreenState():
-        return SignInUpScreen(autoLogin: screenState.autoLogin);
+        return MaterialApp(
+          title: 'Tutor Platform',
+          theme: tutorTheme,
+          home: AutoLoginView(autoLogin: screenState.autoLogin),
+        );
       case TuteeScreenState():
-        return TuteeScreen(userInfo: screenState.userInfo);
+        return MaterialApp(
+          title: 'Tutor Platform',
+          theme: tutorTheme,
+          home: TuteeScreen(jwtToken: screenState.jwtToken),
+        );
       case TutorScreenState():
-        return const TutorScreen();
+        return MaterialApp(
+          title: 'Tutor Platform',
+          theme: tuteeTheme,
+          home: const TutorScreen(),
+        );
     }
   }
 }

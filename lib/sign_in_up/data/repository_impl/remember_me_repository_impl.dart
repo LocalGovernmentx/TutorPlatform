@@ -13,8 +13,10 @@ class RememberMeRepositoryImpl implements RememberMeRepository {
   }
 
   @override
-  Future<void> setRememberMe(String email, String password) async {
-    await rememberMe.save(email, password);
+  Future<void> setRememberMe(String email, String refreshToken) async {
+    await removeRememberMe();
+    await rememberMe.save(email, refreshToken);
+    print("Remember me saved");
   }
 
   @override

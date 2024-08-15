@@ -4,19 +4,23 @@ import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:tutor_platform/sign_in_up/data/data_source/login_api_data_source.dart';
 import 'package:tutor_platform/sign_in_up/data/data_source/remember_me_data_source.dart';
+import 'package:tutor_platform/sign_in_up/data/repository_impl/login_api_repository_impl.dart';
+import 'package:tutor_platform/sign_in_up/data/repository_impl/remember_me_repository_impl.dart';
 import 'package:tutor_platform/sign_in_up/domain/repository/login_api_repository.dart';
 import 'package:tutor_platform/sign_in_up/domain/repository/remember_me_repository.dart';
-import 'package:tutor_platform/sign_in_up/domain/use_case/change_password.dart';
+import 'package:tutor_platform/sign_in_up/domain/use_case/check_nickname.dart';
+import 'package:tutor_platform/sign_in_up/domain/use_case/perform_autologin.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/perform_login.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/remove_remember_me.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/retrieve_remember_me.dart';
-import 'package:tutor_platform/sign_in_up/domain/use_case/send_request_email.dart';
-import 'package:tutor_platform/sign_in_up/domain/use_case/send_verification_code.dart';
+import 'package:tutor_platform/sign_in_up/domain/use_case/request_email_verification.dart';
+import 'package:tutor_platform/sign_in_up/domain/use_case/send_verification_sign_up.dart';
+import 'package:tutor_platform/sign_in_up/domain/use_case/sign_up.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/write_remember_me.dart';
-import 'package:tutor_platform/sign_in_up/presentation/find_password/find_password_view_model.dart';
+import 'package:tutor_platform/sign_in_up/presentation/auto_login_view_model.dart';
 import 'package:tutor_platform/sign_in_up/presentation/login/login_view_model.dart';
-import 'package:tutor_platform/sign_in_up/data/repository_impl/login_api_repository_impl.dart';
-import 'package:tutor_platform/sign_in_up/data/repository_impl/remember_me_repository_impl.dart';
+import 'package:tutor_platform/sign_in_up/presentation/sign_up/email_password/sign_up_email_password_view_model.dart';
+import 'package:tutor_platform/sign_in_up/presentation/sign_up/user_info/sign_up_user_info_view_model.dart';
 
 List<SingleChildWidget> globalProvidersLogin = [
   ...independentModelsLogin,
@@ -32,60 +36,71 @@ List<SingleChildWidget> independentModelsLogin = [
 ];
 
 List<SingleChildWidget> dependentModelsLogin = [
-  // data_source 정의
   ProxyProvider<http.Client, LoginApiDataSource>(
     update: (context, client, _) => LoginApiDataSource(client),
   ),
   ProxyProvider<FlutterSecureStorage, RememberMeDataSource>(
     update: (context, storage, _) => RememberMeDataSource(storage),
   ),
-
-  // repository 정의
   ProxyProvider<LoginApiDataSource, LoginApiRepository>(
     update: (context, dataSource, _) => LoginApiRepositoryImpl(dataSource),
   ),
   ProxyProvider<RememberMeDataSource, RememberMeRepository>(
     update: (context, dataSource, _) => RememberMeRepositoryImpl(dataSource),
   ),
-
-  // use_case 정의
+  ProxyProvider<LoginApiRepository, CheckNickname>(
+    update: (context, repository, _) => CheckNickname(repository),
+  ),
   ProxyProvider<LoginApiRepository, PerformLogin>(
     update: (context, repository, _) => PerformLogin(repository),
   ),
-  ProxyProvider<RememberMeRepository, WriteRememberMe>(
-    update: (context, repository, _) => WriteRememberMe(repository),
+  ProxyProvider<LoginApiRepository, RequestEmailVerification>(
+    update: (context, repository, _) => RequestEmailVerification(repository),
   ),
-  ProxyProvider<RememberMeRepository, RetrieveRememberMe>(
-    update: (context, repository, _) => RetrieveRememberMe(repository),
+  ProxyProvider<LoginApiRepository, SendVerificationSignUp>(
+    update: (context, repository, _) => SendVerificationSignUp(repository),
   ),
   ProxyProvider<RememberMeRepository, RemoveRememberMe>(
     update: (context, repository, _) => RemoveRememberMe(repository),
   ),
-  ProxyProvider<LoginApiRepository, SendRequestEmail>(
-    update: (context, repository, _) => SendRequestEmail(repository),
+  ProxyProvider<RememberMeRepository, RetrieveRememberMe>(
+    update: (context, repository, _) => RetrieveRememberMe(repository),
   ),
-  ProxyProvider<LoginApiRepository, SendVerificationCode>(
-    update: (context, repository, _) => SendVerificationCode(repository),
+  ProxyProvider<RememberMeRepository, WriteRememberMe>(
+    update: (context, repository, _) => WriteRememberMe(repository),
   ),
-  ProxyProvider<LoginApiRepository, ChangePassword>(
-    update: (context, repository, _) => ChangePassword(repository),
+  ProxyProvider2<LoginApiRepository, RememberMeRepository, PerformAutologin>(
+    update: (context, loginApiRepository, rememberMeRepository, _) =>
+        PerformAutologin(loginApiRepository, rememberMeRepository),
+  ),
+  ProxyProvider<LoginApiRepository, SignUp>(
+    update: (context, repository, _) => SignUp(repository),
   ),
 ];
 
 List<SingleChildWidget> viewModelsLogin = [
   ChangeNotifierProvider<LoginViewModel>(
     create: (context) => LoginViewModel(
-      performLogin: context.read<PerformLogin>(),
-      writeRememberMe: context.read<WriteRememberMe>(),
-      retrieveRememberMe: context.read<RetrieveRememberMe>(),
-      removeRememberMe: context.read<RemoveRememberMe>(),
+      context.read<PerformLogin>(),
+      context.read<WriteRememberMe>(),
     ),
   ),
-  ChangeNotifierProvider<FindPasswordViewModel>(
-    create: (context) => FindPasswordViewModel(
-      context.read<SendRequestEmail>(),
-      context.read<SendVerificationCode>(),
-      context.read<ChangePassword>(),
+  ChangeNotifierProvider<AutoLoginViewModel>(
+    create: (context) => AutoLoginViewModel(
+      context.read<PerformAutologin>(),
+      context.read<RemoveRememberMe>(),
+    ),
+  ),
+  ChangeNotifierProvider<SignUpEmailPasswordViewModel>(
+    create: (context) => SignUpEmailPasswordViewModel(
+      context.read<RequestEmailVerification>(),
+      context.read<SendVerificationSignUp>(),
+    ),
+  ),
+  ChangeNotifierProvider<SignUpUserInfoViewModel>(
+    create: (context) => SignUpUserInfoViewModel(
+      context.read<CheckNickname>(),
+      context.read<SignUp>(),
     ),
   ),
 ];

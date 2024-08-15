@@ -8,20 +8,20 @@ class RememberMeDataSource {
 
   Future<void> delete() async {
     await storage.delete(key: 'email');
-    await storage.delete(key: 'password');
+    await storage.delete(key: 'refreshToken');
   }
 
-  Future<void> save(String email, String password) async {
+  Future<void> save(String email, String refreshToken) async {
     delete();
     await storage.write(key: 'email', value: email);
-    await storage.write(key: 'password', value: password);
+    await storage.write(key: 'refreshToken', value: refreshToken);
   }
 
   Future<LoginCredentials?> read() async {
     final String? email = await storage.read(key: 'email');
-    final String? password = await storage.read(key: 'password');
-    if (email != null && password != null) {
-      return LoginCredentials(email: email, password: password);
+    final String? refreshToken = await storage.read(key: 'refreshToken');
+    if (email != null && refreshToken != null) {
+      return LoginCredentials(email: email, refreshToken: refreshToken);
     } else {
       return null;
     }

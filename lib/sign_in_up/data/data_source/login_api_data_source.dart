@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:tutor_platform/core/models/jwt_token.dart';
+import 'package:tutor_platform/core/models/user_info.dart';
 import 'package:tutor_platform/core/network_errors.dart';
 import 'package:tutor_platform/core/result.dart';
 
@@ -11,86 +13,340 @@ class LoginApiDataSource {
 
   static const baseUrl = 'https://www.modututor.com/api';
 
-  Future<Result<Map<String, dynamic>, NetworkErrors>> fetchLogin(String email, String password) async {
+  Future<Result<JwtToken, NetworkErrors>> login(
+      String email, String password) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/members/login?email=$email&password=$password'),
       );
 
-      // for testing
-      // TODO : Replace this with actual code
-      if (email == '1234' && password == '1234') {
-        return Result.success({});
+      if (response.statusCode == 404) {
+        try {
+          final message = json.decode(response.body)['message'];
+          if (message == "Member not found") {
+            return Result.error(NetworkErrors.credentialsError(message));
+          }
+        } catch (e) {
+          return Result.error(
+              NetworkErrors.clientError(404, 'please update the app'));
+        }
       }
-
-      if (email == '1234' && password == '12345') {
-        return Result.error(NetworkErrors.credentialsError('Invalid password'));
-      }
-      return Result.error(NetworkErrors.timeout());
 
       if (response.statusCode == 200) {
-        Map<String, dynamic> jsonResponse = json.decode(response.body);
-        return Result.success(jsonResponse);
-      } else {
-        // TODO: make more error handling
+        try {
+          final accessToken = json.decode(response.body)['accessToken'];
+          final refreshToken = json.decode(response.body)['refreshToken'];
+          final token =
+              JwtToken(accessToken: accessToken, refreshToken: refreshToken);
 
-        return Result.error(NetworkErrors.credentialsError('Invalid email or password'));
+          return Result.success(token);
+        } catch (e) {
+          return Result.error(NetworkErrors.unknownStatusCode(
+              response.statusCode, response.body));
+        }
+      }
+
+      final String message;
+      try {
+        message = json.decode(response.body)['message'];
+      } catch (e) {
+        return Result.error(NetworkErrors.unknownError());
+      }
+
+      switch (response.statusCode) {
+        case 401:
+          if (message == "Invalid password") {
+            return Result.error(NetworkErrors.credentialsError(message));
+          }
+        default:
+          break;
+      }
+
+      if (response.statusCode ~/ 100 == 4) {
+        return Result.error(
+            NetworkErrors.clientError(response.statusCode, message));
+      } else if (response.statusCode ~/ 100 == 5) {
+        return Result.error(
+            NetworkErrors.serverError(response.statusCode, message));
+      } else {
+        return Result.error(
+            NetworkErrors.unknownStatusCode(response.statusCode, message));
       }
     } catch (e) {
       return Result.error(NetworkErrors.timeout());
     }
   }
 
-  Future<Result<dynamic, NetworkErrors>> requestEmailVerify(String email) async {
+  Future<Result<JwtToken, NetworkErrors>> autoLogin(
+      String email, String refreshToken) async {
+    try {
+      final response = await client.post(
+        Uri.parse(
+            '$baseUrl/members/refresh?userEmail=$email&refreshToken=$refreshToken'),
+      );
+
+      if (response.statusCode == 404) {
+        return Result.error(
+            NetworkErrors.clientError(404, 'please update the app'));
+      }
+
+      if (response.statusCode == 200) {
+        try {
+          final accessToken = json.decode(response.body)['accessToken'];
+          final token =
+              JwtToken(accessToken: accessToken, refreshToken: refreshToken);
+
+          return Result.success(token);
+        } catch (e) {
+          return Result.error(NetworkErrors.unknownStatusCode(
+              response.statusCode, response.body));
+        }
+      }
+
+      final String message;
+      try {
+        message = json.decode(response.body)['message'];
+      } catch (e) {
+        return Result.error(NetworkErrors.unknownError());
+      }
+
+      switch (response.statusCode) {
+        case 401:
+          if (message == "Invalid refresh token") {
+            return Result.error(NetworkErrors.credentialsError(message));
+          }
+        default:
+          break;
+      }
+
+      if (response.statusCode ~/ 100 == 4) {
+        return Result.error(
+            NetworkErrors.clientError(response.statusCode, message));
+      } else if (response.statusCode ~/ 100 == 5) {
+        return Result.error(
+            NetworkErrors.serverError(response.statusCode, message));
+      } else {
+        return Result.error(
+            NetworkErrors.unknownStatusCode(response.statusCode, message));
+      }
+    } catch (e) {
+      return Result.error(NetworkErrors.timeout());
+    }
+  }
+
+  Future<Result<String, NetworkErrors>> requestEmailVerification(
+      String email) async {
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/members/emails/verification-requests?email=$email'),
       );
 
+      if (response.statusCode == 404) {
+        return Result.error(
+            NetworkErrors.clientError(404, 'please update the app'));
+      }
 
-      // TODO: Replace this with actual code
-      if (email == '1234') {
-        return Result.success(null);
+      try {
+        final String message = json.decode(response.body)['message'];
+        switch (response.statusCode) {
+          case 200:
+            if (message == "Verification code sent") {
+              return Result.success(message);
+            }
+          case 400:
+            if (message == "Invalid email format") {
+              return Result.error(NetworkErrors.credentialsError(message));
+            }
+        }
+      } catch (e) {}
+
+      if (response.statusCode ~/ 100 == 4) {
+        return Result.error(NetworkErrors.clientError(response.statusCode, ''));
+      } else if (response.statusCode ~/ 100 == 5) {
+        return Result.error(NetworkErrors.serverError(response.statusCode, ''));
+      } else {
+        return Result.error(
+            NetworkErrors.unknownStatusCode(response.statusCode, ''));
       }
-      else if (email == '12345') {
-        return Result.error(NetworkErrors.credentialsError('Invalid email format'));
-      }
-      return Result.error(NetworkErrors.timeout());
     } catch (e) {
       return Result.error(NetworkErrors.timeout());
     }
   }
 
-  Future<Result<String, NetworkErrors>> sendVerificationCode(String email, String code) async {
+  Future<Result<String, NetworkErrors>> sendVerificationSignUp(
+      String email, String code) async {
     try {
-      // final response = await client.post(
-      //   Uri.parse('$baseUrl/members/emails/verification-requests?email=$email'),
-      // );
+      final response = await client.get(
+        Uri.parse(
+            '$baseUrl/members/emails/verifications-signup?email=$email&code=$code'),
+      );
 
+      if (response.statusCode == 404) {
+        return Result.error(
+            NetworkErrors.clientError(404, 'please update the app'));
+      }
 
-      // TODO: Replace this with actual code
-      if (code == '1234') {
-        return Result.success('1234');
+      switch (response.statusCode) {
+        case 200:
+          final String message;
+          try {
+            message = json.decode(response.body)['message'];
+          } catch (e) {
+            return Result.error(NetworkErrors.unknownError());
+          }
+          if (message == "Email verified successfully") {
+            return Result.success(message);
+          }
+        case 400:
+          final String message;
+          try {
+            message = json.decode(response.body)['message'];
+          } catch (e) {
+            return Result.error(NetworkErrors.unknownError());
+          }
+          if (message == "Invalid email format") {
+            return Result.error(NetworkErrors.credentialsError(message));
+          } else if (message == "Invalid verification code") {
+            return Result.error(NetworkErrors.credentialsError(message));
+          }
+        case 409:
+          final String message;
+          try {
+            message = json.decode(response.body)['message'];
+          } catch (e) {
+            return Result.error(NetworkErrors.unknownError());
+          }
+          if (message == "Email is already in use") {
+            return Result.error(NetworkErrors.credentialsError(message));
+          }
+        default:
+          break;
       }
-      else if (code == '12345') {
-        return Result.error(NetworkErrors.credentialsError('Invalid code'));
+
+      if (response.statusCode ~/ 100 == 4) {
+        return Result.error(NetworkErrors.clientError(response.statusCode, ''));
+      } else if (response.statusCode ~/ 100 == 5) {
+        return Result.error(NetworkErrors.serverError(response.statusCode, ''));
+      } else {
+        return Result.error(
+            NetworkErrors.unknownStatusCode(response.statusCode, ''));
       }
-      return Result.error(NetworkErrors.timeout());
     } catch (e) {
       return Result.error(NetworkErrors.timeout());
     }
   }
 
-  Future<Result<dynamic, NetworkErrors>> changePassword(String email, String password) async {
+  Future<Result<String, NetworkErrors>> checkNickname(String nickname) async {
     try {
-      // final response = await client.post(
-      //   Uri.parse('$baseUrl/members/emails/verification-requests?email=$email'),
-      // );
+      final response = await client.get(
+        Uri.parse('$baseUrl/members/check-nickname?nickname=$nickname'),
+      );
 
-      // TODO: Replace this with actual code
-      return Result.success('1234');
+      if (response.statusCode == 404) {
+        return Result.error(
+            NetworkErrors.clientError(404, 'please update the app'));
+      }
+
+      switch (response.statusCode) {
+        case 200:
+          final String message;
+          try {
+            message = json.decode(response.body)['message'];
+          } catch (e) {
+            return Result.error(NetworkErrors.unknownError());
+          }
+          if (message == "Nickname is available") {
+            return Result.success(message);
+          }
+        case 409:
+          final String message;
+          try {
+            message = json.decode(response.body)['message'];
+          } catch (e) {
+            return Result.error(NetworkErrors.unknownError());
+          }
+          if (message == "Nickname is already in use") {
+            return Result.error(NetworkErrors.credentialsError(message));
+          }
+        default:
+          break;
+      }
+
+      if (response.statusCode ~/ 100 == 4) {
+        return Result.error(NetworkErrors.clientError(response.statusCode, ''));
+      } else if (response.statusCode ~/ 100 == 5) {
+        return Result.error(NetworkErrors.serverError(response.statusCode, ''));
+      } else {
+        return Result.error(
+            NetworkErrors.unknownStatusCode(response.statusCode, ''));
+      }
+    } catch (e) {
+      return Result.error(NetworkErrors.timeout());
     }
-    catch (e) {
+  }
+
+  Future<Result<String, NetworkErrors>> register(UserInfo userInfo) async {
+    try {
+      final response = await client.post(
+        Uri.parse('$baseUrl/members'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(userInfo.toJson()),
+      );
+
+      if (response.statusCode == 404) {
+        return Result.error(
+            NetworkErrors.clientError(404, 'please update the app'));
+      }
+
+      try {
+        final String message = json.decode(response.body)['message'];
+        switch (response.statusCode) {
+          case 200:
+            if (message == "Member created successfully") {
+              return Result.success(message);
+            }
+          case 400:
+            if (message == "Nickname must be between 2 and 8 characters long") {
+              return Result.error(NetworkErrors.credentialsError(message));
+            }
+          case 403:
+            if (message == "Email is not verified") {
+              return Result.error(NetworkErrors.credentialsError(message));
+            }
+          case 406:
+            if (message == "Phone number is already in use") {
+              return Result.error(NetworkErrors.credentialsError(message));
+            }
+          case 409:
+            if (message == "Email is already in use") {
+              return Result.error(NetworkErrors.credentialsError(message));
+            }
+          case 411:
+            if (message == "Password is too short") {
+              return Result.error(NetworkErrors.credentialsError(message));
+            }
+          case 422:
+            if (message == "Invalid email format") {
+              return Result.error(NetworkErrors.credentialsError(message));
+            }
+          default:
+            break;
+        }
+      } catch (e) {
+        // continue to following code
+      }
+
+      if (response.statusCode ~/ 100 == 4) {
+        return Result.error(NetworkErrors.clientError(response.statusCode, ''));
+      } else if (response.statusCode ~/ 100 == 5) {
+        return Result.error(NetworkErrors.serverError(response.statusCode, ''));
+      } else {
+        return Result.error(
+            NetworkErrors.unknownStatusCode(response.statusCode, ''));
+      }
+    } catch (e) {
       return Result.error(NetworkErrors.timeout());
     }
   }
