@@ -15,20 +15,20 @@ void main() {
       final storage = MockFlutterSecureStorage();
       final rememberMeDataSource = RememberMeDataSource(storage);
       String? emailStorage;
-      String? passwordStorage;
+      String? refreshTokenStorage;
 
       when(storage.delete(key: 'email')).thenAnswer((_) async {emailStorage = null;});
-      when(storage.delete(key: 'password')).thenAnswer((_) async {passwordStorage = null;});
+      when(storage.delete(key: 'refreshToken')).thenAnswer((_) async {refreshTokenStorage = null;});
 
       when(storage.write(key: 'email', value: '1234')).thenAnswer((_) async {emailStorage = '1234';});
-      when(storage.write(key: 'password', value: '1234')).thenAnswer((_) async {passwordStorage = '1234';});
+      when(storage.write(key: 'refreshToken', value: '1234')).thenAnswer((_) async {refreshTokenStorage = '1234';});
 
       when(storage.read(key: 'email')).thenAnswer((_) async => emailStorage);
-      when(storage.read(key: 'password')).thenAnswer((_) async => passwordStorage);
+      when(storage.read(key: 'refreshToken')).thenAnswer((_) async => refreshTokenStorage);
 
       rememberMeDataSource.save('1234', '1234');
       LoginCredentials? result = await rememberMeDataSource.read();
-      expect(result, const LoginCredentials(email: '1234', password: '1234'));
+      expect(result, const LoginCredentials(email: '1234', refreshToken: '1234'));
 
       rememberMeDataSource.delete();
       result = await rememberMeDataSource.read();

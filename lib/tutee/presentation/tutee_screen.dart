@@ -2,35 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_platform/core/main_view_model.dart';
 import 'package:tutor_platform/core/screen_state.dart';
-import 'package:tutor_platform/core/user_info.dart';
+import 'package:tutor_platform/core/models/jwt_token.dart';
 
 class TuteeScreen extends StatelessWidget {
-  final UserInfo userInfo;
+  final JwtToken jwtToken;
 
-  const TuteeScreen({super.key, required this.userInfo});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
-        ),
-        useMaterial3: true,
-      ),
-      home: const TmpTuteeScreen(),
-    );
-  }
-}
-
-class TmpTuteeScreen extends StatelessWidget {
-  const TmpTuteeScreen({super.key});
+  const TuteeScreen({super.key, required this.jwtToken});
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +20,8 @@ class TmpTuteeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('Welcome'),
+            Text(jwtToken.accessToken),
+            Text(jwtToken.refreshToken),
             ElevatedButton(
               onPressed: () {
                 final viewModel = context.read<MainViewModel>();

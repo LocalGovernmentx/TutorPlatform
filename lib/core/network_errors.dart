@@ -5,6 +5,8 @@ sealed class NetworkErrors {
 
   factory NetworkErrors.clientError(int statusCode, String message) = ClientError;
 
+  factory NetworkErrors.unknownStatusCode(int statusCode, String message) = UnknownStatusCode;
+
   factory NetworkErrors.credentialsError(String message) = CredentialsError;
 
   factory NetworkErrors.unknownError() = UnknownError;
@@ -24,6 +26,13 @@ class ClientError implements NetworkErrors {
   final String message;
 
   ClientError(this.statusCode, this.message);
+}
+
+class UnknownStatusCode implements NetworkErrors {
+  final int statusCode;
+  final String message;
+
+  UnknownStatusCode(this.statusCode, this.message);
 }
 
 class CredentialsError implements NetworkErrors {

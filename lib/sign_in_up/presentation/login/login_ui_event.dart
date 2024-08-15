@@ -1,32 +1,21 @@
-import 'package:tutor_platform/core/user_info.dart';
+import 'package:tutor_platform/core/models/jwt_token.dart';
 
 sealed class LoginUiEvent {
-  factory LoginUiEvent.successful(UserInfo userInfo) = SuccessfulLogin;
-  factory LoginUiEvent.errorMessagePassword(String? message) = LoginErrorMessagePassword;
-  factory LoginUiEvent.errorMessageEmail(String? message) = LoginErrorMessageEmail;
-  factory LoginUiEvent.showSnackBar(String message) = LoginShowSnackBar;
+  factory LoginUiEvent.success(JwtToken jwtToken) = LoginUiEventSuccess;
+  factory LoginUiEvent.error() = LoginUiEventError;
+  factory LoginUiEvent.showSnackBar(String message) = LoginUiEventShowSnackBar;
 }
 
-class SuccessfulLogin implements LoginUiEvent {
-  final UserInfo userInfo;
+class LoginUiEventSuccess implements LoginUiEvent {
+  final JwtToken jwtToken;
 
-  SuccessfulLogin(this.userInfo);
+  LoginUiEventSuccess(this.jwtToken);
 }
 
-class LoginErrorMessagePassword implements LoginUiEvent {
-  final String? message;
+class LoginUiEventError implements LoginUiEvent {}
 
-  LoginErrorMessagePassword(this.message);
-}
-
-class LoginErrorMessageEmail implements LoginUiEvent {
-  final String? message;
-
-  LoginErrorMessageEmail(this.message);
-}
-
-class LoginShowSnackBar implements LoginUiEvent {
+class LoginUiEventShowSnackBar implements LoginUiEvent {
   final String message;
 
-  LoginShowSnackBar(this.message);
+  LoginUiEventShowSnackBar(this.message);
 }

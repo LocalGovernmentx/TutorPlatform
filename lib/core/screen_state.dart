@@ -1,11 +1,11 @@
-import 'package:tutor_platform/core/user_info.dart';
+import 'package:tutor_platform/core/models/jwt_token.dart';
 
 sealed class ScreenState {
   const factory ScreenState.signInUpScreenState(bool autoLogin) = SignInUpScreenState;
 
-  const factory ScreenState.tuteeScreenState(UserInfo userInfo) = TuteeScreenState;
+  const factory ScreenState.tuteeScreenState(JwtToken jwtToken) = TuteeScreenState;
 
-  const factory ScreenState.tutorScreenState(UserInfo userInfo) = TutorScreenState;
+  const factory ScreenState.tutorScreenState(JwtToken jwtToken) = TutorScreenState;
 }
 
 class SignInUpScreenState implements ScreenState {
@@ -15,13 +15,13 @@ class SignInUpScreenState implements ScreenState {
 }
 
 class TuteeScreenState implements ScreenState {
-  final UserInfo userInfo;
+  final JwtToken jwtToken;
 
-  const TuteeScreenState(this.userInfo);
+  const TuteeScreenState(this.jwtToken);
 }
 
 class TutorScreenState implements ScreenState {
-  final UserInfo userInfo;
+  final JwtToken jwtToken;
 
-  const TutorScreenState(this.userInfo);
+  const TutorScreenState(this.jwtToken);
 }
