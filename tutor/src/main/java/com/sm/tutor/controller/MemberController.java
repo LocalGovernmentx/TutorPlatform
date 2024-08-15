@@ -2,6 +2,7 @@ package com.sm.tutor.controller;
 
 import com.sm.tutor.config.JwtTokenProvider;
 import com.sm.tutor.domain.Member;
+import com.sm.tutor.domain.dto.MemberRequestDto;
 import com.sm.tutor.service.MemberService;
 import com.sm.tutor.util.EmailValidator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -52,7 +53,8 @@ public class MemberController {
   }
 
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "OK: 성공", content = {@Content(schema = @Schema(implementation = Member.class))}),
+      @ApiResponse(responseCode = "200", description = "OK: 성공", content = {
+          @Content(schema = @Schema(implementation = Member.class))}),
       @ApiResponse(responseCode = "404", description = "NOT_FOUND: Member not found")
   })
   @Operation(summary = "내 정보 조회",
@@ -84,16 +86,24 @@ public class MemberController {
       @ApiResponse(responseCode = "409", description = "CONFLICT: Email is already in use")
   })
   @Operation(summary = "회원가입",
-      description = "1. **이메일 형식 검증**: 유효하지 않은 이메일 형식인 경우, `422 Unprocessable Entity` 상태 코드와 'Invalid email format' 메시지를 반환합니다.\n" +
-          "2. **비밀번호 길이 검증**: 비밀번호 길이가 8자 미만인 경우, `411 Length Required` 상태 코드와 'Password is too short' 메시지를 반환합니다.\n" +
-          "3. **닉네임 길이 검증**: 닉네임 길이가 2자 미만 또는 8자 초과인 경우, `400 Bad Request` 상태 코드와 'Nickname must be between 2 and 8 characters long' 메시지를 반환합니다.\n" +
-          "4. **닉네임 중복 검증**: 닉네임이 이미 사용 중인 경우, `409 Conflict` 상태 코드와 'Nickname is already in use' 메시지를 반환합니다.\n" +
-          "5. **전화번호 중복 검증**: 전화번호가 이미 사용 중인 경우, `406 Not Acceptable` 상태 코드와 'Phone number is already in use' 메시지를 반환합니다.\n" +
-          "6. **이메일 인증 여부 검증**: 이메일이 인증되지 않은 경우, `403 Forbidden` 상태 코드와 'Email is not verified' 메시지를 반환합니다.\n" +
-          "7. **이메일 중복 검증**: 이메일이 이미 사용 중인 경우, `409 Conflict` 상태 코드와 'Email is already in use' 메시지를 반환합니다.\n" +
-          "회원 가입이 성공적으로 처리된 경우, `200 OK` 상태 코드와 'Member created successfully' 메시지를 반환합니다.\n")
+      description =
+          "1. **이메일 형식 검증**: 유효하지 않은 이메일 형식인 경우, `422 Unprocessable Entity` 상태 코드와 'Invalid email format' 메시지를 반환합니다.\n"
+              +
+              "2. **비밀번호 길이 검증**: 비밀번호 길이가 8자 미만인 경우, `411 Length Required` 상태 코드와 'Password is too short' 메시지를 반환합니다.\n"
+              +
+              "3. **닉네임 길이 검증**: 닉네임 길이가 2자 미만 또는 8자 초과인 경우, `400 Bad Request` 상태 코드와 'Nickname must be between 2 and 8 characters long' 메시지를 반환합니다.\n"
+              +
+              "4. **닉네임 중복 검증**: 닉네임이 이미 사용 중인 경우, `409 Conflict` 상태 코드와 'Nickname is already in use' 메시지를 반환합니다.\n"
+              +
+              "5. **전화번호 중복 검증**: 전화번호가 이미 사용 중인 경우, `406 Not Acceptable` 상태 코드와 'Phone number is already in use' 메시지를 반환합니다.\n"
+              +
+              "6. **이메일 인증 여부 검증**: 이메일이 인증되지 않은 경우, `403 Forbidden` 상태 코드와 'Email is not verified' 메시지를 반환합니다.\n"
+              +
+              "7. **이메일 중복 검증**: 이메일이 이미 사용 중인 경우, `409 Conflict` 상태 코드와 'Email is already in use' 메시지를 반환합니다.\n"
+              +
+              "회원 가입이 성공적으로 처리된 경우, `200 OK` 상태 코드와 'Member created successfully' 메시지를 반환합니다.\n")
   @PostMapping
-  public ResponseEntity<?> createMember(@RequestBody Member member) {
+  public ResponseEntity<?> createMember(@RequestBody MemberRequestDto member) {
     // 이메일 형식 검증
     if (!EmailValidator.isValidEmail(member.getEmail())) {
       return new ResponseEntity<>(
@@ -235,7 +245,8 @@ public class MemberController {
   })
   @Operation(summary = "로그인",
       description = "이메일과 비밀번호를 사용하여 로그인합니다. \n" +
-          "요청된 이메일이 데이터베이스에 존재하지 않거나 비밀번호가 일치하지 않는 경우 각각 `404 Not Found` 또는 `401 Unauthorized` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "요청된 이메일이 데이터베이스에 존재하지 않거나 비밀번호가 일치하지 않는 경우 각각 `404 Not Found` 또는 `401 Unauthorized` 상태 코드와 함께 에러 메시지를 반환합니다. \n"
+          +
           "로그인이 성공하면 새로운 액세스 토큰과 리프레시 토큰을 생성하여 반환하며, `200 OK` 상태 코드와 함께 반환됩니다.")
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestParam String email, @RequestParam String password) {
@@ -324,7 +335,8 @@ public class MemberController {
   })
   @Operation(summary = "이메일 인증 코드 확인 - 비밀번호 찾기할 때 사용",
       description = "이메일 인증 코드를 확인하여 비밀번호 재설정을 위한 토큰을 발급합니다. \n" +
-          "요청된 이메일이 유효하지 않거나 해당 이메일이 데이터베이스에 존재하지 않는 경우 각각 `400 Bad Request` 또는 `404 Not Found` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "요청된 이메일이 유효하지 않거나 해당 이메일이 데이터베이스에 존재하지 않는 경우 각각 `400 Bad Request` 또는 `404 Not Found` 상태 코드와 함께 에러 메시지를 반환합니다. \n"
+          +
           "인증 코드가 유효하면 회원가입이 완료되었음을 알리는 메시지를 반환하며, `200 OK` 상태 코드와 함께 반환됩니다. \n" +
           "이외에 다른 사유로 이메일 인증 확인에 실패할 경우 `400 Bad Request` 상태 코드와 `Invalid verification code` 에러 메시지를 반환합니다.")
   @GetMapping("/emails/verifications")
@@ -358,7 +370,8 @@ public class MemberController {
   })
   @Operation(summary = "이메일 인증 코드 확인 - 회원가입할 때 사용",
       description = "이메일 인증 코드를 확인하여 회원가입을 완료합니다. \n" +
-          "요청된 이메일이 유효하지 않거나 해당 이메일이 이미 데이터베이스에 존재하는 경우 각각 `400 Bad Request` 또는 `409 Conflict` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "요청된 이메일이 유효하지 않거나 해당 이메일이 이미 데이터베이스에 존재하는 경우 각각 `400 Bad Request` 또는 `409 Conflict` 상태 코드와 함께 에러 메시지를 반환합니다. \n"
+          +
           "인증 코드가 유효하면 회원가입이 완료되었음을 알리는 메시지를 반환하며, `200 OK` 상태 코드와 함께 반환됩니다. \n" +
           "이외에 다른 사유로 이메일 인증 확인에 실패할 경우 `400 Bad Request` 상태 코드와 `Invalid verification code` 에러 메시지를 반환합니다.")
   @GetMapping("/emails/verifications-signup")
@@ -421,7 +434,8 @@ public class MemberController {
   @Operation(summary = "비밀번호 찾기에서의 비밀번호 바꾸기",
       description = "비밀번호 찾기를 통해서 사용자의 비밀번호를 변경합니다. \n" +
           "요청에서 이메일을 받고, 해당 이메일에 대해 비밀번호를 수정합니다. \n" +
-          "요청된 이메일이 유효하지 않거나 해당 이메일이 데이터베이스에 존재하지 않는 경우 각각 `400 Bad Request` 또는 `404 Not Found` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
+          "요청된 이메일이 유효하지 않거나 해당 이메일이 데이터베이스에 존재하지 않는 경우 각각 `400 Bad Request` 또는 `404 Not Found` 상태 코드와 함께 에러 메시지를 반환합니다. \n"
+          +
           "비밀번호 변경이 성공적으로 처리되면 `200 OK` 상태 코드와 함께 성공 메시지를 반환합니다. \n" +
           "이외에 다른 사유로 비밀번호 변경에 실패할 경우 `400 Bad Request` 상태 코드와 `Password change failed` 에러 메시지를 반환합니다.")
   @PostMapping("/emails/password-email")

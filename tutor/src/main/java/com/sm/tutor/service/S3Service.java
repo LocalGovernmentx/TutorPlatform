@@ -9,6 +9,7 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Service
@@ -49,5 +50,14 @@ public class S3Service {
     // Generate the file URL
     URL url = s3Client.utilities().getUrl(builder -> builder.bucket(bucket).key(keyName));
     return url.toString();
+  }
+
+  public void deleteFile(String filePath) {
+    DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+        .bucket(bucket)
+        .key(filePath)
+        .build();
+
+    s3Client.deleteObject(deleteObjectRequest);
   }
 }

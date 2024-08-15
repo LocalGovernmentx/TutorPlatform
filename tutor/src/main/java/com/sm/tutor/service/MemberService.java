@@ -1,6 +1,7 @@
 package com.sm.tutor.service;
 
 import com.sm.tutor.domain.Member;
+import com.sm.tutor.domain.dto.MemberRequestDto;
 import com.sm.tutor.repository.MemberRepository;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -53,9 +54,16 @@ public class MemberService {
     return member.orElse(null);
   }
 
-  public Member saveMember(Member member) {
-    String encodedPassword = passwordEncoder.encode(member.getPassword()); // 비밀번호 암호화
-    member.setPassword(encodedPassword);
+  public Member saveMember(MemberRequestDto memberRequestDto) {
+    Member member = Member.builder()
+        .name(memberRequestDto.getName())
+        .password(passwordEncoder.encode(memberRequestDto.getPassword())) // 비밀번호 암호화
+        .email(memberRequestDto.getEmail())
+        .nickname(memberRequestDto.getNickname())
+        .phoneNumber(memberRequestDto.getPhoneNumber())
+        .gender(memberRequestDto.getGender())
+        .birth(memberRequestDto.getBirth())
+        .build();
     return memberRepository.save(member);
   }
 
