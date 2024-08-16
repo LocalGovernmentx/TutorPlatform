@@ -370,8 +370,7 @@ public class MemberController {
   })
   @Operation(summary = "이메일 인증 코드 확인 - 회원가입할 때 사용",
       description = "이메일 인증 코드를 확인하여 회원가입을 완료합니다. \n" +
-          "요청된 이메일이 유효하지 않거나 해당 이메일이 이미 데이터베이스에 존재하는 경우 각각 `400 Bad Request` 또는 `409 Conflict` 상태 코드와 함께 에러 메시지를 반환합니다. \n"
-          +
+          "요청된 이메일이 유효하지 않거나 해당 이메일이 이미 데이터베이스에 존재하는 경우 각각 `400 Bad Request` 또는 `409 Conflict` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
           "인증 코드가 유효하면 회원가입이 완료되었음을 알리는 메시지를 반환하며, `200 OK` 상태 코드와 함께 반환됩니다. \n" +
           "이외에 다른 사유로 이메일 인증 확인에 실패할 경우 `400 Bad Request` 상태 코드와 `Invalid verification code` 에러 메시지를 반환합니다.")
   @GetMapping("/emails/verifications-signup")
@@ -399,13 +398,17 @@ public class MemberController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "OK: Password changed successfully"),
       @ApiResponse(responseCode = "401", description = "UNAUTHORIZED: Invalid token"),
-      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Password change failed")
+      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Password change failed"),
+      @ApiResponse(responseCode = "411", description = "LENGTH_REQUIRED: Password is too short"),
+      @ApiResponse(responseCode = "403", description = "FORBIDDEN: Email is not verified")
   })
   @Operation(summary = "비밀번호 수정에서의 비밀번호 바꾸기",
       description = "현재 로그인된 사용자의 비밀번호를 변경합니다. \n" +
           "요청에 포함된 토큰에서 이메일을 추출하고, 해당 이메일에 대해 비밀번호를 수정합니다. \n" +
           "토큰이 유효하지 않은 경우 `401 Unauthorized` 상태 코드와 함께 에러 메시지를 반환합니다. \n" +
           "비밀번호 변경이 성공적으로 처리되면 `200 OK` 상태 코드와 함께 성공 메시지를 반환합니다. \n" +
+          "비밀번호 길이가 8자 미만인 경우, `411 Length Required` 상태 코드와 'Password is too short' 메시지를 반환합니다.\n" +
+          "이메일이 인증되지 않은 경우, `403 Forbidden` 상태 코드와 'Email is not verified' 메시지를 반환합니다.\n" +
           "이외에 다른 사유로 비밀번호 변경에 실패할 경우 `400 Bad Request` 상태 코드와 `Password change failed` 에러 메시지를 반환합니다.")
   @PostMapping("/emails/password-token")
   public ResponseEntity<?> modifyPasswordByToken(HttpServletRequest request,
@@ -415,6 +418,24 @@ public class MemberController {
       return new ResponseEntity<>(Collections.singletonMap("message", "Invalid token"),
           HttpStatus.UNAUTHORIZED);
     }
+
+    // 비밀번호 길이 검증
+    if (password.length() < 8) {
+      return new ResponseEntity<>(
+          Collections.singletonMap("message", "Password is too short"),
+          HttpStatus.LENGTH_REQUIRED // 411 Length Required: 요청에 필요한 길이가 충족되지 않는 경우
+      );
+    }
+
+    // 이메일 인증 여부 검증
+    String verificationStatus = memberService.getEmailVerificationStatus(email);
+    if ("unverified".equals(verificationStatus)) {
+      return new ResponseEntity<>(
+          Collections.singletonMap("message", "Email is not verified"),
+          HttpStatus.FORBIDDEN // 403 Forbidden: 요청이 서버에서 거부된 경우
+      );
+    }
+
     boolean status = memberService.modifyPassword(email, password);
     if (status) {
       return new ResponseEntity<>(
@@ -429,7 +450,9 @@ public class MemberController {
       @ApiResponse(responseCode = "200", description = "OK: Password changed successfully"),
       @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Invalid email format"),
       @ApiResponse(responseCode = "404", description = "NOT_FOUND: Email not found"),
-      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Password change failed")
+      @ApiResponse(responseCode = "400", description = "BAD_REQUEST: Password change failed"),
+      @ApiResponse(responseCode = "411", description = "LENGTH_REQUIRED: Password is too short"),
+      @ApiResponse(responseCode = "403", description = "FORBIDDEN: Email is not verified")
   })
   @Operation(summary = "비밀번호 찾기에서의 비밀번호 바꾸기",
       description = "비밀번호 찾기를 통해서 사용자의 비밀번호를 변경합니다. \n" +
@@ -437,6 +460,8 @@ public class MemberController {
           "요청된 이메일이 유효하지 않거나 해당 이메일이 데이터베이스에 존재하지 않는 경우 각각 `400 Bad Request` 또는 `404 Not Found` 상태 코드와 함께 에러 메시지를 반환합니다. \n"
           +
           "비밀번호 변경이 성공적으로 처리되면 `200 OK` 상태 코드와 함께 성공 메시지를 반환합니다. \n" +
+          "비밀번호 길이가 8자 미만인 경우, `411 Length Required` 상태 코드와 'Password is too short' 메시지를 반환합니다.\n" +
+          "이메일이 인증되지 않은 경우, `403 Forbidden` 상태 코드와 'Email is not verified' 메시지를 반환합니다.\n" +
           "이외에 다른 사유로 비밀번호 변경에 실패할 경우 `400 Bad Request` 상태 코드와 `Password change failed` 에러 메시지를 반환합니다.")
   @PostMapping("/emails/password-email")
   public ResponseEntity<?> modifyPasswordByEmail(@RequestParam("email") String email,
@@ -449,6 +474,24 @@ public class MemberController {
       return new ResponseEntity<>(Collections.singletonMap("message", "Email not found"),
           HttpStatus.NOT_FOUND);
     }
+
+    // 비밀번호 길이 검증
+    if (password.length() < 8) {
+      return new ResponseEntity<>(
+          Collections.singletonMap("message", "Password is too short"),
+          HttpStatus.LENGTH_REQUIRED // 411 Length Required: 요청에 필요한 길이가 충족되지 않는 경우
+      );
+    }
+
+    // 이메일 인증 여부 검증
+    String verificationStatus = memberService.getEmailVerificationStatus(email);
+    if ("unverified".equals(verificationStatus)) {
+      return new ResponseEntity<>(
+          Collections.singletonMap("message", "Email is not verified"),
+          HttpStatus.FORBIDDEN // 403 Forbidden: 요청이 서버에서 거부된 경우
+      );
+    }
+
     boolean status = memberService.modifyPassword(email, password);
     if (status) {
       return new ResponseEntity<>(
