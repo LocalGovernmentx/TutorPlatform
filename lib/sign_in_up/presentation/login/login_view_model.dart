@@ -95,4 +95,9 @@ class LoginViewModel extends ChangeNotifier {
         return LoginUiEvent.showSnackBar('알 수 없는 오류가 발생했습니다');
     }
   }
+
+  void clear() {
+    _emailError = null;
+    _passwordError = null;
+  }
 }

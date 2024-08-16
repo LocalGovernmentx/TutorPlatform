@@ -6,8 +6,8 @@ import 'package:tutor_platform/sign_in_up/presentation/sign_up/email_password/si
 import 'package:tutor_platform/sign_in_up/presentation/sign_up/email_password/sign_up_email_password_ui_event.dart';
 import 'package:tutor_platform/sign_in_up/presentation/sign_up/user_info/sign_up_user_info_view.dart';
 import 'package:tutor_platform/sign_in_up/presentation/sign_up/user_info/sign_up_user_info_view_model.dart';
-import 'package:tutor_platform/ui/tutee_theme.dart';
-import 'package:tutor_platform/ui/tutor_theme.dart';
+import 'package:tutor_platform/core/design/tutee_theme.dart';
+import 'package:tutor_platform/core/design/tutor_theme.dart';
 
 class SignUpEmailPasswordView extends StatefulWidget {
   final bool isTutor;
@@ -60,7 +60,7 @@ class _SignUpEmailPasswordViewState extends State<SignUpEmailPasswordView> {
                 builder: (context) {
                   return SignUpUserInfoView(
                     isTutor: widget.isTutor,
-                    email: _emailController.text,
+                    email: _emailController.text.trim(),
                     password: _passwordController.text,
                   );
                 },
@@ -148,7 +148,7 @@ class _SignUpEmailPasswordViewState extends State<SignUpEmailPasswordView> {
                             onPressed: () {
                               if (!viewModel.isEmailValidating) {
                                 viewModel.requestEmailVerification(
-                                    _emailController.text);
+                                    _emailController.text.trim());
                                 return;
                               } else if (time <= 0) {
                                 const snackBar = SnackBar(
@@ -159,7 +159,7 @@ class _SignUpEmailPasswordViewState extends State<SignUpEmailPasswordView> {
                                 return;
                               } else if (viewModel.isEmailValidating) {
                                 viewModel.sendVerificationCode(
-                                  _emailController.text,
+                                  _emailController.text.trim(),
                                   _verificationCode.text,
                                 );
                               }
@@ -177,7 +177,7 @@ class _SignUpEmailPasswordViewState extends State<SignUpEmailPasswordView> {
                     controller: _verificationCode,
                     decoration: InputDecoration(
                       hintText: '인증번호를 입력해주세요',
-                      errorText: viewModel.verificationcodeError,
+                      errorText: viewModel.verificationCodeError,
                       suffixIcon: Padding(
                         padding: const EdgeInsets.only(left: 8, right: 15),
                         child: SizedBox(
@@ -192,11 +192,14 @@ class _SignUpEmailPasswordViewState extends State<SignUpEmailPasswordView> {
                       ),
                     ),
                   ),
-                  TextButton(
-                    onPressed: () {
-                      viewModel.requestEmailVerification(_emailController.text);
-                    },
-                    child: const Text('인증번호 재전송'),
+                  Padding(
+                    padding: const EdgeInsets.all(2.0),
+                    child: TextButton(
+                      onPressed: () {
+                        viewModel.requestEmailVerification(_emailController.text.trim());
+                      },
+                      child: const Text('인증번호 재전송'),
+                    ),
                   ),
                 ],
                 const SizedBox(height: 30),
@@ -226,7 +229,7 @@ class _SignUpEmailPasswordViewState extends State<SignUpEmailPasswordView> {
                   child: ElevatedButton(
                     onPressed: () {
                       viewModel.nextScreen(
-                        _emailController.text,
+                        _emailController.text.trim(),
                         _passwordController.text,
                         _passwordCheckController.text,
                       );

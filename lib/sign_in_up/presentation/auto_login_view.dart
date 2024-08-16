@@ -9,7 +9,7 @@ import 'package:tutor_platform/sign_in_up/presentation/auto_login_view_model.dar
 import 'package:tutor_platform/sign_in_up/presentation/login/login_view.dart';
 import 'package:tutor_platform/sign_in_up/presentation/sign_up/email_password/sign_up_email_password_view.dart';
 import 'package:tutor_platform/sign_in_up/presentation/sign_up/user_info/sign_up_user_info_view.dart';
-import 'package:tutor_platform/ui/colors.dart';
+import 'package:tutor_platform/core/design/colors.dart';
 
 class AutoLoginView extends StatefulWidget {
   final bool autoLogin;
