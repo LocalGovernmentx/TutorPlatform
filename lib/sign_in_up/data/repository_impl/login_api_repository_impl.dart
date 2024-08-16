@@ -31,6 +31,11 @@ class LoginApiRepositoryImpl implements LoginApiRepository {
   }
 
   @override
+  Future<Result<String, NetworkErrors>> checkEmailDuplicate(String email) async {
+    return await loginApi.checkEmailDuplicate(email);
+  }
+
+  @override
   Future<Result<String, NetworkErrors>> sendVerificationSignUp(String email, String code) async {
     return await loginApi.sendVerificationSignUp(email, code);
   }
@@ -40,4 +45,13 @@ class LoginApiRepositoryImpl implements LoginApiRepository {
     return await loginApi.register(userInfo);
   }
 
+  @override
+  Future<Result<String, NetworkErrors>> sendVerificationFindPassword(String email, String code) async {
+    return await loginApi.sendVerificationFindPassword(email, code);
+  }
+
+  @override
+  Future<Result<String, NetworkErrors>> changePassword(String email, String password) async {
+    return await loginApi.changePassword(email, password);
+  }
 }

@@ -8,9 +8,9 @@ import 'package:tutor_platform/sign_in_up/presentation/sign_up/final_screen/sign
 import 'package:tutor_platform/sign_in_up/presentation/sign_up/user_info/phone_number_formatter.dart';
 import 'package:tutor_platform/sign_in_up/presentation/sign_up/user_info/sign_up_user_info_ui_event.dart';
 import 'package:tutor_platform/sign_in_up/presentation/sign_up/user_info/sign_up_user_info_view_model.dart';
-import 'package:tutor_platform/ui/font.dart';
-import 'package:tutor_platform/ui/tutee_theme.dart';
-import 'package:tutor_platform/ui/tutor_theme.dart';
+import 'package:tutor_platform/core/design/font.dart';
+import 'package:tutor_platform/core/design/tutee_theme.dart';
+import 'package:tutor_platform/core/design/tutor_theme.dart';
 
 class SignUpUserInfoView extends StatefulWidget {
   final bool isTutor;
@@ -166,15 +166,15 @@ class _SignUpUserInfoViewState extends State<SignUpUserInfoView> {
                   segments: const <ButtonSegment>[
                     ButtonSegment(
                       value: MemberProperty.man,
-                      label: Text('남자'),
+                      label: SizedBox(height: 23,child: Center(child: Text('남자'))),
                     ),
                     ButtonSegment(
                       value: MemberProperty.woman,
-                      label: Text('여자'),
+                      label: SizedBox(height: 23,child: Center(child: Text('여자'))),
                     ),
                   ],
                   style: SegmentedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 18.25),
+                    padding: const EdgeInsets.symmetric(vertical: 18),
                   ),
                   selected: {viewModel.selectedGender},
                   onSelectionChanged: (newSelection) {

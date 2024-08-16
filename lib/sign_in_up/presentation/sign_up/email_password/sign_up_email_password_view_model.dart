@@ -3,16 +3,16 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:tutor_platform/core/network_errors.dart';
 import 'package:tutor_platform/core/result.dart';
-import 'package:tutor_platform/sign_in_up/domain/use_case/request_email_verification.dart';
+import 'package:tutor_platform/sign_in_up/domain/use_case/request_email_verification_no_duplicate.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/send_verification_sign_up.dart';
 import 'package:tutor_platform/sign_in_up/presentation/sign_up/email_password/sign_up_email_password_ui_event.dart';
 
 class SignUpEmailPasswordViewModel extends ChangeNotifier {
-  final RequestEmailVerification _requestEmailVerification;
+  final RequestEmailVerificationNoDuplicate _requestEmailVerificationNoDuplicate;
   final SendVerificationSignUp _sendVerificationSignUp;
 
   SignUpEmailPasswordViewModel(
-    this._requestEmailVerification,
+    this._requestEmailVerificationNoDuplicate,
     this._sendVerificationSignUp,
   );
 
@@ -23,7 +23,7 @@ class SignUpEmailPasswordViewModel extends ChangeNotifier {
 
   String? get emailError => _emailError;
 
-  String? get verificationcodeError => _verificationCodeError;
+  String? get verificationCodeError => _verificationCodeError;
 
   String? get passwordError => _passwordError;
 
@@ -63,7 +63,7 @@ class SignUpEmailPasswordViewModel extends ChangeNotifier {
     }
 
     final Result<dynamic, NetworkErrors> result =
-        await _requestEmailVerification(email);
+        await _requestEmailVerificationNoDuplicate(email);
     switch (result) {
       case Success<dynamic, NetworkErrors>():
         validatedEmail = email;
@@ -190,6 +190,10 @@ class SignUpEmailPasswordViewModel extends ChangeNotifier {
       case CredentialsError():
         if (error.message == 'Invalid email format') {
           _emailError = '이메일 형식이 틀렸습니다';
+          return SignUpEmailPasswordUiEvent.error();
+        }
+        if (error.message == 'Email is already in use') {
+          _emailError = '이메일이 이미 사용중입니다';
           return SignUpEmailPasswordUiEvent.error();
         }
         return SignUpEmailPasswordUiEvent.showSnackBar(error.message);

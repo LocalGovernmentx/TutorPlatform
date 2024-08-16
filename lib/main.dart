@@ -7,11 +7,11 @@ import 'package:tutor_platform/sign_in_up/di/login_provider_setup.dart';
 import 'package:tutor_platform/sign_in_up/presentation/auto_login_view.dart';
 import 'package:tutor_platform/tutee/presentation/tutee_screen.dart';
 import 'package:tutor_platform/tutor/presentation/tutor_screen.dart';
-import 'package:tutor_platform/ui/tutee_theme.dart';
-import 'package:tutor_platform/ui/tutor_theme.dart';
+import 'package:tutor_platform/core/design/tutee_theme.dart';
+import 'package:tutor_platform/core/design/tutor_theme.dart';
 
 void main() async {
-  final providers = [...globalProvidersMain, ...globalProvidersLogin];
+  final providers = globalProvidersMain;
   runApp(MultiProvider(
     providers: providers,
     child: const MyApp(),
@@ -27,10 +27,13 @@ class MyApp extends StatelessWidget {
 
     switch (screenState) {
       case SignInUpScreenState():
-        return MaterialApp(
-          title: 'Tutor Platform',
-          theme: tutorTheme,
-          home: AutoLoginView(autoLogin: screenState.autoLogin),
+        return MultiProvider(
+          providers: globalProvidersLogin,
+          child: MaterialApp(
+            title: 'Tutor Platform',
+            theme: tutorTheme,
+            home: AutoLoginView(autoLogin: screenState.autoLogin),
+          ),
         );
       case TuteeScreenState():
         return MaterialApp(

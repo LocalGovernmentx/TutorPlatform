@@ -1,16 +1,82 @@
-import 'package:flutter/material.dart';
-import 'package:tutor_platform/ui/common_style.dart';
+import 'dart:async';
 
-class FindPasswordSendCodeView extends StatelessWidget {
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tutor_platform/sign_in_up/presentation/find_password/change_password/find_password_change_password_view.dart';
+import 'package:tutor_platform/sign_in_up/presentation/find_password/send_code/find_password_send_code_ui_event.dart';
+import 'package:tutor_platform/sign_in_up/presentation/find_password/send_code/find_password_send_code_view_model.dart';
+import 'package:tutor_platform/core/design/common_style.dart';
+
+class FindPasswordSendCodeView extends StatefulWidget {
   final String email;
+
   const FindPasswordSendCodeView({super.key, required this.email});
 
   @override
+  State<FindPasswordSendCodeView> createState() =>
+      _FindPasswordSendCodeViewState();
+}
+
+class _FindPasswordSendCodeViewState extends State<FindPasswordSendCodeView> {
+  final TextEditingController _codeController = TextEditingController();
+
+  int time = 180;
+  Timer? _timer;
+
+  StreamSubscription? _streamSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        time--;
+        if (time == 0) {
+          timer.cancel();
+        }
+      });
+    });
+
+    Future.microtask(() {
+      final viewModel = context.read<FindPasswordSendCodeViewModel>();
+      _streamSubscription = viewModel.eventStream.listen((uiEvent) {
+        FindPasswordSendCodeUiEvent event = uiEvent;
+        switch (event) {
+          case FindPasswordSendCodeSuccess():
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    FindPasswordChangePasswordView(email: widget.email),
+              ),
+            );
+          case FindPasswordSendCodeError():
+            break;
+          case FindPasswordSendCodeShowSnackBar():
+            final snackBar = SnackBar(content: Text(event.message));
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        }
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _streamSubscription?.cancel();
+    _timer?.cancel();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final viewModel = context.watch<FindPasswordSendCodeViewModel>();
+
     return PopScope(
       onPopInvoked: (bool didPop) {
         if (didPop) {
-          // viewModel clean
+          viewModel.clear();
         }
       },
       child: Scaffold(
@@ -38,14 +104,31 @@ class FindPasswordSendCodeView extends StatelessWidget {
             children: [
               Text('비밀번호 찾기', style: Theme.of(context).textTheme.headlineLarge),
               const SizedBox(height: 30),
-              Text('$email로 인증코드를 보냈습니다.'),
-              const Text('이메일을 확인해주십시오'),
-              const Text('이메일'),
+              Text('인증코드를 보냈습니다.\n이메일을 확인해주십시오.',
+                  style: Theme.of(context).textTheme.bodyLarge),
+              const SizedBox(height: 15),
+              const Text('인증코드'),
               SizedBox(
                 height: 88,
                 child: TextField(
+                  controller: _codeController,
                   decoration: InputDecoration(
-                    hintText: '가입하신 이메일을 입력해주세요',
+                    hintText: '인증코드를 입력해주세요',
+                    errorText: viewModel.codeError,
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 15),
+                      child: SizedBox(
+                        width: 40,
+                        height: 20,
+                        child: Center(
+                          child: Text(
+                            '${time ~/ 60}:${(time % 60).toString().padLeft(2, '0')}',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.error),
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -55,12 +138,12 @@ class FindPasswordSendCodeView extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //     builder: (context) => const FindPasswordSendCodeView(),
-                    //   ),
-                    // );
+                    if (time == 0) {
+                      viewModel.timeOut();
+                    }
+                    else {
+                      viewModel.sendCode(widget.email, _codeController.text);
+                    }
                   },
                   child: const Text('비밀번호 바꾸기'),
                 ),
@@ -71,12 +154,10 @@ class FindPasswordSendCodeView extends StatelessWidget {
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: () {
-                    Navigator.of(context)
-                      ..pop()
-                      ..pop();
+                    Navigator.of(context).pop();
                   },
                   style: uncheckedButtonStyle,
-                  child: const Text('로그인으로 돌아가기'),
+                  child: const Text('이전으로 돌아가기'),
                 ),
               ),
             ],

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tutor_platform/ui/colors.dart';
+import 'package:tutor_platform/core/design/colors.dart';
 
 TextTheme textTheme = TextTheme(
   headlineLarge: titleTextStyle,

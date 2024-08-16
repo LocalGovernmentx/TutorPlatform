@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tutor_platform/ui/colors.dart';
-import 'package:tutor_platform/ui/font.dart';
+import 'package:tutor_platform/core/design/colors.dart';
+import 'package:tutor_platform/core/design/font.dart';
 
 InputDecorationTheme inputDecorationTheme = InputDecorationTheme(
   border: const OutlineInputBorder(
