@@ -1,6 +1,7 @@
 package com.sm.tutor.domain.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -45,5 +46,9 @@ public class MemberRequestDto {
   @Schema(description = "회원 생년월일", example = "1990-01-01")
   private LocalDate birth;
 
+  @Size(max = 45)
+  @Column(name = "type", length = 45)
+  @Schema(description = "회원 유형", example = "1", maxLength = 45)
+  private Integer type;
   // Getters and Setters
 }
