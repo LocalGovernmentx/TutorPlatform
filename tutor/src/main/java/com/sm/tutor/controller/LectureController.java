@@ -1,6 +1,7 @@
 package com.sm.tutor.controller;
 
 import com.sm.tutor.domain.dto.LectureDto;
+import com.sm.tutor.domain.dto.SimpleLectureResponseDto;
 import com.sm.tutor.service.LectureService;
 import com.sm.tutor.service.LocationService;
 import com.sm.tutor.service.MemberService;
@@ -95,6 +96,16 @@ public class LectureController {
   @GetMapping("/paging")
   public ResponseEntity<Page<LectureDto>> paging(@PageableDefault(page = 0, size = 10, sort = {"id"}) Pageable pageable) {
     Page<LectureDto> lectureDtoPages = lectureService.paging(pageable);
+
+    return new ResponseEntity<>(lectureDtoPages, HttpStatus.OK);
+  }
+
+  @Operation(summary = "필터링 + 강의 리스트",
+      description = """ 
+          """)
+  @GetMapping("/list")
+  public ResponseEntity<Page<SimpleLectureResponseDto>> paging2(@PageableDefault(page = 0, size = 10, sort = {"id"}) Pageable pageable) {
+    Page<SimpleLectureResponseDto> lectureDtoPages = lectureService.getLectureByFilter(pageable);
 
     return new ResponseEntity<>(lectureDtoPages, HttpStatus.OK);
   }
