@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -104,8 +105,13 @@ public class LectureController {
       description = """ 
           """)
   @GetMapping("/list")
-  public ResponseEntity<Page<SimpleLectureResponseDto>> paging2(@PageableDefault(page = 0, size = 10, sort = {"id"}) Pageable pageable) {
-    Page<SimpleLectureResponseDto> lectureDtoPages = lectureService.getLectureByFilter(pageable);
+  public ResponseEntity<Page<SimpleLectureResponseDto>> getLectureByFilter(@PageableDefault(page = 0, size = 10, sort = {"id"}) Pageable pageable,
+      @RequestParam(required = false) List<Integer> categoryId,
+      @RequestParam(required = false) Integer tuitionMaximum,
+      @RequestParam(required = false) List<Integer> locationId, @RequestParam(required = false) Integer online,
+      @RequestParam(required = false) String keyword) {
+    Page<SimpleLectureResponseDto> lectureDtoPages = lectureService.getLectureByFilter(pageable, categoryId, tuitionMaximum, locationId, online,
+        keyword);
 
     return new ResponseEntity<>(lectureDtoPages, HttpStatus.OK);
   }

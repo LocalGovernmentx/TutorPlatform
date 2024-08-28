@@ -34,7 +34,7 @@ public class SimpleLectureConverter {
     for (LectureReview review : lecture.getReviews()) {
       score += review.getScore();
     }
-    if (lecture.getReviews().size()) {
+    if (lecture.getReviews().size() != 0) {
       score /= lecture.getReviews().size();
     }
     return SimpleLectureResponseDto.builder()

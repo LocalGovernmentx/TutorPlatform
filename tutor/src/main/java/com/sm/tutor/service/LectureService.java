@@ -126,8 +126,9 @@ public class LectureService {
     return lecturePages.map(lectureConverter::toDto);
   }
 
-  public Page<SimpleLectureResponseDto> getLectureByFilter(Pageable pageable/*filtering condition*/) {
-    Page<Lecture> lecturePages = lectureRepository.findAll(pageable);
+  public Page<SimpleLectureResponseDto> getLectureByFilter(Pageable pageable, List<Integer> categoryId, Integer tuitionMaximum,
+      List<Integer> locationId, Integer online, String keyword) {
+    List<Lecture> lecturePages = lectureRepository.findAllByFilter(categoryId, tuitionMaximum, locationId, online, keyword);
 
     // SimpleLectureResponseDto로 2차 가공
     List<SimpleLectureResponseDto> simpleLectureResponseList = lecturePages.stream().map(simpleLectureConverter::toDto).collect(Collectors.toList());
