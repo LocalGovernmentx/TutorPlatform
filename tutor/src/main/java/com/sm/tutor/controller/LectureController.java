@@ -93,9 +93,45 @@ public class LectureController {
                    \s
           sort: 정렬할 속성(오름차순) (기본: id)""")
   @GetMapping("/paging")
-  public ResponseEntity<Page<LectureDto>> paging(@PageableDefault(page = 0, size = 10, sort = {"id"}) Pageable pageable) {
+  public ResponseEntity<Page<LectureDto>> paging(
+      @PageableDefault(page = 0, size = 10, sort = {"id"}) Pageable pageable) {
     Page<LectureDto> lectureDtoPages = lectureService.paging(pageable);
 
     return new ResponseEntity<>(lectureDtoPages, HttpStatus.OK);
   }
+
+  @Operation(
+      summary = "현재 사용자가 듣고 있는 강의 목록 조회",
+      description = """
+              현재 로그인된 사용자의 이메일을 기반으로 사용자가 듣고 있는 강의 목록을 조회합니다. \n
+              요청 헤더에서 사용자 이메일을 추출하고, 해당 이메일에 대해 진행 중인 강의 목록을 반환합니다. \n
+              이 API를 통해 사용자는 현재 듣고 있는 강의들을 확인할 수 있습니다. \n
+              요청이 성공적으로 처리되면, `200 OK` 상태 코드와 함께 강의 목록을 반환합니다. \n
+              요청이 실패하거나 강의 목록이 없는 경우에도 `200 OK` 상태 코드와 함께 빈 목록이 반환될 수 있습니다.
+          """
+  )
+  @GetMapping("/ongoing")
+  public ResponseEntity<List<LectureDto>> getOngoingLectures(HttpServletRequest request) {
+    String email = (String) request.getAttribute("userEmail");
+    List<LectureDto> ongoingLectures = lectureService.getOngoingLectures(email);
+    return new ResponseEntity<>(ongoingLectures, HttpStatus.OK);
+  }
+
+
+  @Operation(summary = "강의 시작 (듣기)",
+      description = "강의를 시작하고, 현재 사용자가 해당 강의를 듣기 시작합니다. 이미 듣고 있는 강의일 경우 400 에러가 발생합니다.")
+  @PostMapping("/start/{id}")
+  public ResponseEntity<LectureDto> startLecture(@PathVariable Long id,
+      HttpServletRequest request) {
+    String email = (String) request.getAttribute("userEmail");
+
+    try {
+      LectureDto lectureDto = lectureService.startLecture(id, email);
+      return new ResponseEntity<>(lectureDto, HttpStatus.OK);
+    } catch (IllegalArgumentException e) {
+      // 에러 메시지와 함께 400 Bad Request 반환
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+  }
+
 }

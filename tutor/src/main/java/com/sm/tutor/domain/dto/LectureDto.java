@@ -41,6 +41,27 @@ public class LectureDto {
   private List<LectureReviewDto> reviews;
   private List<LectureTimeDto> times;
 
+  public static LectureDto fromEntity(Lecture lecture) {
+    if (lecture == null) {
+      return null;
+    }
+
+    return LectureDto.builder()
+        .id(lecture.getId())
+        .tutorId(lecture.getTutor().getId())
+        .categoryId(lecture.getCategoryId())
+        .title(lecture.getTitle())
+        .content(lecture.getContent())
+        .activation(lecture.getActivation())
+        .online(lecture.getOnline())
+        .tuitionMaximum(lecture.getTuitionMaximum())
+        .tuitionMinimum(lecture.getTuitionMinimum())
+        .tuteeNumber(lecture.getTuteeNumber())
+        .gender(lecture.getGender())
+        .level(lecture.getLevel())
+        .build();
+  }
+
   public Lecture toEntity(Tutor tutor, List<LectureAge> ages, List<LectureImage> images,
       List<LectureLocation> locations, List<LectureReview> reviews, List<LectureTime> times) {
     return new Lecture(tutor, this.categoryId, this.title, this.content, this.activation,
