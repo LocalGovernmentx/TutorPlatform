@@ -1,6 +1,7 @@
 package com.sm.tutor.service;
 
 import com.sm.tutor.converter.LectureConverter;
+import com.sm.tutor.converter.SimpleLectureConverter;
 import com.sm.tutor.domain.Lecture;
 import com.sm.tutor.domain.LectureAge;
 import com.sm.tutor.domain.LectureImage;
@@ -8,6 +9,7 @@ import com.sm.tutor.domain.LectureLocation;
 import com.sm.tutor.domain.LectureReview;
 import com.sm.tutor.domain.LectureTime;
 import com.sm.tutor.domain.dto.LectureDto;
+import com.sm.tutor.domain.dto.SimpleLectureResponseDto;
 import com.sm.tutor.repository.LectureAgeRepository;
 import com.sm.tutor.repository.LectureImageRepository;
 import com.sm.tutor.repository.LectureLocationRepository;
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +43,7 @@ public class LectureService {
   private final LectureTimeRepository lectureTimeRepository;
 
   private final LectureConverter lectureConverter;
+  private final SimpleLectureConverter simpleLectureConverter;
 
   private final MemberService memberService;
   private final TutorService tutorService;
@@ -119,5 +124,21 @@ public class LectureService {
     Page<Lecture> lecturePages = lectureRepository.findAll(pageable);
 
     return lecturePages.map(lectureConverter::toDto);
+  }
+
+  public Page<SimpleLectureResponseDto> getLectureByFilter(Pageable pageable, List<Integer> categoryId, Integer tuitionMaximum,
+      List<Integer> locationId, Integer online, String keyword) {
+    List<Lecture> lecturePages = lectureRepository.findAllByFilter(categoryId, tuitionMaximum, locationId, online, keyword);
+
+    // SimpleLectureResponseDto로 2차 가공
+    List<SimpleLectureResponseDto> simpleLectureResponseList = lecturePages.stream().map(simpleLectureConverter::toDto).collect(Collectors.toList());
+
+    PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+    int start = (int) pageRequest.getOffset();
+    int end = Math.min((start + pageRequest.getPageSize()), simpleLectureResponseList.size());
+
+    Page<SimpleLectureResponseDto> simpleLectureResponsePages = new PageImpl<>(simpleLectureResponseList.subList(start, end), pageRequest,
+        simpleLectureResponseList.size());
+    return simpleLectureResponsePages;
   }
 }
