@@ -189,20 +189,24 @@ public class LectureService {
   }
 
 
-
-  public Page<SimpleLectureResponseDto> getLectureByFilter(Pageable pageable, List<Integer> categoryId, Integer tuitionMaximum,
+  public Page<SimpleLectureResponseDto> getLectureByFilter(Pageable pageable,
+      List<Integer> categoryId, Integer tuitionMaximum,
       List<Integer> locationId, Integer online, String keyword) {
-    List<Lecture> lecturePages = lectureRepository.findAllByFilter(categoryId, tuitionMaximum, locationId, online, keyword);
+    List<Lecture> lecturePages = lectureRepository.findAllByFilter(categoryId, tuitionMaximum,
+        locationId, online, keyword);
 
     // SimpleLectureResponseDto로 2차 가공
-    List<SimpleLectureResponseDto> simpleLectureResponseList = lecturePages.stream().map(simpleLectureConverter::toDto).collect(Collectors.toList());
+    List<SimpleLectureResponseDto> simpleLectureResponseList = lecturePages.stream()
+        .map(simpleLectureConverter::toDto).collect(Collectors.toList());
 
     PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
     int start = (int) pageRequest.getOffset();
     int end = Math.min((start + pageRequest.getPageSize()), simpleLectureResponseList.size());
 
-    Page<SimpleLectureResponseDto> simpleLectureResponsePages = new PageImpl<>(simpleLectureResponseList.subList(start, end), pageRequest,
+    Page<SimpleLectureResponseDto> simpleLectureResponsePages = new PageImpl<>(
+        simpleLectureResponseList.subList(start, end), pageRequest,
         simpleLectureResponseList.size());
     return simpleLectureResponsePages;
   }
+
 }

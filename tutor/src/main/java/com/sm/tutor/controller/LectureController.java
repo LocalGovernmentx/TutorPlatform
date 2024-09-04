@@ -123,12 +123,15 @@ public class LectureController {
           성공하면 `200 OK` 상태 코드와 강의 리스트에 대한 정보를 반환합니다.
           """)
   @GetMapping("/list")
-  public ResponseEntity<Page<SimpleLectureResponseDto>> getLectureByFilter(@PageableDefault(page = 0, size = 20, sort = {"id"}) Pageable pageable,
+  public ResponseEntity<Page<SimpleLectureResponseDto>> getLectureByFilter(
+      @PageableDefault(page = 0, size = 20, sort = {"id"}) Pageable pageable,
       @RequestParam(required = false) List<Integer> categoryId,
       @RequestParam(required = false) Integer tuitionMaximum,
-      @RequestParam(required = false) List<Integer> locationId, @RequestParam(required = false) Integer online,
+      @RequestParam(required = false) List<Integer> locationId,
+      @RequestParam(required = false) Integer online,
       @RequestParam(required = false) String keyword) {
-    Page<SimpleLectureResponseDto> lectureDtoPages = lectureService.getLectureByFilter(pageable, categoryId, tuitionMaximum, locationId, online,
+    Page<SimpleLectureResponseDto> lectureDtoPages = lectureService.getLectureByFilter(pageable,
+        categoryId, tuitionMaximum, locationId, online,
         keyword);
 
     return new ResponseEntity<>(lectureDtoPages, HttpStatus.OK);
@@ -167,5 +170,6 @@ public class LectureController {
       return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
   }
+
 
 }
