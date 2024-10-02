@@ -1,5 +1,6 @@
 package com.sm.tutor.service;
 
+import com.sm.tutor.domain.Member;
 import com.sm.tutor.domain.Tutor;
 import com.sm.tutor.repository.TutorRepository;
 import java.util.Optional;
@@ -22,4 +23,12 @@ public class TutorService {
     return locationData.orElse(null);
   }
 
+  public void registerTutor(Member member, String introduction, String job) {
+    Tutor tutor = new Tutor();
+    System.out.println(member);
+    tutor.setMember(member);
+    tutor.setJob(job);
+    tutor.setIntroduction(introduction);
+    tutorRepository.save(tutor);
+  }
 }

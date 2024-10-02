@@ -4,13 +4,13 @@ import com.sm.tutor.converter.LectureConverter;
 import com.sm.tutor.converter.SimpleLectureConverter;
 import com.sm.tutor.domain.Lecture;
 import com.sm.tutor.domain.LectureAge;
-import com.sm.tutor.domain.LectureImage;
 import com.sm.tutor.domain.LectureLocation;
 import com.sm.tutor.domain.LectureReview;
 import com.sm.tutor.domain.LectureTime;
 import com.sm.tutor.domain.Member;
 import com.sm.tutor.domain.OngoingLecture;
 import com.sm.tutor.domain.OngoingLectureId;
+import com.sm.tutor.domain.dto.LectureCreateDto;
 import com.sm.tutor.domain.dto.LectureDto;
 import com.sm.tutor.domain.dto.SimpleLectureResponseDto;
 import com.sm.tutor.repository.LectureAgeRepository;
@@ -21,6 +21,7 @@ import com.sm.tutor.repository.LectureReviewRepository;
 import com.sm.tutor.repository.LectureTimeRepository;
 import com.sm.tutor.repository.MemberRepository;
 import com.sm.tutor.repository.OngoingLectureRepository;
+import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -64,28 +65,26 @@ public class LectureService {
             Collectors.toList());
   }
 
-  public LectureDto createLecture(LectureDto lecturedto) {
-    log.info("LectureDto: {}", lecturedto.toString());
-    Lecture lecture = lecturedto.toEntity(
-        tutorService.getTutorById(Long.valueOf(lecturedto.getTutorId())),
+  public LectureDto createLecture(String email, LectureCreateDto lectureCreateDto) {
+    log.info("LectureDto: {}", lectureCreateDto.toString());
+    Lecture lecture = lectureCreateDto.toEntity(
+        tutorService.getTutorById(Long.valueOf(memberService.getMemberByEmail(email).getId())),
         new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
         new ArrayList<>());
-    List<LectureAge> ageList = lecturedto.getAges().stream().map(m -> m.toEntity(lecture))
+
+    List<LectureAge> ageList = lectureCreateDto.getAges().stream().map(m -> m.toEntity(lecture))
         .collect(Collectors.toList());
-    List<LectureImage> imageList = lecturedto.getImages().stream().map(m -> m.toEntity(lecture))
-        .collect(Collectors.toList());
-    List<LectureLocation> locationList = lecturedto.getLocations().stream()
+    List<LectureLocation> locationList = lectureCreateDto.getLocations().stream()
         .map(m -> m.toEntity(lecture,
             locationService.getLocationById(Long.valueOf(m.getLocationId()))))
         .collect(Collectors.toList());
-    List<LectureReview> reviewList = lecturedto.getReviews().stream()
+    List<LectureReview> reviewList = lectureCreateDto.getReviews().stream()
         .map(m -> m.toEntity(lecture, memberService.getMemberById(Long.valueOf(m.getTuteeId()))))
         .collect(Collectors.toList());
-    List<LectureTime> timeList = lecturedto.getTimes().stream().map(m -> m.toEntity(lecture))
+    List<LectureTime> timeList = lectureCreateDto.getTimes().stream().map(m -> m.toEntity(lecture))
         .collect(Collectors.toList());
 
     lecture.setAges(ageList);
-    lecture.setImages(imageList);
     lecture.setLocations(locationList);
     lecture.setReviews(reviewList);
     lecture.setTimes(timeList);
@@ -94,7 +93,6 @@ public class LectureService {
         lectureRepository.save(lecture));
 
     lectureAgeRepository.saveAll(ageList);
-    lectureImageRepository.saveAll(imageList);
     lectureLocationRepository.saveAll(locationList);
     lectureReviewRepository.saveAll(reviewList);
     lectureTimeRepository.saveAll(timeList);
@@ -102,15 +100,15 @@ public class LectureService {
     return lectureDtoResult;
   }
 
-  /*public Lecture updateLecture(Long id, Lecture updatedLecture) {
+  public Lecture updateLecture(Long id, Optional<Lecture> updatedLecture) {
     Optional<Lecture> findLecture = lectureRepository.findById(id);
-    if (findLecture.isPresent()) {
-
-      updatedLecture.setId(id);
-      return lectureRepository.save(updatedLecture);
+    if (findLecture.isPresent() && updatedLecture.isPresent()) {
+      Lecture lectureToUpdate = updatedLecture.get();
+      lectureToUpdate.setId(Math.toIntExact(id));  // ID는 Long 타입이므로 변환 불필요
+      return lectureRepository.save(lectureToUpdate);
     }
     throw new EntityNotFoundException("Lecture not found with id " + id);
-  }*/
+  }
 
   public boolean deleteLectureById(Long id) {
     if (lectureRepository.existsById(id)) {
@@ -122,9 +120,14 @@ public class LectureService {
     }
   }
 
-  public LectureDto getLectureById(Long id) {
+  public LectureDto getLectureDtoById(Long id) {
     Optional<Lecture> lecture = lectureRepository.findById(id);
     return lecture.map(lectureConverter::toDto).orElse(null);
+  }
+
+  public Optional<Lecture> getLectureById(Long id) {
+    Optional<Lecture> lecture = lectureRepository.findById(id);
+    return lecture;
   }
 
   public Page<LectureDto> paging(Pageable pageable) {
