@@ -4,6 +4,7 @@ import com.sm.tutor.service.ImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class ImageController {
   )
   @PostMapping(value = "/member", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file,
-      HttpServletRequest request) {
+      HttpServletRequest request) throws IOException {
     // 사용자 이메일을 요청 속성에서 가져오기
     String email = (String) request.getAttribute("userEmail");
     if (email == null) {
@@ -44,8 +45,8 @@ public class ImageController {
           HttpStatus.UNAUTHORIZED);
     }
 
-    String resultMessage = imageService.uploadImage(email, file);
-
+    String resultMessage = imageService.uploadImage(email, "profile", file);
+// string -> code
     if (resultMessage.equals("File uploaded successfully")) {
       return new ResponseEntity<>(Collections.singletonMap("message", resultMessage),
           HttpStatus.OK);

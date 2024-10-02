@@ -1,7 +1,11 @@
 package com.sm.tutor.controller;
 
+import com.sm.tutor.domain.Lecture;
+import com.sm.tutor.domain.Member;
+import com.sm.tutor.domain.dto.LectureCreateDto;
 import com.sm.tutor.domain.dto.LectureDto;
 import com.sm.tutor.domain.dto.SimpleLectureResponseDto;
+import com.sm.tutor.service.ImageService;
 import com.sm.tutor.service.LectureService;
 import com.sm.tutor.service.LocationService;
 import com.sm.tutor.service.MemberService;
@@ -11,23 +15,27 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -35,8 +43,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class LectureController {
 
   @Autowired
+  ImageService imageService;
+  @Autowired
   private LectureService lectureService;
-
   @Autowired
   private MemberService memberService;
 
@@ -53,9 +62,49 @@ public class LectureController {
   }
 
   @Operation(summary = "강의 생성")
-  @PostMapping
-  public ResponseEntity<?> createLecture(@RequestBody LectureDto lectureDto) {
-    LectureDto lectureDtoResult = lectureService.createLecture(lectureDto);
+  @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<?> createLecture(
+//      @RequestPart("categoryId") Integer categoryId,
+//      @RequestPart("title") String title,
+//      @RequestPart("content") String content,
+//      @RequestPart("activation") Boolean activation,
+//      @RequestPart("online") Integer online,
+//      @RequestPart("tuitionMaximum") Integer tuitionMaximum,
+//      @RequestPart("tuitionMinimum") Integer tuitionMinimum,
+//      @RequestPart("tuteeNumber") Integer tuteeNumber,
+//      @RequestPart("gender") Integer gender,
+//      @RequestPart("level") Integer level,
+//      @RequestPart("ages") List<LectureAgeDto> ages, // AgeDto는 age 필드가 있는 DTO
+//      @RequestPart("locations") List<LectureLocationDto> locations,
+//      // LocationDto는 lectureId, locationId 필드가 있는 DTO
+//      @RequestPart("times") List<LectureTimeDto> times,
+//      // TimeDto는 모든 필드를 포함하는 DTO
+      @RequestPart("lectureCreateDto") LectureCreateDto lectureCreateDto,
+      @RequestParam List<MultipartFile> files,
+      HttpServletRequest request) throws IOException {
+    System.out.println(123123);
+    String email = (String) request.getAttribute("userEmail");
+    Member member = memberService.getMemberByEmail(email);
+    if (member.getType() != 2) {
+      return new ResponseEntity<>(Collections.singletonMap("message", "is not tutor"),
+          HttpStatus.UNAUTHORIZED);
+    }
+//    LectureCreateDto lectureCreateDto = new LectureCreateDto(categoryId, title, content, activation,
+//        online, tuitionMaximum, tuitionMinimum, tuteeNumber, gender, level, ages, locations,
+//        new ArrayList<>(), times);
+    System.out.println(lectureCreateDto);
+    LectureDto lectureDtoResult = lectureService.createLecture(email, lectureCreateDto);
+    Optional<Lecture> lecture = lectureService.getLectureById(
+        Long.valueOf(lectureDtoResult.getId()));
+    // 파일들을 S3에 업로드
+    for (MultipartFile file : files) {
+      String result = imageService.uploadImage(String.valueOf(lecture.get().getId()), "lecutre",
+          file);
+      if (!result.equals("File uploaded successfully")) {
+        return new ResponseEntity<>(Collections.singletonMap("message", result),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    }
     return new ResponseEntity<>(Collections.singletonMap("message", "Lecture created successfully"),
         HttpStatus.CREATED);
   }
@@ -82,7 +131,7 @@ public class LectureController {
   @Operation(summary = "선택한 강의 조회")
   @GetMapping("/{id}")
   public ResponseEntity<?> getLectureById(@PathVariable Long id) {
-    LectureDto lecture = lectureService.getLectureById(id);
+    LectureDto lecture = lectureService.getLectureDtoById(id);
     if (lecture != null) {
       return new ResponseEntity<>(lecture, HttpStatus.OK);
     } else {
