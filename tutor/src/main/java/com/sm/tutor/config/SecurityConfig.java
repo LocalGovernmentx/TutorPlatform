@@ -64,7 +64,7 @@ public class SecurityConfig {
       @Override
       public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins("https://www.modututor.com") // Swagger UI가 호스팅되는 도메인
+            .allowedOrigins("https://modututor.com") // Swagger UI가 호스팅되는 도메인
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true);
