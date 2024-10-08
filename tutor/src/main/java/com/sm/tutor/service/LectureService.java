@@ -12,6 +12,7 @@ import com.sm.tutor.domain.OngoingLecture;
 import com.sm.tutor.domain.OngoingLectureId;
 import com.sm.tutor.domain.dto.LectureCreateDto;
 import com.sm.tutor.domain.dto.LectureDto;
+import com.sm.tutor.domain.dto.LectureImageDto;
 import com.sm.tutor.domain.dto.SimpleLectureResponseDto;
 import com.sm.tutor.repository.LectureAgeRepository;
 import com.sm.tutor.repository.LectureImageRepository;
@@ -86,7 +87,7 @@ public class LectureService {
 
     lecture.setAges(ageList);
     lecture.setLocations(locationList);
-    lecture.setReviews(reviewList);
+//    lecture.setReviews(reviewList);
     lecture.setTimes(timeList);
 
     LectureDto lectureDtoResult = lectureConverter.toDto(
@@ -94,7 +95,7 @@ public class LectureService {
 
     lectureAgeRepository.saveAll(ageList);
     lectureLocationRepository.saveAll(locationList);
-    lectureReviewRepository.saveAll(reviewList);
+//    lectureReviewRepository.saveAll(reviewList);
     lectureTimeRepository.saveAll(timeList);
 
     return lectureDtoResult;
@@ -212,4 +213,8 @@ public class LectureService {
     return simpleLectureResponsePages;
   }
 
+  public void saveLectureImage(int lectureId, LectureImageDto lectureImageDto) {
+    lectureImageRepository.save(
+        lectureImageDto.toEntity(lectureRepository.getLectureById(lectureId)));
+  }
 }

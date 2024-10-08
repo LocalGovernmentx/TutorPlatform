@@ -54,7 +54,7 @@ public class LectureReview {
   public LectureReview(Lecture lecture, Member tutee, String content, Integer score,
       LocalDateTime reviewTime, Integer online) {
     this.lecture = lecture;
-    this.lecture.getReviews().add(this);
+//    this.lecture.getReviews().add(this);
     this.tutee = tutee;
     this.content = content;
     this.score = score;

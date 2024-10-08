@@ -1,17 +1,14 @@
 package com.sm.tutor.controller;
 
-import com.sm.tutor.domain.dto.LectureSmallView;
 import com.sm.tutor.service.DibsService;
 import com.sm.tutor.service.LectureService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,20 +56,20 @@ public class DibsController {
     return new ResponseEntity<>(HttpStatus.OK);
   }
 
-  @Operation(
-      summary = "찜한 강의 조회",
-      description = "사용자가 찜한 강의의 정보를 조회합니다. 요청 헤더에서 사용자 이메일을 추출하여 해당 사용자가 찜한 강의의 상세 정보를 반환합니다.",
-      responses = {
-          @ApiResponse(responseCode = "200", description = "찜한 강의의 상세 정보 반환"),
-          @ApiResponse(responseCode = "404", description = "사용자가 찜한 강의가 없음")
-      }
-  )
-  @GetMapping()
-  public ResponseEntity<List<LectureSmallView>> getDibsLectureDetails(HttpServletRequest request) {
-    String email = (String) request.getAttribute("userEmail");
-    List<LectureSmallView> lectureDetails = dibsService.getDibsLectureDetails(email);
-    return new ResponseEntity<>(lectureDetails, HttpStatus.OK);
-  }
+//  @Operation(
+//      summary = "찜한 강의 조회",
+//      description = "사용자가 찜한 강의의 정보를 조회합니다. 요청 헤더에서 사용자 이메일을 추출하여 해당 사용자가 찜한 강의의 상세 정보를 반환합니다.",
+//      responses = {
+//          @ApiResponse(responseCode = "200", description = "찜한 강의의 상세 정보 반환"),
+//          @ApiResponse(responseCode = "404", description = "사용자가 찜한 강의가 없음")
+//      }
+//  )
+//  @GetMapping()
+//  public ResponseEntity<List<LectureSmallView>> getDibsLectureDetails(HttpServletRequest request) {
+//    String email = (String) request.getAttribute("userEmail");
+//    List<LectureSmallView> lectureDetails = dibsService.getDibsLectureDetails(email);
+//    return new ResponseEntity<>(lectureDetails, HttpStatus.OK);
+//  }
 
 
 }

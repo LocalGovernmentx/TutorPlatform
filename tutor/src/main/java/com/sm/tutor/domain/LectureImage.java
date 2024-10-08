@@ -37,7 +37,7 @@ public class LectureImage {
   private String image;
 
   @Column(name = "main_image", nullable = false)
-  private Boolean mainImage;
+  private Boolean mainImage = false;
 
   @Builder
   public LectureImage(Lecture lecture, String image, Boolean mainImage) {

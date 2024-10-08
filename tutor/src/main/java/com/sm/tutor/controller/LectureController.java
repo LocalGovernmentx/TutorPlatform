@@ -64,25 +64,9 @@ public class LectureController {
   @Operation(summary = "강의 생성")
   @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<?> createLecture(
-//      @RequestPart("categoryId") Integer categoryId,
-//      @RequestPart("title") String title,
-//      @RequestPart("content") String content,
-//      @RequestPart("activation") Boolean activation,
-//      @RequestPart("online") Integer online,
-//      @RequestPart("tuitionMaximum") Integer tuitionMaximum,
-//      @RequestPart("tuitionMinimum") Integer tuitionMinimum,
-//      @RequestPart("tuteeNumber") Integer tuteeNumber,
-//      @RequestPart("gender") Integer gender,
-//      @RequestPart("level") Integer level,
-//      @RequestPart("ages") List<LectureAgeDto> ages, // AgeDto는 age 필드가 있는 DTO
-//      @RequestPart("locations") List<LectureLocationDto> locations,
-//      // LocationDto는 lectureId, locationId 필드가 있는 DTO
-//      @RequestPart("times") List<LectureTimeDto> times,
-//      // TimeDto는 모든 필드를 포함하는 DTO
       @RequestPart("lectureCreateDto") LectureCreateDto lectureCreateDto,
       @RequestParam List<MultipartFile> files,
       HttpServletRequest request) throws IOException {
-    System.out.println(123123);
     String email = (String) request.getAttribute("userEmail");
     Member member = memberService.getMemberByEmail(email);
     if (member.getType() != 2) {
@@ -92,15 +76,15 @@ public class LectureController {
 //    LectureCreateDto lectureCreateDto = new LectureCreateDto(categoryId, title, content, activation,
 //        online, tuitionMaximum, tuitionMinimum, tuteeNumber, gender, level, ages, locations,
 //        new ArrayList<>(), times);
-    System.out.println(lectureCreateDto);
     LectureDto lectureDtoResult = lectureService.createLecture(email, lectureCreateDto);
     Optional<Lecture> lecture = lectureService.getLectureById(
         Long.valueOf(lectureDtoResult.getId()));
     // 파일들을 S3에 업로드
+    System.out.println(lecture.get().getId());
     for (MultipartFile file : files) {
-      String result = imageService.uploadImage(String.valueOf(lecture.get().getId()), "lecutre",
+      String result = imageService.uploadImage(String.valueOf(lecture.get().getId()), "lecture",
           file);
-      if (!result.equals("File uploaded successfully")) {
+      if (!result.equals("Lecture image uploaded successfully")) {
         return new ResponseEntity<>(Collections.singletonMap("message", result),
             HttpStatus.INTERNAL_SERVER_ERROR);
       }

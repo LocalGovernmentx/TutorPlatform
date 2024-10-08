@@ -3,6 +3,7 @@ package com.sm.tutor.service;
 import com.sm.tutor.domain.Lecture;
 import com.sm.tutor.domain.LectureImage;
 import com.sm.tutor.domain.Member;
+import com.sm.tutor.domain.dto.LectureImageDto;
 import com.sm.tutor.repository.LectureRepository;
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -31,88 +32,6 @@ public class ImageService {
 
   private String decodeUrl(String encodedUrl) {
     return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
-  }
-
-  public String uploadImage(String email, String type, MultipartFile file) throws IOException {
-    validateFile(file);
-
-    // 파일 이름 설정 (이메일 주소 기반)
-    String fileName = email + type + getFileExtension(file.getOriginalFilename());
-    String folderPath = "uploads/" + type + "/";
-    String filePath = folderPath + fileName;
-    // 현재 프로필 이미지 URL을 멤버에서 가져오기
-    if (type.equals("profile")) {
-      Member member = memberService.getMemberByEmail(email);
-      if (member == null) {
-        return "Member not found";
-      }
-      String existingImageUrl = member.getImage();
-      if (existingImageUrl != null && !existingImageUrl.equals("0")) {
-        String existingFileKey = existingImageUrl.substring(existingImageUrl.indexOf("uploads/"));
-        try {
-          // 기존 이미지 삭제
-          s3Service.deleteFile(existingFileKey);
-        } catch (Exception e) {
-          return "Failed to delete existing file";
-        }
-      }
-      try {
-        String imageUrl = s3Service.uploadFile(filePath, file.getInputStream(), file.getSize());
-        String decodedImageUrl = decodeUrl(imageUrl);
-
-        member.setImage(decodedImageUrl);
-        memberService.modifyMemberInfo(member);
-
-        return "File uploaded successfully";
-      } catch (IOException e) {
-        return "File upload failed: " + e.getMessage();
-      }
-    } else if (type.equals("lecture")) {
-      // 강의 이미지 업로드 처리
-      Optional<Lecture> lecture = lectureService.getLectureById(Long.valueOf(email)); // 강의 ID로 변경
-      if (!lecture.isPresent()) {
-        return "Lecture not found";
-      }
-      List<LectureImage> lectureImages = lecture.get().getImages();
-
-      try {
-        // 새 이미지 업로드
-        String imageUrl = s3Service.uploadFile(filePath, file.getInputStream(), file.getSize());
-        String decodedImageUrl = decodeUrl(imageUrl);
-
-        // 기존 이미지가 있다면 삭제하고, 새 이미지로 업데이트
-        boolean imageUpdated = false;
-        for (LectureImage lectureImage : lectureImages) {
-          if (lectureImage != null && !lectureImage.getImage().equals("0")) {
-            String existingFileKey = lectureImage.getImage().substring(
-                lectureImage.getImage().indexOf("uploads/"));
-
-            // 기존 이미지 삭제
-            s3Service.deleteFile(existingFileKey);
-
-            // 이미지 업데이트
-            lectureImage.setImage(decodedImageUrl);
-            imageUpdated = true;
-            break;
-          }
-        }
-        // 기존 이미지가 없었다면 새 이미지 추가
-        if (!imageUpdated) {
-          LectureImage newImage = new LectureImage();
-          newImage.setImage(decodedImageUrl);
-          lectureImages.add(newImage);
-        }
-
-        // 강의 정보 업데이트
-        lecture.get().setImages(lectureImages);
-        lectureService.updateLecture(Long.valueOf(email), lecture);
-
-        return "Lecture image uploaded successfully";
-      } catch (IOException e) {
-        return "File upload failed: " + e.getMessage();
-      }
-    }
-    return "Invalid upload type";
   }
 
   public String uploadLectureImage(Lecture lecture, MultipartFile file) {
@@ -157,6 +76,67 @@ public class ImageService {
     } catch (IOException e) {
       return "File upload failed: " + e.getMessage();
     }
+  }
+
+  public String uploadImage(String email, String type, MultipartFile file) throws IOException {
+    validateFile(file);
+    // 파일 이름 설정 (이메일 주소 기반)
+    String fileName = email + type + getFileExtension(file.getOriginalFilename());
+    String folderPath = "uploads/" + type + "/";
+    String filePath = folderPath + fileName;
+
+    // 현재 프로필 이미지 URL을 멤버에서 가져오기
+    if (type.equals("profile")) {
+      Member member = memberService.getMemberByEmail(email);
+      if (member == null) {
+        return "Member not found";
+      }
+      String existingImageUrl = member.getImage();
+      if (existingImageUrl != null && !existingImageUrl.equals("0")) {
+        String existingFileKey = existingImageUrl.substring(existingImageUrl.indexOf("uploads/"));
+        try {
+          // 기존 이미지 삭제
+          s3Service.deleteFile(existingFileKey);
+        } catch (Exception e) {
+          return "Failed to delete existing file";
+        }
+      }
+      try {
+        String imageUrl = s3Service.uploadFile(filePath, file.getInputStream(), file.getSize());
+        String decodedImageUrl = decodeUrl(imageUrl);
+
+        member.setImage(decodedImageUrl);
+        memberService.modifyMemberInfo(member);
+
+        return "File uploaded successfully";
+      } catch (IOException e) {
+        return "File upload failed: " + e.getMessage();
+      }
+    } else if (type.equals("lecture")) {
+      System.out.println(file.getOriginalFilename());
+      // 강의 이미지 업로드 처리
+      Optional<Lecture> lecture = lectureService.getLectureById(Long.valueOf(email)); // 강의 ID로 변경
+      if (!lecture.isPresent()) {
+        return "Lecture not found";
+      }
+      LectureImageDto lectureImage = new LectureImageDto();
+
+      try {
+        // 새 이미지 업로드
+        String imageUrl = s3Service.uploadFile(filePath, file.getInputStream(), file.getSize());
+        String decodedImageUrl = decodeUrl(imageUrl);
+        lectureImage.setLectureId(Integer.valueOf(email));
+        lectureImage.setImage(decodedImageUrl);
+
+        // 강의 정보 업데이트
+        lectureService.saveLectureImage(Integer.valueOf(email), lectureImage);
+
+        return "Lecture image uploaded successfully";
+      } catch (IOException e) {
+        return "File upload failed: " + e.getMessage();
+      }
+    }
+    return "Invalid upload type";
   }
 
   public String deleteImage(String email) {

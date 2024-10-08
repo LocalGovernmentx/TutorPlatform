@@ -21,6 +21,6 @@ public class LectureImageDto {
   private Boolean mainImage;
 
   public LectureImage toEntity(Lecture lecture) {
-    return new LectureImage(lecture, this.image, this.mainImage);
+    return new LectureImage(lecture, this.image, this.mainImage != null ? this.mainImage : false);
   }
 }
