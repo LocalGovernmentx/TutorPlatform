@@ -12,6 +12,7 @@ ThemeData tutorTheme = ThemeData(
   hintColor: hintTextColor,
   inputDecorationTheme: inputDecorationTheme,
   segmentedButtonTheme: tutorSegmentedButtonTheme,
+  outlinedButtonTheme: tutorOutlinedButtonTheme,
   useMaterial3: true,
 );
 
@@ -49,6 +50,21 @@ SegmentedButtonThemeData tutorSegmentedButtonTheme = SegmentedButtonThemeData(
       color: tutorPrimaryColor,
       width: 1,
     ),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8),
+    ),
+  ),
+);
+
+OutlinedButtonThemeData tutorOutlinedButtonTheme = OutlinedButtonThemeData(
+  style: OutlinedButton.styleFrom(
+    foregroundColor: tutorPrimaryColor,
+    backgroundColor: tutorSecondaryColor,
+    textStyle: tinyTextStyle,
+    side: const BorderSide(
+      color: tutorPrimaryColor,
+    ),
+    padding: EdgeInsets.zero,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(8),
     ),

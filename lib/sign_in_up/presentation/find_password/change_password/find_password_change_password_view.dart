@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:tutor_platform/sign_in_up/presentation/find_password/change_password/find_password_change_password_ui_event.dart';
 import 'package:tutor_platform/sign_in_up/presentation/find_password/change_password/find_password_change_password_view_model.dart';
 import 'package:tutor_platform/sign_in_up/presentation/find_password/final_screen/find_password_final_screen_view.dart';
-import 'package:tutor_platform/core/design/common_style.dart';
+import 'package:tutor_platform/core/design/style.dart';
 
 class FindPasswordChangePasswordView extends StatefulWidget {
   final String email;
@@ -45,6 +45,12 @@ class _FindPasswordChangePasswordViewState extends State<FindPasswordChangePassw
         }
       });
     });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _streamSubscription?.cancel();
   }
 
   @override

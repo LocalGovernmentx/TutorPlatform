@@ -19,6 +19,8 @@ class LoginApiDataSource {
       final response = await client.post(
         Uri.parse('$baseUrl/members/login?email=$email&password=$password'),
       );
+      print(response.body);
+      print(response.statusCode);
 
       if (response.statusCode == 404) {
         try {
@@ -173,7 +175,8 @@ class LoginApiDataSource {
     }
   }
 
-  Future<Result<String, NetworkErrors>> checkEmailDuplicate(String email) async {
+  Future<Result<String, NetworkErrors>> checkEmailDuplicate(
+      String email) async {
     try {
       final response = await client.get(
         Uri.parse('$baseUrl/members/check-email?email=$email'),
@@ -332,6 +335,7 @@ class LoginApiDataSource {
   }
 
   Future<Result<String, NetworkErrors>> register(UserInfo userInfo) async {
+    print(userInfo.toJson());
     try {
       final response = await client.post(
         Uri.parse('$baseUrl/members'),
@@ -503,6 +507,40 @@ class LoginApiDataSource {
             NetworkErrors.unknownStatusCode(response.statusCode, ''));
       }
     } catch (e) {
+      return Result.error(NetworkErrors.timeout());
+    }
+  }
+
+  Future<Result<UserInfo, NetworkErrors>> getMyInfo(String authorization) async {
+    try {
+      final url = Uri.parse('$baseUrl/members/me');
+      final response = await client.get(url, headers: {
+        'Authorization': authorization,
+      });
+
+      if (response.statusCode == 404) {
+        print(1);
+        return Result.error(
+            NetworkErrors.clientError(404, 'please update the app'));
+      }
+      else if(response.statusCode == 200) {
+        final userInfo = UserInfo.fromJson(json.decode(response.body));
+
+        final Result<UserInfo, NetworkErrors> result = Result.success(userInfo);
+        return result;
+      }
+
+      if (response.statusCode ~/ 100 == 4) {
+        return Result.error(NetworkErrors.clientError(response.statusCode, ''));
+      } else if (response.statusCode ~/ 100 == 5) {
+        return Result.error(NetworkErrors.serverError(response.statusCode, ''));
+      } else {
+        return Result.error(
+            NetworkErrors.unknownStatusCode(response.statusCode, ''));
+      }
+    }
+    catch (e) {
+      print(e);
       return Result.error(NetworkErrors.timeout());
     }
   }

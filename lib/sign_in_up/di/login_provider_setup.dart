@@ -10,6 +10,7 @@ import 'package:tutor_platform/sign_in_up/domain/repository/login_api_repository
 import 'package:tutor_platform/sign_in_up/domain/repository/remember_me_repository.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/change_password_without_login.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/check_nickname.dart';
+import 'package:tutor_platform/sign_in_up/domain/use_case/get_my_info.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/perform_autologin.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/perform_login.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/remove_remember_me.dart';
@@ -92,6 +93,9 @@ List<SingleChildWidget> dependentModelsLogin = [
   ProxyProvider<LoginApiRepository, ChangePasswordWithoutLogin>(
     update: (context, repository, _) => ChangePasswordWithoutLogin(repository),
   ),
+  ProxyProvider<LoginApiRepository, GetMyInfo>(
+    update: (context, repository, _) => GetMyInfo(repository),
+  ),
 ];
 
 List<SingleChildWidget> viewModelsLogin = [
@@ -99,12 +103,14 @@ List<SingleChildWidget> viewModelsLogin = [
     create: (context) => LoginViewModel(
       context.read<PerformLogin>(),
       context.read<WriteRememberMe>(),
+      context.read<GetMyInfo>(),
     ),
   ),
   ChangeNotifierProvider<AutoLoginViewModel>(
     create: (context) => AutoLoginViewModel(
       context.read<PerformAutologin>(),
       context.read<RemoveRememberMe>(),
+      context.read<GetMyInfo>(),
     ),
   ),
   ChangeNotifierProvider<SignUpEmailPasswordViewModel>(

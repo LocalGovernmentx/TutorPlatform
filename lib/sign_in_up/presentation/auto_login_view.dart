@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tutor_platform/core/models/jwt_token.dart';
+import 'package:tutor_platform/core/design/style.dart';
 import 'package:tutor_platform/core/main_view_model.dart';
+import 'package:tutor_platform/core/models/jwt_token.dart';
+import 'package:tutor_platform/core/models/user_info.dart';
 import 'package:tutor_platform/core/network_errors.dart';
+import 'package:tutor_platform/core/properties/member_property.dart';
 import 'package:tutor_platform/core/result.dart';
 import 'package:tutor_platform/core/screen_state.dart';
 import 'package:tutor_platform/sign_in_up/presentation/auto_login_view_model.dart';
 import 'package:tutor_platform/sign_in_up/presentation/login/login_view.dart';
 import 'package:tutor_platform/sign_in_up/presentation/sign_up/email_password/sign_up_email_password_view.dart';
-import 'package:tutor_platform/sign_in_up/presentation/sign_up/user_info/sign_up_user_info_view.dart';
-import 'package:tutor_platform/core/design/colors.dart';
 
 class AutoLoginView extends StatefulWidget {
   final bool autoLogin;
@@ -27,13 +28,31 @@ class _AutoLoginViewState extends State<AutoLoginView> {
 
     AutoLoginViewModel viewModel = context.read<AutoLoginViewModel>();
     if (widget.autoLogin) {
-      viewModel.autoLogin().then((Result<JwtToken, dynamic> result) {
+      viewModel.autoLogin().then((Result<JwtToken, dynamic> result) async {
         switch (result) {
           case Success<JwtToken, dynamic>():
-            final mainViewModel = context.read<MainViewModel>();
-            mainViewModel.onEvent(
-              ScreenState.tuteeScreenState(result.value),
-            );
+            final myInfoResult = await viewModel.getMyInfo(result.value.accessToken);
+
+            if (myInfoResult case Success<UserInfo,NetworkErrors>()) {
+              final UserInfo userInfo = myInfoResult.value;
+
+              if (userInfo.type == MemberProperty.tuteeType) {
+                final mainViewModel = context.read<MainViewModel>();
+                mainViewModel.onEvent(
+                  ScreenState.tuteeScreenState(result.value, userInfo),
+                );
+              }
+              else {
+                final mainViewModel = context.read<MainViewModel>();
+                mainViewModel.onEvent(
+                  ScreenState.tutorScreenState(result.value, userInfo),
+                );
+              }
+            }
+            else {
+              const snackBar = SnackBar(content: Text('자동로그인이 실패하였습니다.'));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
 
           case Error<JwtToken, dynamic>():
             if (result.error.isEmpty) {
@@ -64,10 +83,7 @@ class _AutoLoginViewState extends State<AutoLoginView> {
               width: double.infinity,
               height: 131,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: tuteeSecondaryColor,
-                  foregroundColor: contentTextColor,
-                ),
+                style: tuteeFaintButtonStyle,
                 onPressed: () {
                   Navigator.push(
                       context,
@@ -100,10 +116,7 @@ class _AutoLoginViewState extends State<AutoLoginView> {
               width: double.infinity,
               height: 131,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: tutorSecondaryColor,
-                  foregroundColor: contentTextColor,
-                ),
+                style: tutorFaintButtonStyle,
                 onPressed: () {
                   Navigator.push(
                     context,

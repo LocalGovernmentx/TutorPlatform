@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tutor_platform/core/di/main_provider_setup.dart';
-import 'package:tutor_platform/core/main_view_model.dart';
-import 'package:tutor_platform/core/screen_state.dart';
-import 'package:tutor_platform/sign_in_up/di/login_provider_setup.dart';
-import 'package:tutor_platform/sign_in_up/presentation/auto_login_view.dart';
-import 'package:tutor_platform/tutee/presentation/tutee_screen.dart';
-import 'package:tutor_platform/tutor/presentation/tutor_screen.dart';
 import 'package:tutor_platform/core/design/tutee_theme.dart';
 import 'package:tutor_platform/core/design/tutor_theme.dart';
+import 'package:tutor_platform/main/di/main_provider_setup.dart';
+import 'package:tutor_platform/core/main_view_model.dart';
+import 'package:tutor_platform/core/screen_state.dart';
+import 'package:tutor_platform/main/di/setup_di.dart';
+import 'package:tutor_platform/main/presentation/tutee/home/tutee_home_view.dart';
+import 'package:tutor_platform/main/presentation/tutee/tutee_page_controller.dart';
+import 'package:tutor_platform/main/presentation/tutor/tutor_home_view.dart';
+import 'package:tutor_platform/main/presentation/tutor/tutor_page_controller_view.dart';
+import 'package:tutor_platform/sign_in_up/di/login_provider_setup.dart';
+import 'package:tutor_platform/sign_in_up/presentation/auto_login_view.dart';
 
 void main() async {
   final providers = globalProvidersMain;
@@ -36,16 +39,22 @@ class MyApp extends StatelessWidget {
           ),
         );
       case TuteeScreenState():
-        return MaterialApp(
-          title: 'Tutor Platform',
-          theme: tutorTheme,
-          home: TuteeScreen(jwtToken: screenState.jwtToken),
+        return MultiProvider(
+          providers: setupDi(screenState.jwtToken, screenState.userInfo, false),
+          child: MaterialApp(
+            title: 'Tutor Platform',
+            theme: tuteeTheme,
+            home: const TuteePageController(),
+          ),
         );
       case TutorScreenState():
-        return MaterialApp(
-          title: 'Tutor Platform',
-          theme: tuteeTheme,
-          home: const TutorScreen(),
+        return MultiProvider(
+          providers: setupDi(screenState.jwtToken, screenState.userInfo, true),
+          child: MaterialApp(
+            title: 'Tutor Platform',
+            theme: tutorTheme,
+            home: const TutorPageControllerView(),
+          ),
         );
     }
   }

@@ -3,6 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_platform/core/main_view_model.dart';
+import 'package:tutor_platform/core/models/user_info.dart';
+import 'package:tutor_platform/core/network_errors.dart';
+import 'package:tutor_platform/core/properties/member_property.dart';
+import 'package:tutor_platform/core/result.dart';
 import 'package:tutor_platform/core/screen_state.dart';
 import 'package:tutor_platform/sign_in_up/presentation/find_password/send_email/find_password_send_email_view.dart';
 import 'package:tutor_platform/sign_in_up/presentation/login/login_ui_event.dart';
@@ -31,8 +35,31 @@ class _LoginViewState extends State<LoginView> {
         switch (event) {
           case LoginUiEventSuccess():
             Navigator.pop(context);
+
             final mainViewModel = context.read<MainViewModel>();
-            mainViewModel.onEvent(ScreenState.tuteeScreenState(event.jwtToken));
+
+            viewModel.getMyInfo(event.jwtToken.accessToken).then(
+              (Result<UserInfo, NetworkErrors> result) async {
+                if (result case Success<UserInfo, NetworkErrors>()) {
+                  final UserInfo userInfo = result.value;
+
+                  if (userInfo.type == MemberProperty.tuteeType) {
+                    mainViewModel.onEvent(
+                      ScreenState.tuteeScreenState(event.jwtToken, userInfo),
+                    );
+                  }
+                  else {
+                    mainViewModel.onEvent(
+                      ScreenState.tutorScreenState(event.jwtToken, userInfo),
+                    );
+                  }
+                }
+                else {
+                  const snackBar = SnackBar(content: Text('로그인이 실패하였습니다.'));
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+              },
+            );
           case LoginUiEventError():
             setState(() {});
           case LoginUiEventShowSnackBar():
@@ -108,8 +135,8 @@ class _LoginViewState extends State<LoginView> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          viewModel.login(
-                              _emailController.text.trim(), _passwordController.text);
+                          viewModel.login(_emailController.text.trim(),
+                              _passwordController.text);
                         },
                         child: const Text('로그인'),
                       ),
@@ -128,7 +155,8 @@ class _LoginViewState extends State<LoginView> {
                         const Text(' | '),
                         TextButton(
                           onPressed: () {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
                               return const FindPasswordSendEmailView();
                             }));
                           },

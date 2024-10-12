@@ -8,7 +8,8 @@ import 'package:tutor_platform/sign_in_up/domain/use_case/send_verification_sign
 import 'package:tutor_platform/sign_in_up/presentation/sign_up/email_password/sign_up_email_password_ui_event.dart';
 
 class SignUpEmailPasswordViewModel extends ChangeNotifier {
-  final RequestEmailVerificationNoDuplicate _requestEmailVerificationNoDuplicate;
+  final RequestEmailVerificationNoDuplicate
+      _requestEmailVerificationNoDuplicate;
   final SendVerificationSignUp _sendVerificationSignUp;
 
   SignUpEmailPasswordViewModel(
@@ -80,7 +81,7 @@ class SignUpEmailPasswordViewModel extends ChangeNotifier {
     _emailError = null;
     _verificationCodeError = null;
     if (validatedEmail != email) {
-      _emailError = '입력하신 이메일 주소가 이전과 일치하지 않습니다. \n 재인증을 바라시면 인증번호 재전송을 해주세요.';
+      _emailError = '입력하신 이메일 주소로 인증해주십시오. \n재인증을 바라시면 인증번호 재전송을 해주세요.';
       _eventController.add(SignUpEmailPasswordUiEvent.error());
       notifyListeners();
       return;
@@ -99,27 +100,28 @@ class SignUpEmailPasswordViewModel extends ChangeNotifier {
   }
 
   void nextScreen(String email, String password, String passwordCheck) {
+    _emailError = null;
     _passwordError = null;
     _confirmPasswordError = null;
     print(1);
+
+    bool validate = true;
     if (validatedEmail != email) {
-      _emailError =
-          '입력하신 이메일 주소가 이전과 일치하지 않습니다. \n 입력하신 이메일 주소로 회원가입을 진행해주십시오.';
-      _eventController.add(SignUpEmailPasswordUiEvent.error());
-      notifyListeners();
-      return;
+      validate = false;
+      _emailError = '입력하신 이메일 주소로 인증해주십시오.';
     }
     if (!_isEmailValidated) {
+      validate = false;
       _emailError = '이메일 인증을 진행해주세요';
-      _eventController.add(SignUpEmailPasswordUiEvent.error());
+    }
+    validate = _validatePassword(password, passwordCheck) && validate;
+
+    if (!validate) {
       notifyListeners();
+      _eventController.add(SignUpEmailPasswordUiEvent.error());
       return;
     }
-    if (!_validatePassword(password, passwordCheck)) {
-      _eventController.add(SignUpEmailPasswordUiEvent.error());
-      notifyListeners();
-      return;
-    }
+
     _eventController.add(SignUpEmailPasswordUiEvent.nextScreen());
     notifyListeners();
   }

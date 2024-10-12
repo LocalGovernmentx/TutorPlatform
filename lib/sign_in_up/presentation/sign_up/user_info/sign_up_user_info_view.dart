@@ -36,6 +36,9 @@ class _SignUpUserInfoViewState extends State<SignUpUserInfoView> {
 
   StreamSubscription? _streamSubscription;
 
+  final FocusNode _codeFocusNode = FocusNode();
+  final FocusNode _phoneFocusNode = FocusNode();
+
   @override
   void initState() {
     super.initState();
@@ -70,8 +73,10 @@ class _SignUpUserInfoViewState extends State<SignUpUserInfoView> {
     _nicknameController.dispose();
     _phoneNumberController.dispose();
     _invitationCodeController.dispose();
-
     _streamSubscription?.cancel();
+
+    _codeFocusNode.dispose();
+    _phoneFocusNode.dispose();
 
     super.dispose();
   }
@@ -166,11 +171,13 @@ class _SignUpUserInfoViewState extends State<SignUpUserInfoView> {
                   segments: const <ButtonSegment>[
                     ButtonSegment(
                       value: MemberProperty.man,
-                      label: SizedBox(height: 23,child: Center(child: Text('남자'))),
+                      label: SizedBox(
+                          height: 23, child: Center(child: Text('남자'))),
                     ),
                     ButtonSegment(
                       value: MemberProperty.woman,
-                      label: SizedBox(height: 23,child: Center(child: Text('여자'))),
+                      label: SizedBox(
+                          height: 23, child: Center(child: Text('여자'))),
                     ),
                   ],
                   style: SegmentedButton.styleFrom(
@@ -196,15 +203,29 @@ class _SignUpUserInfoViewState extends State<SignUpUserInfoView> {
                     ).then((value) {
                       if (value != null) {
                         viewModel.birth = value;
+                        if (viewModel.isUnder15) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _codeFocusNode.requestFocus();
+                          });
+                        } else {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _phoneFocusNode.requestFocus();
+                          });
+                        }
                       }
                     });
                   },
                   child: Text(viewModel.birthString),
                 ),
               ),
-              if (viewModel.birthDateError != null)
+              if (widget.isTutor && viewModel.isUnder15)
+                Text(
+                  '15세 이하는 선생님으로 가입할 수 없습니다',
+                  style: errorTextStyle,
+                ),
+              if (viewModel.birthDateError != null && !widget.isTutor)
                 Text(viewModel.birthDateError!, style: errorTextStyle),
-              if (viewModel.isUnder15) ...[
+              if (viewModel.isUnder15 && !widget.isTutor) ...[
                 const SizedBox(height: 30),
                 Row(
                   children: [
@@ -223,6 +244,9 @@ class _SignUpUserInfoViewState extends State<SignUpUserInfoView> {
                   ],
                 ),
                 TextField(
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  focusNode: _codeFocusNode,
                   controller: _invitationCodeController,
                   decoration: InputDecoration(
                     hintText: '초대코드를 입력해주세요',
@@ -233,9 +257,10 @@ class _SignUpUserInfoViewState extends State<SignUpUserInfoView> {
               const SizedBox(height: 30),
               const Text('전화번호'),
               TextField(
+                focusNode: _phoneFocusNode,
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(13),
+                  LengthLimitingTextInputFormatter(11),
                   PhoneNumberFormatter(),
                 ],
                 keyboardType: TextInputType.number,

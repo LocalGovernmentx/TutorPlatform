@@ -12,6 +12,7 @@ ThemeData tuteeTheme = ThemeData(
   hintColor: hintTextColor,
   inputDecorationTheme: inputDecorationTheme,
   segmentedButtonTheme: tuteeSegmentedButtonTheme,
+  outlinedButtonTheme: tuteeOutlinedButtonTheme,
   useMaterial3: true,
 );
 
@@ -50,6 +51,21 @@ SegmentedButtonThemeData tuteeSegmentedButtonTheme = SegmentedButtonThemeData(
       color: tuteePrimaryColor,
       width: 1,
     ),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8),
+    ),
+  ),
+);
+
+OutlinedButtonThemeData tuteeOutlinedButtonTheme = OutlinedButtonThemeData(
+  style: OutlinedButton.styleFrom(
+    foregroundColor: tuteePrimaryColor,
+    backgroundColor: tuteeSecondaryColor,
+    textStyle: smallTextStyle,
+    side: const BorderSide(
+      color: tuteePrimaryColor,
+    ),
+    padding: EdgeInsets.zero,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(8),
     ),

@@ -54,4 +54,11 @@ class LoginApiRepositoryImpl implements LoginApiRepository {
   Future<Result<String, NetworkErrors>> changePassword(String email, String password) async {
     return await loginApi.changePassword(email, password);
   }
+
+  @override
+  Future<Result<UserInfo, NetworkErrors>> getMyInfo(String authorization) async {
+    final result = await loginApi.getMyInfo(authorization);
+    print(result);
+    return result;
+  }
 }

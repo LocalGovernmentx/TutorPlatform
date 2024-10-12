@@ -6,6 +6,7 @@ TextTheme textTheme = TextTheme(
   headlineMedium: subTitleTextStyle,
   bodyLarge: emphasisTextStyle,
   bodyMedium: normalTextStyle,
+  bodySmall: smallTextStyle,
 );
 
 TextStyle titleTextStyle = const TextStyle(
@@ -39,4 +40,14 @@ TextStyle errorTextStyle = const TextStyle(
 TextStyle hintTextStyle = const TextStyle(
   color: hintTextColor,
   fontSize: 16,
+);
+
+TextStyle smallTextStyle = const TextStyle(
+  color: hintTextColor,
+  fontSize: 14,
+);
+
+TextStyle tinyTextStyle = const TextStyle(
+  color: contentTextColor,
+  fontSize: 12,
 );
