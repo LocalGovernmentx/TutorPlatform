@@ -19,6 +19,8 @@ dependencies:
   http: ^1.2.2
   syncfusion_flutter_datepicker: ^26.2.9
   intl: ^0.19.0
+  image_picker: ^1.1.2
+  path_provider: ^2.1.4
 
 dev_dependencies:
   flutter_test:
@@ -45,3 +47,6 @@ flutter:
     - assets/images/starting_screen/
     - assets/icons/
     - assets/images/successful_register/
+    - assets/images/tutor_main_page/
+    - assets/images/default/
+    - assets/images/reviews/

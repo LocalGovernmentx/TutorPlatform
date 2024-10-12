@@ -53,6 +53,7 @@ class _SignUpEmailPasswordViewState extends State<SignUpEmailPasswordView> {
             });
           case SignUpUiEventVerifyCodeSuccess():
             _timer?.cancel();
+            _verificationCode.clear();
           case SignUpUiEventNextScreen():
             Navigator.push(
               context,

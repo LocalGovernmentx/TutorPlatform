@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:tutor_platform/core/models/jwt_token.dart';
+import 'package:tutor_platform/core/models/user_info.dart';
 import 'package:tutor_platform/core/network_errors.dart';
 import 'package:tutor_platform/core/result.dart';
+import 'package:tutor_platform/sign_in_up/domain/use_case/get_my_info.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/perform_login.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/write_remember_me.dart';
 import 'package:tutor_platform/sign_in_up/presentation/login/login_ui_event.dart';
@@ -18,12 +20,13 @@ class LoginViewModel extends ChangeNotifier {
 
   final PerformLogin _performLogin;
   final WriteRememberMe _writeRememberMe;
+  final GetMyInfo _getMyInfo;
 
   final _eventController = StreamController<LoginUiEvent>.broadcast();
 
   Stream get eventStream => _eventController.stream;
 
-  LoginViewModel(this._performLogin, this._writeRememberMe);
+  LoginViewModel(this._performLogin, this._writeRememberMe, this._getMyInfo);
 
   @override
   void dispose() {
@@ -94,6 +97,10 @@ class LoginViewModel extends ChangeNotifier {
       case UnknownError():
         return LoginUiEvent.showSnackBar('알 수 없는 오류가 발생했습니다');
     }
+  }
+
+  Future<Result<UserInfo, NetworkErrors>> getMyInfo(String authentication) async {
+    return await _getMyInfo(authentication);
   }
 
   void clear() {

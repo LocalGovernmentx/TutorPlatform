@@ -1,0 +1,14 @@
+1. 모든 di를 widget tree의 상단에 위치함
+    대부분의 기능들이 사용하지 않는 view_model들도 provider로 주입
+2. stateful widget의 과사용
+3. 공동으로 사용할 수 있는 함수나 widget 분리를 못함 -> 중복되는 코드
+
+각 문제점의 이유
+    1. di를 하기 적합한 위치를 매번 찾는 것이 번거로움
+    2. stream을 사용하기 위해 initState를 사용
+    3. 어느정도까지가 공통으로 사용할 수 있는 함수나 widget인지 판단하기 어려움
+
+문제의 이유:
+    프로그래밍 전 계획의 부재
+    provider, stream, stateful/stateless widget의 개념 부족
+

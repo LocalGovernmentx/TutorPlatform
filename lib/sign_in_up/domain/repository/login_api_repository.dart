@@ -13,4 +13,5 @@ abstract class LoginApiRepository {
   Future<Result<String, NetworkErrors>> register(UserInfo userInfo);
   Future<Result<String, NetworkErrors>> sendVerificationFindPassword(String email, String code);
   Future<Result<String, NetworkErrors>> changePassword(String email, String password);
+  Future<Result<UserInfo, NetworkErrors>> getMyInfo(String authorization);
 }

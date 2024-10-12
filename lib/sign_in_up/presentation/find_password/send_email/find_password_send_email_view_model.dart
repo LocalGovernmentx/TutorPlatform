@@ -3,20 +3,22 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:tutor_platform/core/network_errors.dart';
 import 'package:tutor_platform/core/result.dart';
-import 'package:tutor_platform/sign_in_up/domain/use_case/request_email_verification_no_duplicate.dart';
 import 'package:tutor_platform/sign_in_up/domain/use_case/request_email_verification_yes_duplicate.dart';
 import 'package:tutor_platform/sign_in_up/presentation/find_password/send_email/find_password_send_email_ui_event.dart';
 
 class FindPasswordSendEmailViewModel extends ChangeNotifier {
-  final RequestEmailVerificationYesDuplicate _requestEmailVerificationYesDuplicate;
+  final RequestEmailVerificationYesDuplicate
+      _requestEmailVerificationYesDuplicate;
 
-  final _eventController = StreamController<FindPasswordSendEmailUiEvent>.broadcast();
+  final _eventController =
+      StreamController<FindPasswordSendEmailUiEvent>.broadcast();
 
   Stream get eventStream => _eventController.stream;
 
   FindPasswordSendEmailViewModel(this._requestEmailVerificationYesDuplicate);
 
   String? _emailError;
+
   String? get emailError => _emailError;
 
   @override
@@ -35,7 +37,8 @@ class FindPasswordSendEmailViewModel extends ChangeNotifier {
       return;
     }
 
-    final Result<dynamic, NetworkErrors> result = await _requestEmailVerificationYesDuplicate(email);
+    final Result<dynamic, NetworkErrors> result =
+        await _requestEmailVerificationYesDuplicate(email);
     switch (result) {
       case Success<dynamic, NetworkErrors>():
         _eventController.add(FindPasswordSendEmailUiEvent.success());
@@ -66,11 +69,14 @@ class FindPasswordSendEmailViewModel extends ChangeNotifier {
       case TimeoutError():
         return FindPasswordSendEmailUiEvent.showSnackBar('네트워크가 불안정합니다');
       case ServerError():
-        return FindPasswordSendEmailUiEvent.showSnackBar('${error.statusCode} : 서버 오류가 발생했습니다');
+        return FindPasswordSendEmailUiEvent.showSnackBar(
+            '${error.statusCode} : 서버 오류가 발생했습니다');
       case ClientError():
-        return FindPasswordSendEmailUiEvent.showSnackBar('${error.statusCode} : 클라이언트 오류가 발생했습니다');
+        return FindPasswordSendEmailUiEvent.showSnackBar(
+            '${error.statusCode} : 클라이언트 오류가 발생했습니다');
       case UnknownStatusCode():
-        return FindPasswordSendEmailUiEvent.showSnackBar('${error.statusCode} : 알 수 없는 오류가 발생했습니다');
+        return FindPasswordSendEmailUiEvent.showSnackBar(
+            '${error.statusCode} : 알 수 없는 오류가 발생했습니다');
       case CredentialsError():
         if (error.message == 'Email is available') {
           _emailError = '가입되지 않은 이메일입니다';

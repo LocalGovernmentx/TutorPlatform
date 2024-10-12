@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:tutor_platform/sign_in_up/presentation/find_password/send_code/find_password_send_code_view.dart';
 import 'package:tutor_platform/sign_in_up/presentation/find_password/send_email/find_password_send_email_ui_event.dart';
 import 'package:tutor_platform/sign_in_up/presentation/find_password/send_email/find_password_send_email_view_model.dart';
-import 'package:tutor_platform/core/design/common_style.dart';
+import 'package:tutor_platform/core/design/style.dart';
 
 class FindPasswordSendEmailView extends StatefulWidget {
   const FindPasswordSendEmailView({super.key});

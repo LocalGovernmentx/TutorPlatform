@@ -54,6 +54,7 @@ class SignUpUserInfoViewModel extends ChangeNotifier {
   set birth(DateTime? value) {
     _birth = value;
     _isUnder15 = DateTime.now().year - value!.year < 15;
+
     notifyListeners();
   }
 
@@ -79,10 +80,15 @@ class SignUpUserInfoViewModel extends ChangeNotifier {
   }
 
   void clean() {
-    print(1243);
     _nicknameError = null;
+    _nameError = null;
+    _phoneNumberError = null;
+    _invitationCodeError = null;
+    _birthDateError = null;
     _validatedNickname = null;
     _selectedGender = MemberProperty.man;
+    _isUnder15 = false;
+    _birth = null;
   }
 
   void checkNickname(String nickname) async {
