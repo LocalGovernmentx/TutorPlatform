@@ -14,6 +14,7 @@ import com.sm.tutor.domain.dto.LectureCreateDto;
 import com.sm.tutor.domain.dto.LectureDto;
 import com.sm.tutor.domain.dto.LectureImageDto;
 import com.sm.tutor.domain.dto.SimpleLectureResponseDto;
+import com.sm.tutor.repository.CategoryDataRepository;
 import com.sm.tutor.repository.LectureAgeRepository;
 import com.sm.tutor.repository.LectureImageRepository;
 import com.sm.tutor.repository.LectureLocationRepository;
@@ -59,6 +60,8 @@ public class LectureService {
   private final MemberRepository memberRepository;
   @Autowired
   private OngoingLectureRepository ongoingLectureRepository;
+  @Autowired
+  private CategoryDataRepository categoryDataRepository;
 
   public List<LectureDto> getAllLecturesWithDetails() {
     return lectureRepository.findAll().stream().map(lectureConverter::toDto)
@@ -216,5 +219,9 @@ public class LectureService {
   public void saveLectureImage(int lectureId, LectureImageDto lectureImageDto) {
     lectureImageRepository.save(
         lectureImageDto.toEntity(lectureRepository.getLectureById(lectureId)));
+  }
+
+  public String getCategoryByCategoryId(long categoryId) {
+    return categoryDataRepository.getReferenceById(categoryId).getSpecificCategory();
   }
 }

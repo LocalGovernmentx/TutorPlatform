@@ -61,6 +61,15 @@ public class LectureController {
     return new ResponseEntity<>(lectureService.getAllLecturesWithDetails(), HttpStatus.OK);
   }
 
+  @Operation(summary = "카테고리 id로 카테고리 조회")
+  @GetMapping("/category/{categoryId}")
+  public ResponseEntity<?> getCategory(HttpServletRequest request,
+      @RequestParam("categoryId") int categoryId) {
+//    String email = (String) request.getAttribute("userEmail");
+    String specificName = lectureService.getCategoryByCategoryId(categoryId);
+    return new ResponseEntity<>(specificName, HttpStatus.OK);
+  }
+
   @Operation(summary = "강의 생성")
   @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<?> createLecture(
