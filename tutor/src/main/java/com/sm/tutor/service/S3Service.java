@@ -42,6 +42,7 @@ public class S3Service {
     PutObjectRequest putObjectRequest = PutObjectRequest.builder()
         .bucket(bucket)
         .key(keyName)
+        .contentType("image/png")  // Content-Type을 image/png로 설정
         .build();
 
     s3Client.putObject(putObjectRequest,

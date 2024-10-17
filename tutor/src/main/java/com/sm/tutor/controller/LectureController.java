@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -101,6 +102,51 @@ public class LectureController {
     return new ResponseEntity<>(Collections.singletonMap("message", "Lecture created successfully"),
         HttpStatus.CREATED);
   }
+
+  @Operation(summary = "강의 수정")
+  @PutMapping(value = "/{lectureId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE,
+      MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<?> updateLecture(
+      @PathVariable Long lectureId,
+      @RequestPart("lectureUpdateDto") LectureCreateDto lectureUpdateDto,
+      @RequestParam List<MultipartFile> files,
+      HttpServletRequest request) throws IOException {
+
+    String email = (String) request.getAttribute("userEmail");
+    Member member = memberService.getMemberByEmail(email);
+
+    // 강의를 수정할 권한이 있는지 확인 (ex. 튜터 여부)
+    if (member.getType() != 2) {
+      return new ResponseEntity<>(Collections.singletonMap("message", "is not tutor"),
+          HttpStatus.UNAUTHORIZED);
+    }
+
+    Optional<Lecture> lectureOptional = lectureService.getLectureById(lectureId);
+
+    if (!lectureOptional.isPresent()) {
+      return new ResponseEntity<>(Collections.singletonMap("message", "Lecture not found"),
+          HttpStatus.NOT_FOUND);
+    }
+
+    Lecture lecture = lectureOptional.get();
+
+    // 강의 정보 수정
+    LectureDto updatedLecture = lectureService.updateLecture(lecture, lectureUpdateDto);
+
+    // 파일들 S3에 업로드 (이미 있던 파일은 새로운 파일로 덮어쓰거나 추가할 수 있음)
+    for (MultipartFile file : files) {
+      String result = imageService.uploadImage(String.valueOf(lecture.getId()), "lecture", file);
+//      if (!result.equals("Lecture image uploaded successfully")) {
+//        return new ResponseEntity<>(Collections.singletonMap("message", result),
+//            HttpStatus.INTERNAL_SERVER_ERROR);
+//      }
+    }
+
+    return new ResponseEntity<>(Collections.singletonMap("message", "Lecture updated successfully"),
+        HttpStatus.OK);
+  }
+
+
 
   /*@Operation(summary = "강의 수정")
   @PutMapping("/{id}")

@@ -81,7 +81,7 @@ public class ImageService {
   public String uploadImage(String email, String type, MultipartFile file) throws IOException {
     validateFile(file);
     // 파일 이름 설정 (이메일 주소 기반)
-    String fileName = email + type + getFileExtension(file.getOriginalFilename());
+    String fileName = email + type + file.getOriginalFilename();
     String folderPath = "uploads/" + type + "/";
     String filePath = folderPath + fileName;
 
@@ -122,9 +122,17 @@ public class ImageService {
       LectureImageDto lectureImage = new LectureImageDto();
 
       try {
+        List<LectureImage> lectureImages = lecture.get().getImages(); // 기존 이미지 확인
+
         // 새 이미지 업로드
         String imageUrl = s3Service.uploadFile(filePath, file.getInputStream(), file.getSize());
         String decodedImageUrl = decodeUrl(imageUrl);
+        boolean imageExists = lectureImages.stream()
+            .anyMatch(image -> decodedImageUrl.equals(image.getImage()));
+
+        if (imageExists) {
+          return "Image already exists, skipping upload";
+        }
         lectureImage.setLectureId(Integer.valueOf(email));
         lectureImage.setImage(decodedImageUrl);
 

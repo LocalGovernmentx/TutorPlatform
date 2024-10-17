@@ -23,7 +23,6 @@ import com.sm.tutor.repository.LectureReviewRepository;
 import com.sm.tutor.repository.LectureTimeRepository;
 import com.sm.tutor.repository.MemberRepository;
 import com.sm.tutor.repository.OngoingLectureRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -104,15 +103,45 @@ public class LectureService {
     return lectureDtoResult;
   }
 
-  public Lecture updateLecture(Long id, Optional<Lecture> updatedLecture) {
-    Optional<Lecture> findLecture = lectureRepository.findById(id);
-    if (findLecture.isPresent() && updatedLecture.isPresent()) {
-      Lecture lectureToUpdate = updatedLecture.get();
-      lectureToUpdate.setId(Math.toIntExact(id));  // ID는 Long 타입이므로 변환 불필요
-      return lectureRepository.save(lectureToUpdate);
-    }
-    throw new EntityNotFoundException("Lecture not found with id " + id);
+  public LectureDto updateLecture(Lecture existingLecture, LectureCreateDto lectureUpdateDto) {
+    log.info("Updating LectureDto: {}", lectureUpdateDto.toString());
+
+    // 필요한 필드 업데이트
+    existingLecture.setTitle(lectureUpdateDto.getTitle());
+    existingLecture.setContent(lectureUpdateDto.getContent());
+    existingLecture.setActivation(lectureUpdateDto.getActivation());
+    existingLecture.setOnline(lectureUpdateDto.getOnline());
+
+    // 업데이트할 나이, 위치, 시간 정보 처리 (기존 것을 지우고 새로 저장할지, 덮어쓸지 결정)
+    List<LectureAge> updatedAgeList = lectureUpdateDto.getAges().stream()
+        .map(m -> m.toEntity(existingLecture))
+        .collect(Collectors.toList());
+
+    List<LectureLocation> updatedLocationList = lectureUpdateDto.getLocations().stream()
+        .map(m -> m.toEntity(existingLecture,
+            locationService.getLocationById(Long.valueOf(m.getLocationId()))))
+        .collect(Collectors.toList());
+
+    List<LectureTime> updatedTimeList = lectureUpdateDto.getTimes().stream()
+        .map(m -> m.toEntity(existingLecture))
+        .collect(Collectors.toList());
+
+    // 기존 데이터를 새 데이터로 업데이트
+    existingLecture.setAges(updatedAgeList);
+    existingLecture.setLocations(updatedLocationList);
+    existingLecture.setTimes(updatedTimeList);
+
+    // 저장
+    LectureDto lectureDtoResult = lectureConverter.toDto(lectureRepository.save(existingLecture));
+
+    // 관련 엔티티 업데이트
+    lectureAgeRepository.saveAll(updatedAgeList);
+    lectureLocationRepository.saveAll(updatedLocationList);
+    lectureTimeRepository.saveAll(updatedTimeList);
+
+    return lectureDtoResult;
   }
+
 
   public boolean deleteLectureById(Long id) {
     if (lectureRepository.existsById(id)) {
@@ -224,4 +253,6 @@ public class LectureService {
   public String getCategoryByCategoryId(long categoryId) {
     return categoryDataRepository.getReferenceById(categoryId).getSpecificCategory();
   }
+
+
 }
