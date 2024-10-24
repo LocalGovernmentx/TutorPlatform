@@ -29,9 +29,17 @@ public class AfterSchoolController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "OK: 성공"),
   })
-  @Operation(summary = "모든 after school notice 조회",
-      description = "모든 방과후학교 강사 공고를 조회합니다. \n" +
-          "조회에 성공하면 방과후학교 강사 공고 데이터를 `200 OK` 상태 코드와 함께 반환됩니다.")
+  @Operation(summary = "지역에 따른 모든 after school notice 조회",
+      description = """
+          지역에 따른 모든 방과후학교 강사 공고를 조회합니다.
+          \s
+          조회에 성공하면 방과후학교 강사 공고 데이터를 `200 OK` 상태 코드와 함께 반환됩니다.
+          \s
+          지역 정보를 입력할 경우 해당 지역에 대한 공고만을 가져오게 됩니다. 지역 정보를 입력하지 않으면 모든 지역에 대한 공고를 가져오게 됩니다.
+          \s
+          현재 사용 가능한 지역은 Busan, Incheon, Daegu 가 있습니다.
+          \s
+          강의 paging, list API와 같이 Page로 제공합니다.""")
   @GetMapping
   public ResponseEntity<Page<SimpleAfterSchoolNoticeResponseDto>> getAllAfterSchoolNoticeByFilter(
       @PageableDefault(page = 0, size = 10, sort = {"id"}) Pageable pageable, @RequestParam(required = false) String region) {
@@ -44,10 +52,12 @@ public class AfterSchoolController {
       @ApiResponse(responseCode = "404", description = "NOT_FOUND: ID not found")
   })
   @Operation(summary = "after_school_notice_id를 이용하여 after school notice 조회",
-      description = "방과후학교 강사 공고의 ID를 사용하여 방과후학교 강사 공고를 조회합니다. \n" +
-          "요청된 ID가 데이터베이스에 존재하지 않는 경우 `404 Not Found` 상태 코드와 함께 에러 메시지를 반환합니다. \n"
-          +
-          "조회에 성공하면 방과후학교 강사 공고 데잍터를 `200 OK` 상태 코드와 함께 반환됩니다.")
+      description = """
+          방과후학교 강사 공고의 ID를 사용하여 방과후학교 강사 공고를 조회합니다.
+          \s
+          요청된 ID가 데이터베이스에 존재하지 않는 경우 `404 Not Found` 상태 코드와 함께 에러 메시지를 반환합니다.
+          \s
+          조회에 성공하면 방과후학교 강사 공고 데잍터를 `200 OK` 상태 코드와 함께 반환됩니다.""")
   @GetMapping("/{id}")
   public ResponseEntity<?> getAfterSchoolNoticeById(@PathVariable Long id) {
     AfterSchoolNotice afterSchoolNotice = afterschoolService.getAfterSchoolNoticeById(id);

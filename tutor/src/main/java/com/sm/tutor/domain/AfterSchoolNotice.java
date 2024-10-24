@@ -36,6 +36,9 @@ public class AfterSchoolNotice {
   @Column(name = "key_value", nullable = false)
   private String keyValue;
 
+  @Column(name = "file_name")
+  private String fileName;
+
   @Column(name = "file_content")
   private String fileContent;
 
