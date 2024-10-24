@@ -229,13 +229,13 @@ public class LectureService {
       List<Integer> categoryId, Integer tuitionMaximum,
       List<Integer> locationId, Integer online, String keyword) {
     List<Lecture> lecturePages = lectureRepository.findAllByFilter(categoryId, tuitionMaximum,
-        locationId, online, keyword);
+        locationId, online, keyword, pageable);
 
     // SimpleLectureResponseDto로 2차 가공
     List<SimpleLectureResponseDto> simpleLectureResponseList = lecturePages.stream()
         .map(simpleLectureConverter::toDto).collect(Collectors.toList());
 
-    PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+    PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
     int start = (int) pageRequest.getOffset();
     int end = Math.min((start + pageRequest.getPageSize()), simpleLectureResponseList.size());
 

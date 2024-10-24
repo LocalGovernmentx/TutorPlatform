@@ -185,7 +185,12 @@ public class LectureController {
                    \s
           size: page 당 entity 개수 (기본: 10)
                    \s
-          sort: 정렬할 속성(오름차순) (기본: id)""")
+          sort: 정렬할 속성(오름차순) (기본: id)
+                   \s
+          정렬 가능한 속성은 id (강의 ID), categoryId (카테고리 ID), title (제목), content(내용), online (온라인 여부), tuitionMaximum (최대 수업료), tuitionMinimum (최저 수업료), tuteeNumber (튜터 수), gender (성별), level (난이도) 의 이름으로 가능하며, 속성이름,정렬 순서로 보내기
+                   \s
+          ex) 0번 페이지, 페이지 당 강의 개수 10개, 카테고리 ID 내림차순, 그 후 ID 오름차순으로 반환받고 싶을 경우 http://modututor.com/api/lectures/paging?page=0&size=10&sort=categoryId,desc&sort=id,asc 와 같이 보내기
+          """)
   @GetMapping("/paging")
   public ResponseEntity<Page<LectureDto>> paging(
       @PageableDefault(page = 0, size = 10, sort = {"id"}) Pageable pageable) {
@@ -209,6 +214,8 @@ public class LectureController {
           모든 파라미터는 required = false로, 파라미터 값을 반드시 보낼 필요는 없습니다. 파라미터가 없을 경우 NULL 처리됩니다.
                    \s
           성공하면 `200 OK` 상태 코드와 강의 리스트에 대한 정보를 반환합니다.
+                   \s
+          정렬할 속성에 대한 설명은 paging API와 동일합니다.
           """)
   @GetMapping("/list")
   public ResponseEntity<Page<SimpleLectureResponseDto>> getLectureByFilter(

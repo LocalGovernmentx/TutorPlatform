@@ -3,6 +3,7 @@ package com.sm.tutor.repository;
 import com.sm.tutor.domain.Lecture;
 import io.lettuce.core.dynamic.annotation.Param;
 import java.util.List;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -24,5 +25,5 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> {
   List<Lecture> findAllByFilter(@Param("categoryId") List<Integer> categoryId,
       @Param("tuitionMaximum") Integer tuitionMaximum,
       @Param("locationId") List<Integer> locationId, @Param("online") Integer online,
-      @Param("keyword") String keyword);
+      @Param("keyword") String keyword, Pageable pageable);
 }
