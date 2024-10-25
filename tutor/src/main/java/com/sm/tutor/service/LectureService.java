@@ -61,8 +61,6 @@ public class LectureService {
   private OngoingLectureRepository ongoingLectureRepository;
   @Autowired
   private CategoryDataRepository categoryDataRepository;
-  @Autowired
-  private ImageService imageService;
 
   public List<LectureDto> getAllLecturesWithDetails() {
     return lectureRepository.findAll().stream().map(lectureConverter::toDto)
@@ -237,7 +235,8 @@ public class LectureService {
     List<SimpleLectureResponseDto> simpleLectureResponseList = lecturePages.stream()
         .map(simpleLectureConverter::toDto).collect(Collectors.toList());
 
-    PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), pageable.getSort());
+    PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(),
+        pageable.getSort());
     int start = (int) pageRequest.getOffset();
     int end = Math.min((start + pageRequest.getPageSize()), simpleLectureResponseList.size());
 
@@ -255,5 +254,5 @@ public class LectureService {
   public String getCategoryByCategoryId(long categoryId) {
     return categoryDataRepository.getReferenceById(categoryId).getSpecificCategory();
   }
-  
+
 }
