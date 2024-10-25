@@ -197,4 +197,34 @@ public class ImageService {
     int lastDotIndex = originalFilename.lastIndexOf('.');
     return (lastDotIndex >= 0) ? originalFilename.substring(lastDotIndex) : ".png";
   }
+
+  public Boolean deleteLectureImage(int lectureId, int lectureImageId) {
+    Lecture lecture = lectureRepository.getLectureById(lectureId);
+    // 기존 이미지 리스트에서 lectureImageId에 해당하는 LectureImage 찾기
+    Optional<LectureImage> lectureImageToDelete = lecture.getImages().stream()
+        .filter(image -> image.getId() == lectureImageId)
+        .findFirst();
+    if (lectureImageToDelete.isPresent()) {
+      String url = lectureImageToDelete.get().getImage();
+      String existingFileKey = url.substring(url.indexOf("uploads/"));
+
+      try {
+        System.out.println(existingFileKey);
+        // S3에서 기존 이미지 삭제
+        s3Service.deleteFile(existingFileKey);
+
+        // Lecture 객체에서 해당 이미지 삭제
+        lecture.getImages().remove(lectureImageToDelete.get());
+
+        // 변경된 Lecture 객체를 저장하여 업데이트
+        lectureRepository.save(lecture);
+
+        return true;
+      } catch (Exception e) {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
 }

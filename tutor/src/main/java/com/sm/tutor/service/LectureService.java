@@ -61,6 +61,8 @@ public class LectureService {
   private OngoingLectureRepository ongoingLectureRepository;
   @Autowired
   private CategoryDataRepository categoryDataRepository;
+  @Autowired
+  private ImageService imageService;
 
   public List<LectureDto> getAllLecturesWithDetails() {
     return lectureRepository.findAll().stream().map(lectureConverter::toDto)
@@ -253,6 +255,5 @@ public class LectureService {
   public String getCategoryByCategoryId(long categoryId) {
     return categoryDataRepository.getReferenceById(categoryId).getSpecificCategory();
   }
-
-
+  
 }

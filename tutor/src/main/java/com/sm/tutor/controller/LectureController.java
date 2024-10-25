@@ -146,8 +146,21 @@ public class LectureController {
         HttpStatus.OK);
   }
 
+  @Operation(summary = "강의 이미지 삭제")
+  @DeleteMapping("/{lectureId}")
+  public ResponseEntity<?> deleteLectureImage(HttpServletRequest request,
+      @PathVariable int lectureId, int lectureImageId) {
+    String email = (String) request.getAttribute("userEmail");
 
-
+    boolean status = imageService.deleteLectureImage(lectureId, lectureImageId);
+    if (status) {
+      return new ResponseEntity<>(
+          Collections.singletonMap("message", "Lecture Image deleted successfully"), HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(Collections.singletonMap("message", "Lecture not found"),
+          HttpStatus.NOT_FOUND);
+    }
+  }
   /*@Operation(summary = "강의 수정")
   @PutMapping("/{id}")
   public Lecture updateLecture(@PathVariable Integer id, @RequestBody Lecture lecture) {
