@@ -29,7 +29,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t $ECR_REPOSITORY .
+          docker build -t $ECR_REPOSITORY ./backend  # Dockerfile 위치 지정
 
       - name: Tag Docker image
         run: |
