@@ -57,7 +57,8 @@ jobs:
           
           # 새 작업 정의 등록
           echo $NEW_TASK_DEFINITION | jq '.taskDefinition | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' > new-task-def.json
-          aws ecs register-task-definition --cli-input-json file://new-task-def.json
+          # AWS CLI를 사용하여 새 작업 정의 등록
+          aws ecs register-task-definition --cli-input-json file://new-task-def.json --region $AWS_REGION
 
       - name: Update ECS service
         env:
@@ -66,4 +67,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           # ECS 서비스 업데이트
-          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment
+          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --task-definition $ECS_TASK_DEFINITION --region $AWS_REGION --force-new-deployment
