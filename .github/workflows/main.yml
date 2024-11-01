@@ -26,6 +26,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '17'  # 또는 필요한 Java 버전으로 설정
+          distribution: 'adopt'  # AdoptOpenJDK 또는 다른 배포판을 선택
 
       - name: Build with Gradle
         run: |
