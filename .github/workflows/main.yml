@@ -13,7 +13,7 @@ jobs:
       AWS_REGION: 'ap-northeast-2'
       ECR_REGISTRY: '975050350378.dkr.ecr.ap-northeast-2.amazonaws.com'
       ECR_REPOSITORY: 'modu/springrepo'
-      IMAGE_TAG: 'v1'
+      IMAGE_TAG: 'v2'
       ECS_TASK_DEFINITION: 'prod-modu-task-definition'  # 작업 정의 이름
       ECS_CLUSTER: 'modu-cluster'                  # ECS 클러스터 이름
       ECS_SERVICE: 'prod-modu-service'                  # ECS 서비스 이름
