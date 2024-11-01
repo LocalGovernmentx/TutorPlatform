@@ -27,14 +27,18 @@ jobs:
         with:
           java-version: '17'  # 또는 필요한 Java 버전으로 설정
           distribution: 'adopt'  # AdoptOpenJDK 또는 다른 배포판을 선택
-
-      - name: Build with Gradle
-        run: |
-          ./tutor/gradlew build  # Gradle 빌드 명령어
-
+          
       - name: Create application.properties
         run: |
           echo "${{ secrets.APP_PROPERTIES }}" > ./tutor/src/main/resources/application.properties
+
+      - name: Grant execute permission to Gradle wrapper
+        run: |
+          chmod +x ./tutor/gradlew  # gradlew 파일에 실행 권한 추가
+          
+      - name: Build with Gradle
+        run: |
+          ./tutor/gradlew build  # Gradle 빌드 명령어
           
       - name: Log in to Amazon ECR
         env:
