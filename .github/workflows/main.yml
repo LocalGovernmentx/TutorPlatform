@@ -22,8 +22,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Create application.properties
+        run: |
+          echo "${{ secrets.APP_PROPERTIES }}" > /tutor/src/main/resources/application.properties
+          
       - name: Log in to Amazon ECR
         env:
+          APP_PROPERTIES: ${{ secrets.APP_PROPERTIES }}
           AWS_REGION: ${{ env.AWS_REGION }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
