@@ -10,7 +10,7 @@ COPY ${JAR_FILE} app.jar
 
 # APM 환경 변수 설정
 ENV JAVA_TOOL_OPTIONS="-javaagent:/elastic-apm-agent.jar \
-                       -Delastic.apm.server_urls=http://apm-server:8200 \
+                       -Delastic.apm.server_urls=https://apm-server:8200 \
                        -Delastic.apm.service_name=modu-tutor-service \
                        -Delastic.apm.application_packages=com.sm.tutor"
 
