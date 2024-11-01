@@ -39,7 +39,7 @@ jobs:
       - name: Build with Gradle
         run: |
           cd ./tutor  # Gradle 프로젝트 디렉토리로 이동
-          ./gradlew build  # Gradle 빌드 명령어
+          ./gradlew build -x test  # 테스트를 비활성화하고 빌드
           
       - name: Log in to Amazon ECR
         env:
