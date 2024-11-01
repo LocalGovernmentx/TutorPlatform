@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '17'  # 또는 필요한 Java 버전으로 설정
-          distribution: 'adopt'  # AdoptOpenJDK 또는 다른 배포판을 선택
+          distribution: 'temurin'  # AdoptOpenJDK 또는 다른 배포판을 선택
           
       - name: Create application.properties
         run: |
@@ -51,7 +51,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t $ECR_REPOSITORY .  # Dockerfile 위치 지정
+          docker build -t $ECR_REPOSITORY ./tutor  # Dockerfile 위치 지정
 
       - name: Tag Docker image
         run: |
