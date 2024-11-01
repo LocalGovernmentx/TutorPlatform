@@ -38,7 +38,8 @@ jobs:
           
       - name: Build with Gradle
         run: |
-          ./tutor/gradlew build  # Gradle 빌드 명령어
+          cd ./tutor  # Gradle 프로젝트 디렉토리로 이동
+          ./gradlew build  # Gradle 빌드 명령어
           
       - name: Log in to Amazon ECR
         env:
