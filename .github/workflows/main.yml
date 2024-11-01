@@ -51,7 +51,7 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t $ECR_REPOSITORY ./tutor  # Dockerfile 위치 지정
+          docker build -t $ECR_REPOSITORY .  # Dockerfile 위치 지정
 
       - name: Tag Docker image
         run: |
