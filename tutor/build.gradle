@@ -52,6 +52,10 @@ dependencies {
     // aws s3
     implementation 'software.amazon.awssdk:s3:2.27.2'
 
+    // apm
+    implementation 'co.elastic.apm:apm-agent-api:1.30.0'  // 필요에 따라 버전 조정
+
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.mysql:mysql-connector-j'
