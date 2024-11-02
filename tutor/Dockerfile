@@ -8,7 +8,7 @@ COPY scouter-agent/scouter.agent.jar $SCOUTER_HOME/scouter.agent.jar
 COPY scouter-agent/conf/scouter.conf/ $SCOUTER_HOME/conf/scouter.conf
 
 ENV JAVA_OPTS="-javaagent:$SCOUTER_HOME/scouter.agent.jar"
-ENV JAVA_OPTS="${JAVA_OPTS} -Dscouter.config=$SCOUTER_HOME/conf/scouter.conf
+ENV JAVA_OPTS="${JAVA_OPTS} -Dscouter.config=$SCOUTER_HOME/conf/scouter.conf"
 
 COPY ${JAR_FILE} app.jar
 ENTRYPOINT ["java","$JAVA_OPTS", "-jar", "/app.jar"]
