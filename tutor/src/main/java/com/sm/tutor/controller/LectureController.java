@@ -75,7 +75,7 @@ public class LectureController {
   @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<?> createLecture(
       @RequestPart("lectureCreateDto") LectureCreateDto lectureCreateDto,
-      @RequestParam List<MultipartFile> files,
+      @RequestParam(required = false) List<MultipartFile> files,
       HttpServletRequest request) throws IOException {
     String email = (String) request.getAttribute("userEmail");
     Member member = memberService.getMemberByEmail(email);
@@ -91,12 +91,14 @@ public class LectureController {
         Long.valueOf(lectureDtoResult.getId()));
     // 파일들을 S3에 업로드
     System.out.println(lecture.get().getId());
-    for (MultipartFile file : files) {
-      String result = imageService.uploadImage(String.valueOf(lecture.get().getId()), "lecture",
-          file);
-      if (!result.equals("Lecture image uploaded successfully")) {
-        return new ResponseEntity<>(Collections.singletonMap("message", result),
-            HttpStatus.INTERNAL_SERVER_ERROR);
+    if (files != null) {
+      for (MultipartFile file : files) {
+        String result = imageService.uploadImage(String.valueOf(lecture.get().getId()), "lecture",
+            file);
+        if (!result.equals("Lecture image uploaded successfully")) {
+          return new ResponseEntity<>(Collections.singletonMap("message", result),
+              HttpStatus.INTERNAL_SERVER_ERROR);
+        }
       }
     }
     return new ResponseEntity<>(Collections.singletonMap("message", "Lecture created successfully"),
