@@ -16,7 +16,7 @@ public interface LectureRepository extends JpaRepository<Lecture, Long> {
   @Query("SELECT l FROM Lecture l " +
       "JOIN LectureLocation ll ON l.id = ll.lecture.id " +
       "JOIN LocationData loc ON ll.location.id = loc.id " +
-      "WHERE " +
+      "WHERE (l.activation = true) AND " +
       "(:categoryId IS NULL OR l.categoryId IN :categoryId) " +
       "AND (:tuitionMaximum IS NULL OR l.tuitionMaximum <= :tuitionMaximum) " +
       "AND (:locationId IS NULL OR loc.id IN :locationId) " +

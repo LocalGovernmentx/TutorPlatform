@@ -48,7 +48,7 @@ public class Lecture {
   @Column(name = "content", nullable = false)
   private String content;
 
-  @Column(name = "activation", nullable = false)
+  @Column(name = "activation", nullable = false, columnDefinition = "TINYINT")
   private Boolean activation;
 
   @Column(name = "online", nullable = false)
