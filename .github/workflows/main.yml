@@ -16,7 +16,7 @@ jobs:
       IMAGE_TAG: 'v2'
       ECS_TASK_DEFINITION: 'prod-modu-task-definition'  # 작업 정의 이름
       ECS_CLUSTER: 'modu-cluster'                  # ECS 클러스터 이름
-      ECS_SERVICE: 'prod-modu-service'                  # ECS 서비스 이름
+      ECS_SERVICE: 'prod-service'                  # ECS 서비스 이름
 
     steps:
       - name: Checkout repository
