@@ -18,35 +18,7 @@ class FileManagerDataSource {
     }
     try {
       String contents = await file.readAsString();
-      return jsonDecode(contents);
-    } catch (e, s) {
-      print(e);
-      print(s);
-
-      throw Exception('e');
-    }
-  }
-
-  // lecturefile
-  Future<File> _lectureFile(int id) async {
-    final path = await _localPath;
-    return File('$path/$id/lecture.json');
-  }
-
-  Future<File> addUpdateLecture(int id, Map<String, dynamic> jsonLecture) async {
-    final file = await _lectureFile(id);
-    return await file.writeAsString(jsonEncode(jsonLecture));
-  }
-
-  Future<void> removeLecture(int id) async {
-    final file = await _lectureFile(id);
-    await file.delete();
-  }
-
-  Future<Map<String, dynamic>> getLecture(int id) async {
-    final file = await _lectureFile(id);
-    try {
-      String contents = await file.readAsString();
+      print(contents);
       return jsonDecode(contents);
     } catch (e, s) {
       print(e);

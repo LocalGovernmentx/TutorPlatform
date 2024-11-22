@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:tutor_platform/main/domain/model/list_tile/lecture_list_tile.dart';
 import 'package:tutor_platform/main/presentation/components/lecture_list/scroll_view_model.dart';
 import 'package:tutor_platform/main/presentation/lecture/lecture_di.dart';
+import 'package:tutor_platform/main/presentation/temp/lecture_images/obtain_image_strings.dart';
 
 class LectureListTileView extends StatelessWidget {
   final LectureListTile lectureListTile;
@@ -26,13 +27,12 @@ class LectureListTileView extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                lectureListTile.mainImage ??
-                    'assets/images/default/lecture_default.png',
+              child: Image.network(
+                lectureListTile.mainImage ?? '',
                 width: 100,
                 height: 100,
                 errorBuilder: (context, error, stackTrace) => Image.asset(
-                  'assets/images/default/lecture_default.png',
+                  obtainLectureImage(lectureListTile.id),
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,

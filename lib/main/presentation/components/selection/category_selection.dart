@@ -5,9 +5,10 @@ import 'package:tutor_platform/main/presentation/components/lecture_list/scroll_
 import 'package:tutor_platform/main/presentation/components/selection/category_selection_view_model.dart';
 
 class CategorySelection extends StatelessWidget {
-  final ScrollViewModel scrollViewModel;
+  final Function changeCategory;
+  final bool canSelectMultiple;
 
-  const CategorySelection({super.key, required this.scrollViewModel});
+  const CategorySelection({super.key, required this.changeCategory, this.canSelectMultiple = true});
 
   @override
   Widget build(BuildContext context) {
@@ -100,11 +101,15 @@ class CategorySelection extends StatelessWidget {
                       ? ListView(
                           children: [
                             for (CategoryData category
-                                in viewModel.specificCategories!)
+                                in viewModel.specificCategories)
                               ListTile(
                                 title: Text(category.specificCategory),
                                 onTap: () {
-                                  viewModel.toggleCategory(category);
+                                  if (canSelectMultiple) {
+                                    viewModel.toggleCategory(category);
+                                  } else {
+                                    viewModel.setCategory(category);
+                                  }
                                 },
                                 selected: viewModel.isChosen(category),
                                 selectedColor: Colors.black,
@@ -127,7 +132,7 @@ class CategorySelection extends StatelessWidget {
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  scrollViewModel.set(viewModel.chosenCategories);
+                  changeCategory(viewModel.chosenCategories);
                   Navigator.pop(context);
                 },
                 child: const Text('선택 완료'),

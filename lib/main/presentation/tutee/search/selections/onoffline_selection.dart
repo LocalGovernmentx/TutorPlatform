@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tutor_platform/core/properties/lecture_information.dart';
 import 'package:tutor_platform/main/presentation/components/lecture_list/scroll_view_model.dart';
 
 class OnofflineSelection extends StatefulWidget {
@@ -52,7 +53,7 @@ class _OnofflineSelectionState extends State<OnofflineSelection> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    widget.viewModel.set(_selectedValue);
+                    widget.viewModel.set(OnOffline.values[_selectedValue]);
                     Navigator.pop(context);
                   },
                   child: const Text('선택 완료'),

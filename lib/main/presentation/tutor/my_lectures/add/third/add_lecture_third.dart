@@ -97,7 +97,7 @@ class AddLectureThird extends StatelessWidget {
                       ChangeNotifierProvider(create: (context) => context.read<AddLectureImageViewModel>()),
                       ChangeNotifierProvider(create: (context) => AddLectureDateViewModel()),
                     ],
-                    child: AddLectureFourth(lectureInfo: lectureInfo),
+                    child: AddLectureFourth(lectureInfo: lectureInfo, imageVM: viewModel),
                   ),
                 ),
               );

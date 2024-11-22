@@ -28,7 +28,7 @@ class DibsApiDataSource {
     }
 
     if (response.statusCode == 200) {
-      final List<dynamic> lectureList = jsonDecode(response.body);
+      final List<dynamic> lectureList = jsonDecode(utf8.decode(response.bodyBytes));
       print(lectureList);
       return Result.success(
         lectureList.map((e) => LectureSmallView.fromJson(e)).toList(),

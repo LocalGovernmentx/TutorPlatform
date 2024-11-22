@@ -1,18 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:tutor_platform/main/domain/model/dto/lecture_dto.dart';
 import 'package:tutor_platform/main/domain/model/dto/lecture_review_dto.dart';
+import 'package:tutor_platform/main/domain/use_case/handle_ongoing_lecture.dart';
 import 'package:tutor_platform/main/domain/use_case/obtain_lecture.dart';
 
 class LectureViewModel extends ChangeNotifier {
   final ObtainLecture _obtainLecture;
+  final HandleOngoingLecture _handleOngoingLecture;
 
-  LectureViewModel(lectureId, this._obtainLecture) {
+  LectureViewModel(lectureId, this._obtainLecture, this._handleOngoingLecture) {
+    _isOngoing = _handleOngoingLecture.isOngoing(lectureId);
     _init(lectureId);
   }
 
   bool _isLoading = true;
   late LectureDto _lecture;
   late String _tutorNickName;
+  late bool _isOngoing;
 
   void _init(int lectureId) async {
     _lecture = await _obtainLecture.getLecture(lectureId);
@@ -26,6 +30,8 @@ class LectureViewModel extends ChangeNotifier {
   LectureDto get lecture => _lecture;
 
   String get tutorNickname => _tutorNickName;
+
+  bool get isOngoing => _isOngoing;
 
   String get tuitionString {
     if (_lecture.tuitionMinimum == _lecture.tuitionMaximum) {
@@ -48,10 +54,10 @@ class LectureViewModel extends ChangeNotifier {
   }
 
   String get ratingString {
-    if (_lecture.reviews.isEmpty) {
+    if (_lecture.reviews!.isEmpty) {
       return '★ -- | 0개의 평가';
     }
-    return '★ ${_lecture.avgRating} | ${_lecture.reviews.length}개의 평가';
+    return '★ ${_lecture.avgRating} | ${_lecture.reviews!.length}개의 평가';
   }
 
   List<Widget> ratingImages(LectureReviewDto review) {
@@ -66,5 +72,13 @@ class LectureViewModel extends ChangeNotifier {
       stars.add(Image.asset('assets/images/reviews/unfilled_star.png', width: 16));
     }
     return stars;
+  }
+
+  void toggleOngoing() async {
+    final result = await _handleOngoingLecture.toggleOngoing(_lecture.id);
+    if (result) {
+      _isOngoing = !_isOngoing;
+      notifyListeners();
+    }
   }
 }

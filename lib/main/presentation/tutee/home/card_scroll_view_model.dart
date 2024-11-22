@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tutor_platform/main/domain/use_case/dibs/dibs_lecture.dart';
 import 'package:tutor_platform/main/domain/use_case/list_tile/card_view/card_scroll.dart';
+import 'package:tutor_platform/main/domain/use_case/list_tile/card_view/get_ongoing_lecture.dart';
 import 'package:tutor_platform/main/presentation/tutee/home/component/lecture_card_view.dart';
 
 class CardScrollViewModel extends ChangeNotifier{

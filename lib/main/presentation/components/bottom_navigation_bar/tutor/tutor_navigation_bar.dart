@@ -12,6 +12,7 @@ class TutorNavigationBar extends StatelessWidget {
     return NavigationBar(
       selectedIndex: currentScreen?.index ?? controller.page?.round() ?? 0,
       onDestinationSelected: (index) {
+        Navigator.popUntil(context, (route) => route.isFirst);
         controller.jumpToPage(index);
       },
       destinations: [

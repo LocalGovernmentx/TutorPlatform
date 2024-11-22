@@ -23,6 +23,6 @@ String WeekDayString(WeekDay day) {
 
 enum Difficulty {unused, easy, medium, hard}
 
-enum OnOffline {unused, online, offline, both}
+enum OnOffline {both, online, offline}
 
 enum StarRating {filled, halfFilled, unfilled}

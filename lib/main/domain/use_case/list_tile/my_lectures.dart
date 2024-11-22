@@ -6,7 +6,7 @@ import 'package:tutor_platform/main/domain/repository/lecture_api_repository.dar
 import 'package:tutor_platform/main/domain/use_case/list_tile/scroll.dart';
 import 'package:tutor_platform/main/domain/use_case/obtain_lecture.dart';
 
-class MyLectures extends ScrollUseCase {
+class MyLectures extends ScrollUseCase<LectureListTile> {
   final LectureApiRepository lectureApiRepository;
   final ObtainLecture obtainLecture;
 
@@ -16,9 +16,12 @@ class MyLectures extends ScrollUseCase {
 
   @override
   Future<List<int>> initLoadIds() async {
+    print('initLoadIds');
     Result<List<int>, String> result = await lectureApiRepository.getMyLectureIds();
+    print('result: $result');
     switch (result) {
       case Success<List<int>, String>():
+        print(result.value);
         _maxElements = result.value.length;
         return result.value;
       case Error<List<int>, String>():
@@ -29,9 +32,9 @@ class MyLectures extends ScrollUseCase {
   }
 
   @override
-  Future<ListTileObjects> loadId(int id) async {
+  Future<LectureListTile> loadId(int id) async {
     LectureDto lectureDto = await obtainLecture.getLecture(id);
-    return LectureListTile.fromDto(lectureDto);
+    return LectureListTile.fromLectureDto(lectureDto);
   }
 
   @override

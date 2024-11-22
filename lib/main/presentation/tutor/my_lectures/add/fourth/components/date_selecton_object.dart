@@ -19,10 +19,8 @@ class DateSelectonObject {
   bool validatedIncorrect = false;
 
   bool validate() {
-    validatedIncorrect = startTimeHour > endTimeHour ||
-        (startTimeHour == endTimeHour && startTimeMinute >= endTimeMinute);
-
-    return !validatedIncorrect;
+    return toDateTime(startTimeHour, startTimeMinute, startAM)
+        .isBefore(toDateTime(endTimeHour, endTimeMinute, endAM));
   }
 
   Map<String, dynamic> get lectureTimeDto => LectureTimeDto(
@@ -33,9 +31,9 @@ class DateSelectonObject {
     endTime: endTime,
   ).toJson();
 
-  get startTime => toDateTime(startTimeHour, startTimeMinute, startAM);
+  get startTime => toDateTimeString(startTimeHour, startTimeMinute, startAM);
 
-  get endTime => toDateTime(endTimeHour, endTimeMinute, endAM);
+  get endTime => toDateTimeString(endTimeHour, endTimeMinute, endAM);
 
   List<Map<String, dynamic>> get startSelection => [
         {
@@ -93,12 +91,16 @@ class DateSelectonObject {
 
   static get ampmVariants => ['오전', '오후'];
 
-  static get hourVariants => List.generate(24, (index) => index);
+  static get hourVariants => List.generate(12, (index) => index);
 
   static get minuteVariants => List.generate(60, (index) => index);
 
   static toDateTime(int hour, int minute, bool am) {
-    return DateTime(2021, 1, 1, am ? hour : hour + 12, minute)
+    return DateTime(2021, 1, 1, am ? hour : hour + 12, minute);
+  }
+
+  static toDateTimeString(int hour, int minute, bool am) {
+    return toDateTime(hour, minute, am)
         .toUtc()
         .toIso8601String();
   }

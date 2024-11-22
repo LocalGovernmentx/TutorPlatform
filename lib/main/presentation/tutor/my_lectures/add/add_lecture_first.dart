@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tutor_platform/main/domain/use_case/handle_categories.dart';
 import 'package:tutor_platform/main/presentation/components/appbar/common_app_bar.dart';
+import 'package:tutor_platform/main/presentation/components/selection/category_selection.dart';
+import 'package:tutor_platform/main/presentation/components/selection/category_selection_view_model.dart';
 import 'package:tutor_platform/main/presentation/tutor/my_lectures/add/add_lecture_second.dart';
 
 class AddLectureFirst extends StatefulWidget {
@@ -29,7 +33,7 @@ class _AddLectureFirstState extends State<AddLectureFirst> {
         padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
-          child: Column(
+          child: ListView(
             children: [
               const Text('강의 타이틀'),
               TextFormField(
@@ -75,7 +79,11 @@ class _AddLectureFirstState extends State<AddLectureFirst> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => AddLectureSecond(lectureInfo: lectureInfo),
+                    builder: (context) => ChangeNotifierProvider<CategorySelectionViewModel>(
+                      create: (context) => CategorySelectionViewModel(
+                        context.read<HandleCategories>(),
+                      ),
+                        child: AddLectureSecond(lectureInfo: lectureInfo)),
                   ),
                 );
               }

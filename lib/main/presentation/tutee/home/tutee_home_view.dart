@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tutor_platform/main/presentation/components/appbar/main_page_app_bar.dart';
+import 'package:tutor_platform/main/presentation/components/bottom_navigation_bar/tutee/tutee_navigation_bar.dart';
+import 'package:tutor_platform/main/presentation/components/page_controller_provider.dart';
 import 'package:tutor_platform/main/presentation/tutee/home/di/dibs_card_view_di.dart';
 import 'package:tutor_platform/main/presentation/tutee/home/di/home_ongoing_lectures_di.dart';
 

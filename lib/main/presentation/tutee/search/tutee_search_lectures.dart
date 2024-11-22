@@ -30,13 +30,14 @@ class TuteeSearchLectures extends StatelessWidget {
                 Expanded(
                     child: OutlinedButton(
                         onPressed: () {
+                          final categoryVM = context.read<CategorySelectionViewModel>();
+                          print('categoryVM: ${categoryVM.chosenCategories}');
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ChangeNotifierProvider<CategorySelectionViewModel>(
-                                create: (context) => CategorySelectionViewModel(
-                                    context.read<HandleCategories>()),
-                                child: CategorySelection(scrollViewModel: viewModel),
+                              builder: (context) => ChangeNotifierProvider<CategorySelectionViewModel>.value(
+                                value: categoryVM,
+                                child: CategorySelection(changeCategory: viewModel.set),
                               ),
                             ),
                           );

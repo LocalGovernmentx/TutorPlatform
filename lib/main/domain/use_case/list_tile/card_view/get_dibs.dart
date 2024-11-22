@@ -65,7 +65,7 @@ class GetDibs implements CardScroll {
     }
 
     final LectureDto lectureDto = await _obtainLecture.getLecture(id);
-    _lectures[id] = LectureListTile.fromDto(lectureDto);
+    _lectures[id] = LectureListTile.fromLectureDto(lectureDto);
 
     return _lectures[id]!;
   }

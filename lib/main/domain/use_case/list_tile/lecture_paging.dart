@@ -47,7 +47,7 @@ class LecturePaging implements ScrollUseCase<LectureListTile> {
 
     _lectures.clear();
     _lectures.addAll({
-      for (var e in pageLectureDto.content) e.id: LectureListTile.fromDto(e)
+      for (var e in pageLectureDto.content) e.id: LectureListTile.fromLectureSmallView(e)
     });
     print(_lectures);
 
@@ -61,7 +61,7 @@ class LecturePaging implements ScrollUseCase<LectureListTile> {
     }
 
     final LectureDto lectureDto = await _obtainLecture.getLecture(id);
-    _lectures[id] = LectureListTile.fromDto(lectureDto);
+    _lectures[id] = LectureListTile.fromLectureDto(lectureDto);
 
     return _lectures[id]!;
   }
@@ -85,7 +85,7 @@ class LecturePaging implements ScrollUseCase<LectureListTile> {
     _page++;
 
     _lectures.addAll({
-      for (var e in pageLectureDto.content) e.id: LectureListTile.fromDto(e)
+      for (var e in pageLectureDto.content) e.id: LectureListTile.fromLectureSmallView(e)
     });
 
     return pageLectureDto.content.map((e) => e.id).toList();
@@ -100,10 +100,14 @@ class LecturePaging implements ScrollUseCase<LectureListTile> {
       _onOffline = value;
     }
     if (value is int) {
+      print(value);
       if (value < -1) {
         _maxPrice = null;
       } else {
         _maxPrice = value;
+      }
+      if (value is OnOffline) {
+        _onOffline = value as OnOffline;
       }
     }
     if (value is List<CategoryData>) {

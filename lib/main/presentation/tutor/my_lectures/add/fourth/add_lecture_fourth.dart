@@ -3,13 +3,19 @@ import 'package:provider/provider.dart';
 import 'package:tutor_platform/core/design/colors.dart';
 import 'package:tutor_platform/core/design/style.dart';
 import 'package:tutor_platform/core/properties/lecture_information.dart';
+import 'package:tutor_platform/main/data/data_source/image_api.dart';
 import 'package:tutor_platform/main/presentation/components/appbar/common_app_bar.dart';
+import 'package:tutor_platform/main/presentation/tutor/my_lectures/add/add_lecture_final.dart';
 import 'package:tutor_platform/main/presentation/tutor/my_lectures/add/fourth/add_lecture_date_selection.dart';
 import 'package:tutor_platform/main/presentation/tutor/my_lectures/add/fourth/add_lecture_date_view_model.dart';
 import 'package:tutor_platform/main/presentation/tutor/my_lectures/add/fourth/components/date_selecton_object.dart';
+import 'package:tutor_platform/main/presentation/tutor/my_lectures/add/third/add_lecture_image_view_model.dart';
 
 class AddLectureFourth extends StatelessWidget {
-  const AddLectureFourth({super.key, required this.lectureInfo});
+  final AddLectureImageViewModel imageVM;
+
+  const AddLectureFourth(
+      {super.key, required this.lectureInfo, required this.imageVM});
 
   final Map<String, dynamic> lectureInfo;
 
@@ -80,7 +86,15 @@ class AddLectureFourth extends StatelessWidget {
           height: 54,
           child: ElevatedButton(
             onPressed: () {
-              viewModel.finalize(lectureInfo);
+              if (!viewModel.finalize(lectureInfo)) return;
+
+              viewModel.errorMsg = null;
+
+              showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    AddLectureFinal(lectureInfo: lectureInfo, imageVM: imageVM),
+              );
             },
             child: const Text('강의 추가하기'),
           ),

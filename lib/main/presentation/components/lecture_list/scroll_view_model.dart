@@ -6,7 +6,7 @@ import 'package:tutor_platform/main/domain/use_case/list_tile/scroll.dart';
 
 class ScrollViewModel extends ChangeNotifier {
   final ScrollUseCase<ListTileObjects> _scrollUseCase;
-  final DibsUseCase _dibsUseCase;
+  final DibsUseCase? _dibsUseCase;
 
   ScrollViewModel(this._scrollUseCase, this._dibsUseCase) {
     _initLoad();
@@ -37,6 +37,9 @@ class ScrollViewModel extends ChangeNotifier {
     if (!_isLoading) {
       _isLoading = true;
       notifyListeners();
+      if (_maxElements % 20 == 0) {
+        _maxElements += 20;
+      }
     }
 
     List<int> initLoads = await _scrollUseCase.initLoadIds();
@@ -66,21 +69,21 @@ class ScrollViewModel extends ChangeNotifier {
   }
 
   Future<void> addDib(int id) async {
-    await _dibsUseCase.addDib(id);
+    await _dibsUseCase?.addDib(id);
     notifyListeners();
   }
 
   Future<void> removeDib(int id) async {
-    await _dibsUseCase.removeDib(id);
+    await _dibsUseCase?.removeDib(id);
     notifyListeners();
   }
 
   bool isDib(int id) {
-    return _dibsUseCase.isDib(id);
+    return _dibsUseCase?.isDib(id) ?? false;
   }
 
   Future<void> toggleDib(int id) async {
-    await _dibsUseCase.toggleDib(id);
+    await _dibsUseCase?.toggleDib(id);
     notifyListeners();
   }
 

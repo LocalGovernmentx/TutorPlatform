@@ -10,7 +10,7 @@ class LectureReview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lectureViewModel = context.watch<LectureViewModel>();
-    final List<LectureReviewDto> reviews = lectureViewModel.lecture.reviews;
+    final List<LectureReviewDto> reviews = lectureViewModel.lecture.reviews!;
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(

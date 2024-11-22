@@ -7,6 +7,7 @@ import 'package:tutor_platform/main/presentation/temp/my_page_view_model.dart';
 
 class MyPageView extends StatelessWidget {
   final PageController? pageController;
+
   const MyPageView({super.key, this.pageController});
 
   @override
@@ -19,20 +20,62 @@ class MyPageView extends StatelessWidget {
         actions: const [],
         pageController: pageController,
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(20),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Welcome'),
-            Text(myPageViewModel.jwtToken.accessToken),
-            Text(myPageViewModel.jwtToken.refreshToken),
-            ElevatedButton(
+            const SizedBox(height: 10),
+            Center(
+              child: Column(
+                children: [
+                  ClipOval(
+                    child: Image.asset(
+                      'assets/images/default/default_profile_image.png',
+                      width: 100,
+                      height: 100,
+                    ),
+                  ),
+
+                ],
+              ),
+            ),
+            const SizedBox(height: 10),
+            TextButton(
               onPressed: () {
                 final viewModel = context.read<MainViewModel>();
                 viewModel.onEvent(const ScreenState.signInUpScreenState(false));
               },
-              child: const Text('logout'),
+              child: Text('로그아웃', style: Theme.of(context).textTheme.bodyLarge),
             ),
+            // const SizedBox(height: 10),
+            // TextButton(
+            //   onPressed: () {
+            //     showDialog(context: context, builder: (context) {
+            //       return AlertDialog(
+            //         title: const Text('회원탈퇴'),
+            //         content: const Text('정말로 탈퇴하시겠습니까?'),
+            //         actions: [
+            //           TextButton(
+            //             onPressed: () {
+            //               Navigator.pop(context);
+            //             },
+            //             child: const Text('취소'),
+            //           ),
+            //           TextButton(
+            //             onPressed: () {
+            //               viewModel.deleteUser();
+            //               Navigator.pop(context);
+            //             },
+            //             child: const Text('확인', style: TextStyle(color: Colors.red),),
+            //           ),
+            //         ],
+            //       );
+            //     });
+            //   },
+            //   child: const Text('회원탈퇴', style: TextStyle(color: Colors.red),),
+            // ),
           ],
         ),
       ),

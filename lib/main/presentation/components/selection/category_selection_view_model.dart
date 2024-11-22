@@ -34,6 +34,12 @@ class CategorySelectionViewModel extends ChangeNotifier {
 
   List<String> get generalCategoryStrings => _generalCategoryStrings;
 
+  void setCategory(CategoryData category) {
+    _chosenCategories.clear();
+    _chosenCategories.add(category);
+    notifyListeners();
+  }
+
   void setGeneralCategory(String category) {
     _generalCategory = category;
 

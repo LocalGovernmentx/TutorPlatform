@@ -22,7 +22,7 @@ class TutorPageControllerView extends StatelessWidget {
         },
         children: [
           const TutorHomeView(),
-          const TutorAfterSchoolDi(),
+          TutorAfterSchoolDi(pageController: provider.controller,),
           MyPageView(
             pageController: provider.controller,
           ),

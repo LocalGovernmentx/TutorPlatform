@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:tutor_platform/core/models/jwt_token.dart';
 import 'package:tutor_platform/core/models/user_info.dart';
 import 'package:tutor_platform/core/network_errors.dart';
+import 'package:tutor_platform/core/properties/backend_information.dart';
 import 'package:tutor_platform/core/result.dart';
 
 class LoginApiDataSource {
@@ -11,7 +12,7 @@ class LoginApiDataSource {
 
   LoginApiDataSource(this.client);
 
-  static const baseUrl = 'https://www.modututor.com/api';
+  static const baseUrl = backendBaseUrl;
 
   Future<Result<JwtToken, NetworkErrors>> login(
       String email, String password) async {
@@ -74,7 +75,9 @@ class LoginApiDataSource {
         return Result.error(
             NetworkErrors.unknownStatusCode(response.statusCode, message));
       }
-    } catch (e) {
+    } catch (e, s) {
+      print(e);
+      print(s);
       return Result.error(NetworkErrors.timeout());
     }
   }
@@ -544,4 +547,5 @@ class LoginApiDataSource {
       return Result.error(NetworkErrors.timeout());
     }
   }
+
 }

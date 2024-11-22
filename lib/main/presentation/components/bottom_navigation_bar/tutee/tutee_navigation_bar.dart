@@ -4,15 +4,16 @@ import 'package:tutor_platform/main/presentation/temp/my_page_view.dart';
 import 'package:tutor_platform/main/presentation/tutee/search/tutee_search_di.dart';
 
 class TuteeNavigationBar extends StatelessWidget {
-  final TuteeSelectedScreen currentScreen;
+  final TuteeSelectedScreen? currentScreen;
   final PageController controller;
-  const TuteeNavigationBar({super.key, required this.currentScreen, required this.controller});
+  const TuteeNavigationBar({super.key, this.currentScreen, required this.controller});
 
   @override
   Widget build(BuildContext context) {
     return NavigationBar(
-      selectedIndex: currentScreen.index,
+      selectedIndex: currentScreen?.index ?? 0,
       onDestinationSelected: (index) {
+        Navigator.popUntil(context, (route) => route.isFirst);
         controller.jumpToPage(index);
       },
       destinations: [

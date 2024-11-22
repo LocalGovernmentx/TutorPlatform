@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_platform/main/domain/repository/lecture_api_repository.dart';
 import 'package:tutor_platform/main/domain/use_case/dibs/dibs_lecture.dart';
+import 'package:tutor_platform/main/domain/use_case/handle_ongoing_lecture.dart';
 import 'package:tutor_platform/main/domain/use_case/list_tile/card_view/get_ongoing_lecture.dart';
 import 'package:tutor_platform/main/domain/use_case/obtain_lecture.dart';
 import 'package:tutor_platform/main/presentation/tutee/home/card_scroll_view.dart';
@@ -15,9 +16,9 @@ class HomeOngoingLecturesDi extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ProxyProvider2<LectureApiRepository, ObtainLecture, GetOngoingLecture>(
-            update: (context, apiRepo, getLec, previous) =>
-                GetOngoingLecture(apiRepo, getLec)),
+        ProxyProvider2<HandleOngoingLecture, ObtainLecture, GetOngoingLecture>(
+            update: (context, handLec, getLec, previous) =>
+                GetOngoingLecture(handLec, getLec)),
         ChangeNotifierProvider<CardScrollViewModel>(
           create: (context) => CardScrollViewModel(
             context.read<GetOngoingLecture>(),

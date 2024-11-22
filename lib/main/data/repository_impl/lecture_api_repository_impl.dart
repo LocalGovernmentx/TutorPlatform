@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:tutor_platform/core/result.dart';
 import 'package:tutor_platform/main/data/data_source/file_manager_data_source.dart';
 import 'package:tutor_platform/main/data/data_source/lecture_api_data_source.dart';
+import 'package:tutor_platform/main/domain/model/dto/lecture_create_dto.dart';
 import 'package:tutor_platform/main/domain/model/dto/lecture_dto.dart';
 import 'package:tutor_platform/main/domain/model/dto/page_lecture_dto.dart';
 import 'package:tutor_platform/main/domain/repository/lecture_api_repository.dart';
@@ -28,8 +31,22 @@ class LectureApiRepositoryImpl implements LectureApiRepository {
 
   @override
   Future<Result<List<int>, String>> getMyLectureIds() async {
-    List<dynamic> unfurnishedList = await fileManager.readMyLecture();
-    List<int> lectureList = unfurnishedList.map((e) => e as int).toList();
-    return Result.success(lectureList);
+    try {
+      List<LectureDto> list = await lectureApiDataSource.getAllLectures();
+      return Result.success(list.map((e) => e.id).toList());
+    }
+    catch (e) {
+      return Result.error(e.toString());
+    }
+  }
+
+  @override
+  Future<Result<void, String>> toggleOngoing(int id) async {
+    return await lectureApiDataSource.startLecture(id);
+  }
+
+  @override
+  Future<Result<String, String>> makeLecture(LectureCreateDto lecture, File? mainImage, List<File> subImages) async {
+    return await lectureApiDataSource.makeLecture(lecture.toJson(), mainImage, subImages);
   }
 }

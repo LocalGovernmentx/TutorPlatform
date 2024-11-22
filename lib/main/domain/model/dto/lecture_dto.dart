@@ -27,23 +27,23 @@ class LectureDto with _$LectureDto {
     required int tuteeNumber,
     required int? gender,
     required int level,
-    required List<LectureAgeDto> ages,
-    required List<LectureImageDto> images,
-    @Default([]) List<LectureLocationDto> locations,
-    required List<LectureReviewDto> reviews,
-    required List<LectureTimeDto> times,
+    required List<LectureAgeDto>? ages,
+    required List<LectureImageDto>? images,
+    @Default([]) List<LectureLocationDto>? locations,
+    required List<LectureReviewDto>? reviews,
+    required List<LectureTimeDto>? times,
   }) = _LectureDto;
 
   factory LectureDto.fromJson(Map<String, dynamic> json) =>
       _$LectureDtoFromJson(json);
 
-  double? get avgRating => reviews.isEmpty
+  double? get avgRating => reviews!.isEmpty
       ? null
-      : reviews.map((e) => e.score).reduce((a, b) => a + b) / reviews.length;
+      : reviews!.map((e) => e.score).reduce((a, b) => a + b) / reviews!.length;
 
-  String? get mainImage => images.firstWhere((e) => e.mainImage, orElse: () => LectureImageDto.empty()).image;
+  String? get mainImage => images!.firstWhere((e) => e.mainImage, orElse: () => images!.isEmpty ? LectureImageDto.empty() : images![0]).image;
 
-  List<String> get subImages => images.where((e) => !e.mainImage).map((e) => e.image).toList();
+  List<String> get subImages => images!.where((e) => !e.mainImage).map((e) => e.image).toList();
 
   OnOffline get onlineOrOffline => OnOffline.values[online];
 }

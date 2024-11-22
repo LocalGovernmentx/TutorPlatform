@@ -1,37 +1,26 @@
 import 'package:tutor_platform/core/properties/frontend_property.dart';
-import 'package:tutor_platform/core/result.dart';
 import 'package:tutor_platform/main/domain/model/dto/lecture_dto.dart';
 import 'package:tutor_platform/main/domain/model/list_tile/lecture_list_tile.dart';
-import 'package:tutor_platform/main/domain/repository/lecture_api_repository.dart';
+import 'package:tutor_platform/main/domain/use_case/handle_ongoing_lecture.dart';
 import 'package:tutor_platform/main/domain/use_case/list_tile/card_view/card_scroll.dart';
 import 'package:tutor_platform/main/domain/use_case/obtain_lecture.dart';
 
 class GetOngoingLecture implements CardScroll {
-  final LectureApiRepository _lectureApiRepository;
+  final HandleOngoingLecture _handleOngoingLecture;
   final ObtainLecture _obtainLecture;
 
-  GetOngoingLecture(this._lectureApiRepository, this._obtainLecture);
+  GetOngoingLecture(this._handleOngoingLecture, this._obtainLecture);
 
   int _maxElements = -1;
   int _page = 0;
   final Map<int, LectureListTile> _lectures = {};
 
   Future<List<int>> _getListIds(int page, int count) async {
-    final Result<List<LectureDto>, String> result =
-        await _lectureApiRepository.getOngoingLectures(page, count);
-
-    late List<LectureDto> lectureList;
-    switch (result) {
-      case Error<List<LectureDto>,String>():
-        print(result.error);
-        return [];
-      case Success<List<LectureDto>,String>():
-        lectureList = result.value;
-    }
+    final List<LectureDto> lectureList = await _handleOngoingLecture.getOngoingLectures(page, count);
 
     _maxElements = lectureList.length;
 
-    _lectures.addAll({ for (var e in lectureList) e.id : LectureListTile.fromDto(e) });
+    _lectures.addAll({ for (var e in lectureList) e.id : LectureListTile.fromLectureDto(e) });
     print(_lectures);
 
     return lectureList.map((e) => e.id).toList();
@@ -75,7 +64,7 @@ class GetOngoingLecture implements CardScroll {
 
     final LectureDto lectureDto = await _obtainLecture.getLecture(id);
 
-    return LectureListTile.fromDto(lectureDto);
+    return LectureListTile.fromLectureDto(lectureDto);
   }
 
   @override

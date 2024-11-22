@@ -10,7 +10,7 @@ class FeeSelection extends StatefulWidget {
 }
 
 class _FeeSelectionState extends State<FeeSelection> {
-  final selectionValue = [-1, for (int i = 10; i > 0; i--) i*100000];
+  final selectionValue = [-1, for (int i = 10; i > 0; i--) i*10];
   final selectionList = ['전체', for (int i = 10; i > 0; i--) '${i*10}만원 이하'];
   int _selectedValue = 0;
 

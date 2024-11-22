@@ -8,6 +8,7 @@ import 'package:tutor_platform/main/presentation/components/appbar/common_app_ba
 import 'package:tutor_platform/main/presentation/lecture/lecture_pictures.dart';
 import 'package:tutor_platform/main/presentation/lecture/lecture_review.dart';
 import 'package:tutor_platform/main/presentation/lecture/lecture_view_model.dart';
+import 'package:tutor_platform/main/presentation/temp/lecture_images/obtain_image_strings.dart';
 
 class LectureView extends StatelessWidget {
   const LectureView({super.key});
@@ -39,7 +40,7 @@ class LectureView extends StatelessWidget {
           Image.network(
             lecture.mainImage ?? '',
             errorBuilder: (context, error, stackTrace) => Image.asset(
-              'assets/images/default/lecture_default.png',
+              obtainLectureImage(lecture.id),
               height: 250,
               fit: BoxFit.cover,
             ),
@@ -110,9 +111,11 @@ class LectureView extends StatelessWidget {
             const SizedBox(width: 10),
             Expanded(
               child: OutlinedButton(
-                onPressed: () {},
-                style: uncheckedButtonStyle,
-                child: const Text('수강하기'),
+                onPressed: () {
+                  lectureViewModel.toggleOngoing();
+                },
+                style: lectureViewModel.isOngoing ? null : uncheckedButtonStyle,
+                child: Text(lectureViewModel.isOngoing ? '수업 듣는 중' : '수업신청'),
               ),
             ),
           ],

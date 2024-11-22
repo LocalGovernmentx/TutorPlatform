@@ -8,13 +8,15 @@ part 'lecture_small_view.g.dart';
 class LectureSmallView with _$LectureSmallView {
   const factory LectureSmallView({
     required int id,
-    required String? tutorNickname,
+    required String? nickname,
     required int categoryId,
     required String title,
-    required bool activation,
-    required String? mainImage,
+    required String content,
+    required int? score,
+    required String? image,
     required List<LectureLocationDto> locations,
   }) = _LectureSmallView;
 
-  factory LectureSmallView.fromJson(Map<String, dynamic> json) => _$LectureSmallViewFromJson(json);
+  factory LectureSmallView.fromJson(Map<String, dynamic> json) =>
+      _$LectureSmallViewFromJson(json);
 }

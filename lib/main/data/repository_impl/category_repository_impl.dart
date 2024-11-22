@@ -27,21 +27,21 @@ class CategoryRepositoryImpl implements CategoryRepository {
 
   @override
   Future<List<CategoryData>> getCategories() async {
-    try {
-      List<dynamic> unfurnishedCategories =
-          await _fileManagerDataSource.readCategory();
-      List<CategoryData> categories = [
-        for (dynamic category in unfurnishedCategories)
-          CategoryData.fromJson(category)
-      ];
-      updateCategories();
-      return categories;
-    } catch (e, s) {
-      print(e);
-      print(s);
+    // try {
+    //   List<dynamic> unfurnishedCategories =
+    //       await _fileManagerDataSource.readCategory();
+    //   List<CategoryData> categories = [
+    //     for (dynamic category in unfurnishedCategories)
+    //       CategoryData.fromJson(category)
+    //   ];
+    //   updateCategories();
+    //   return categories;
+    // } catch (e, s) {
+    //   print(e);
+    //   print(s);
       List<CategoryData> categories = await _updateCategories();
       return categories;
-    }
+    // }
   }
 
   Future<List<CategoryData>> _updateCategories() async {

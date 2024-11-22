@@ -37,8 +37,8 @@ class AddLectureDateViewModel extends ChangeNotifier {
     return hasErrors;
   }
 
-  void finalize(Map<String, dynamic> lectureDto) {
-    if (_hasError()) return;
+  bool finalize(Map<String, dynamic> lectureDto) {
+    if (_hasError()) return false;
 
     List<Map<String, dynamic>> lectureTimes = [];
 
@@ -49,5 +49,7 @@ class AddLectureDateViewModel extends ChangeNotifier {
     lectureDto['times'] = lectureTimes;
 
     print(lectureDto);
+
+    return true;
   }
 }

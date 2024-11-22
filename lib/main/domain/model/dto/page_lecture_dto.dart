@@ -1,5 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:tutor_platform/main/domain/model/dto/lecture_dto.dart';
+import 'package:tutor_platform/main/domain/model/dto/lecture_small_view.dart';
 import 'package:tutor_platform/main/domain/model/dto/pageable_object.dart';
 import 'package:tutor_platform/main/domain/model/dto/sort_object.dart';
 
@@ -12,7 +13,7 @@ class PageLectureDto with _$PageLectureDto {
     required int totalPages,
     required int totalElements,
     required int size,
-    required List<LectureDto> content,
+    required List<LectureSmallView> content,
     required int number,
     required SortObject sort,
     required PageableObject pageable,

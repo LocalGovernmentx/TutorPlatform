@@ -1,1 +1,1 @@
-const String backendBaseUrl = 'https://www.modututor.com/api';
+const String backendBaseUrl = 'https://modu-server.com/api';

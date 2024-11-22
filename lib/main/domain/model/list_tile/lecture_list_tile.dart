@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tutor_platform/main/domain/model/dto/lecture_dto.dart';
+import 'package:tutor_platform/main/domain/model/dto/lecture_small_view.dart';
 import 'package:tutor_platform/main/domain/model/list_tile/list_tile_objects.dart';
 import 'package:tutor_platform/main/presentation/components/lecture_list/lecture_list_tile_view.dart';
 
@@ -25,13 +26,23 @@ class LectureListTile implements ListTileObjects {
     required this.isBookmarked,
   });
 
-  LectureListTile.fromDto(LectureDto lectureDto, {isBookmarked, this.tutorNickname})
+  LectureListTile.fromLectureDto(LectureDto lectureDto, {isBookmarked, this.tutorNickname})
       : id = lectureDto.id,
         title = lectureDto.title,
         mainImage = lectureDto.mainImage,
         categoryId = lectureDto.categoryId,
         content = lectureDto.content,
         rating = lectureDto.avgRating,
+        isBookmarked = isBookmarked ?? false;
+
+  LectureListTile.fromLectureSmallView(LectureSmallView lectureSmallView, {isBookmarked})
+      : id = lectureSmallView.id,
+        title = lectureSmallView.title,
+        mainImage = lectureSmallView.image,
+        tutorNickname = lectureSmallView.nickname,
+        categoryId = lectureSmallView.categoryId,
+        content = lectureSmallView.content,
+        rating = lectureSmallView.score?.toDouble(),
         isBookmarked = isBookmarked ?? false;
 
   @override

@@ -22,7 +22,6 @@ class LectureCreateDto with _$LectureCreateDto {
     required int? gender,
     required int level,
     required List<LectureAgeDto> ages,
-    required List<LectureImageDto> images,
     @Default([]) List<LectureLocationDto> locations,
     required List<LectureReviewDto> reviews,
     required List<LectureTimeDto> times,

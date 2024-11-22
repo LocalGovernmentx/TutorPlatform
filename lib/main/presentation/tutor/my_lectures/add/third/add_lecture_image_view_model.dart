@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tutor_platform/core/design/colors.dart';
+import 'package:tutor_platform/main/domain/model/dto/lecture_create_dto.dart';
+import 'package:tutor_platform/main/domain/use_case/make_lecture.dart';
 
 class AddLectureImageViewModel extends ChangeNotifier {
   final ImagePicker _picker = ImagePicker();
@@ -91,5 +94,27 @@ class AddLectureImageViewModel extends ChangeNotifier {
   Future<void> removeSubImage(File elem) async {
     _subImages.remove(elem);
     notifyListeners();
+  }
+
+  Future<void> removeMainImage() async {
+    _mainImage = null;
+    notifyListeners();
+  }
+
+  final _eventController = StreamController<String?>.broadcast();
+
+  Stream get eventStream => _eventController.stream;
+
+  Future<void> uploadLecture(Map<String, dynamic> lecture, MakeLecture makeLecture) async {
+    String? result = await makeLecture(LectureCreateDto.fromJson(lecture), _mainImage, _subImages);
+
+    _eventController.add(result);
+  }
+
+  @override
+  void dispose() {
+    _eventController.close();
+
+    super.dispose();
   }
 }

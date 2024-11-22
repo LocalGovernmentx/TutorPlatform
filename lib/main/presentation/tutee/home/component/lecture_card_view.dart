@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tutor_platform/main/domain/model/list_tile/lecture_list_tile.dart';
 import 'package:tutor_platform/main/presentation/lecture/lecture_di.dart';
+import 'package:tutor_platform/main/presentation/temp/lecture_images/obtain_image_strings.dart';
 import 'package:tutor_platform/main/presentation/tutee/home/card_scroll_view_model.dart';
 
 class LectureCardView extends StatelessWidget {
@@ -32,7 +33,7 @@ class LectureCardView extends StatelessWidget {
                   width: 160,
                   height: 160,
                   errorBuilder: (context, stacktrace, stackTrace) => Image.asset(
-                    'assets/images/default/lecture_default.png',
+                    obtainLectureImage(lectureListTile.id),
                     width: 160,
                     height: 160,
                     fit: BoxFit.cover,
