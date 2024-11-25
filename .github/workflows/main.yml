@@ -1,0 +1,90 @@
+name: Build and Push Docker Image to ECR
+
+on:
+  push:
+    branches:
+      - feat/be  # feat/be 브랜치에 푸시할 때만 실행
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: 'ap-northeast-2'
+      ECR_REGISTRY: '975050350378.dkr.ecr.ap-northeast-2.amazonaws.com'
+      ECR_REPOSITORY: 'modu/springrepo'
+      IMAGE_TAG: 'v2'
+      ECS_TASK_DEFINITION: 'prod-modu-task-definition'  # 작업 정의 이름
+      ECS_CLUSTER: 'modu-cluster'                  # ECS 클러스터 이름
+      ECS_SERVICE: 'prod-service'                  # ECS 서비스 이름
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'  # 또는 필요한 Java 버전으로 설정
+          distribution: 'temurin'  # AdoptOpenJDK 또는 다른 배포판을 선택
+          
+      - name: Create application.properties
+        run: |
+          echo "${{ secrets.APP_PROPERTIES }}" > ./tutor/src/main/resources/application.properties
+
+      - name: Grant execute permission to Gradle wrapper
+        run: |
+          chmod +x ./tutor/gradlew  # gradlew 파일에 실행 권한 추가
+          
+      - name: Build with Gradle
+        run: |
+          cd ./tutor  # Gradle 프로젝트 디렉토리로 이동
+          ./gradlew build -x test  # 테스트를 비활성화하고 빌드
+          
+      - name: Log in to Amazon ECR
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+
+      - name: Build Docker image
+        run: |
+          cd ./tutor
+          docker build -t $ECR_REPOSITORY .  # Dockerfile 위치 지정
+
+      - name: Tag Docker image
+        run: |
+          docker tag $ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Push Docker image to ECR
+        run: |
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+      - name: Register new ECS task definition
+        id: taskdef
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          # 현재 작업 정의 가져오기
+          TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition $ECS_TASK_DEFINITION)
+          
+          # 현재 작업 정의의 컨테이너 정의에서 이미지 업데이트
+          NEW_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --arg IMAGE "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" '.taskDefinition.containerDefinitions[0].image = $IMAGE')
+          
+          # 새 작업 정의 등록
+          echo $NEW_TASK_DEFINITION | jq '.taskDefinition | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' > new-task-def.json
+          # AWS CLI를 사용하여 새 작업 정의 등록
+          aws ecs register-task-definition --cli-input-json file://new-task-def.json --region $AWS_REGION
+
+      - name: Update ECS service
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          # ECS 서비스 업데이트
+          aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --task-definition $ECS_TASK_DEFINITION --region $AWS_REGION --force-new-deployment
