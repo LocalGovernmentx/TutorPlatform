@@ -12,6 +12,7 @@
 * [Architecture](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#Architecture)
 * [ERD](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#ERD)
 * [Package structure](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#Package-structure)
+* [API Specs](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#API-Specs)
 
 ## 주요 기능
 
