@@ -1,0 +1,13 @@
+__pycache__/
+files/
+jsondata/
+korquad_prompt_da/
+llama3-korquad-finetuning-da-8B/
+MyProject/
+ollama-webui/
+pdfjsondata/
+testfiles/
+
+.env
+
+Modelfile
