@@ -1,91 +1,65 @@
-# TutorPlatform
+# (모두의 튜터) 튜터 매칭 플랫폼
+
+![sample-image](tutor/references/sample-image.png)
+
+‘모두의 튜터’는 학생들에게 멘토링, 과외, 입시 컨설팅 등의 다양한 튜터링 활동을 제공하고, 공공기관, 초등학교 및 중학교에서 방과 후 학교 강사로 활동할 수 있도록 매칭해주는 종합 교육 서비스입니다. 이를 통해 학생들은 의미 있는 학습 경험을 쌓고, 튜터들은 전문성을 발휘하며 일자리를 얻을 수 있습니다. 또한, 기관들은 필요한 인력을 효율적으로 확보할 수 있어 교육의 질을 높이는 데 기여합니다.
+
 
 ## 목차
 
-* [커밋규칙](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#커밋-규칙)
-* [브랜치규칙](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#브랜치-규칙)
-* [버전](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#버전)
+* [주요기능](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#주요-기능)
+* [Tech stack](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#Tech-stack)
+* [Architecture](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#Architecture)
+* [ERD](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#ERD)
+* [Package structure](https://github.com/LocalGovernmentx/TutorPlatform/blob/main/README.md#Package-structure)
 
+## 주요 기능
 
+# 튜터 입장
+- 주요 기능1: 튜터가 자신 있는 강의 등록
+- 주요 기능2: 튜터 개인 프로필 등록 및 수정
+- 주요 기능3: 학부모/튜티가 평가하는 평점/리뷰 확인
+- 주요 기능4: 튜티의 공고 찜하기
+- 주요 기능5: 방과후 강사 공고 확인
 
-## 커밋규칙
+# 학부모/튜티 입장
+- 주요 기능1: 본인의 성향과 맞는 튜터 매칭
+- 주요 기능2: 튜터의 정보 확인 및 검색
+- 주요 기능3: 튜터의 강의 찜하기
+- 주요 기능4: 튜터에게 튜터링 제안 (채팅 방식)
+- 주요 기능5: 튜터링이 끝난 후 튜터에 대한 평가 및 리뷰 작성
 
-- 모든 커밋 메시지는 `영어`로 작성
-- 구조
-    - 기본적으로 커밋 메시지는 아래와 같이 제목/본문/꼬리말로 구성
-    
-    ```
-    type : subject
-    
-    body
-    
-    footer
-    ```
-    
-- 커밋 타입(Type)
-    - feat : 새로운 기능 추가
-    - fix : 버그 수정
-    - docs: 문서 내용 변경
-    - style: 포맷, 세미콜론 수정 등 코드가 아닌 스타일에 관련된 수정
-    - refactor: 리팩토링 코드
-    - test: 테스트 코드 추가 및 리팩토링 테스트 등
-    - chore: build task 수정, 프로젝트 매니저 설정 수정 등
-    - 타입은 소문자로 시작
-    - 타입은 항상 대괄호 안에 파트를 입력하여 시작
-    - 예시
-        - "fix" --> ''[HW] fix'
-- 제목(Subject)
-    - 제목은 50자 이내로, 대문자로 시작하며 모두 소문자로 작성
-    - 파일명의 경우에는 대소문자 고려하지 않음
-    - 마침표로 끝나지 않도록 함
-    - 과거시제를 사용하지 않고 명령어로 작성
-    - 예시
-        - "feat : Logined" --> "feat : Login"
-        - "feat : Added" --> "feat : Add"
-- 본문(Body)
-    - 선택사항
-    - 부연 설명 필요 시 작성
-    - 100자 미만 작성 권장
-- 꼬리말(Footer)
-    - 선택사항
-    - issue tracker id를 작성할 때 사용
-    - JIRA Code 작성 시 사용
-- 예시
-    
-    ```
-    [FE] feat : Login DEsign.py
-    
-    한글한글한글
-    - 영어말고 한글로
-    - 선택사항
-    
-    Issue tracker id : 486
-    ```
-    
-## 브랜치규칙
+# 자녀 입장
+- 주요 기능1: 본인의 성향과 맞는 튜터 매칭
+- 주요 기능2: 튜터의 정보 확인 및 검색
+- 주요 기능3: 튜터의 강의 찜하기
 
+## Tech stack
 
-- main
-    - 배포 가능한 상태의 결과물
-- develop
-    - 구현한 기능을 병합하기 위한 브랜치
-    - 통합 폴더의 기능
-- feature
-    - 개별 기능 구현 브랜치
-    - 기능 개발 완료 시 삭제
-    - 네이밍 규칙
-        - feat/파트-기능
-        - 예)
-            - feat/fe-login
-            - feat/be-login
+![tech-stack](tutor/references/tech_stack.png)
 
-### Merge 관련
+## Architecture
 
-- MR은 Git lab을 통해 요청 및 수락
-- MR시
-    - title : merge하려는 브랜치 이름
-    - description : 비우기
-    - 머지 후 브랜치 삭제
+# 초기 구성도
 
-## 버전
-java : 22
+![beginning-system-architecture](tutor/references/beginning-system-architecture.png)
+
+![beginning-application-architecture](tutor/references/beginning-application-architecture.png)
+
+# 최종 구성도
+
+![system-architecture](tutor/references/system-architecture.png)
+
+![application-architecture](tutor/references/application-architecture.png)
+
+## ERD
+
+![ERD](tutor/references/ERDfromWorkbench.png)
+
+## Package structure
+
+![package-structure](tutor/references/tree.png)
+
+## API Specs
+
+![API-specs](tutor/references/API.png)
